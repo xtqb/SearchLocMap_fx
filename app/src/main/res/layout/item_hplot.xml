@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="90.1dp"
+    android:layout_height="75dp">
+
+    <TextView
+        android:id="@+id/plot_name"
+        android:layout_width="88dp"
+        android:layout_height="20dp"
+        android:background="@drawable/icon_plot_title"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/plot_pic"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_below="@+id/plot_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:adjustViewBounds="true" />
+
+    <View
+        android:layout_width="2.1dp"
+        android:layout_height="75dp"
+        android:layout_toRightOf="@+id/plot_name"
+        android:background="@color/black" />
+
+</RelativeLayout>

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Dialog_FS"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tv_loction_title"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:background="#F1F1F1"
+        android:gravity="center"
+        android:text="@string/loction_lon_lat"
+        android:textColor="#9C9C9C"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_lon_title"
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tv_loction_title"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical"
+        android:text="@string/location_lon"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/et_lon_degree"
+        android:layout_width="70dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tv_lon_title"
+        android:layout_marginLeft="15dp"
+        android:background="@drawable/corner_rectangle_et_bg"
+        android:hint="@string/location_degree"
+        android:inputType="numberDecimal"
+        android:maxLength="3"
+        android:paddingLeft="10dp"
+        android:paddingRight="3dp"
+        android:singleLine="true"
+        android:textColorHint="@color/gray_lite"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tv_lon_title"
+        android:layout_marginLeft="2dp"
+        android:layout_toRightOf="@+id/et_lon_degree"
+        android:text="°"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/et_lon_minute"
+        android:layout_width="70dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tv_lon_title"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@+id/et_lon_degree"
+        android:background="@drawable/corner_rectangle_et_bg"
+        android:hint="@string/location_minute"
+        android:inputType="numberDecimal"
+        android:maxLength="2"
+        android:paddingLeft="10dp"
+        android:paddingRight="3dp"
+        android:singleLine="true"
+        android:textColorHint="@color/gray_lite"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tv_lon_title"
+        android:layout_marginLeft="2dp"
+        android:layout_toRightOf="@+id/et_lon_minute"
+        android:text="′"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/et_lon_second"
+        android:layout_width="70dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tv_lon_title"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@+id/et_lon_minute"
+        android:background="@drawable/corner_rectangle_et_bg"
+        android:hint="@string/location_second"
+        android:inputType="numberDecimal"
+        android:maxLength="2"
+        android:paddingLeft="10dp"
+        android:paddingRight="3dp"
+        android:singleLine="true"
+        android:textColorHint="@color/gray_lite"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tv_lon_title"
+        android:layout_marginLeft="2dp"
+        android:layout_toRightOf="@+id/et_lon_second"
+        android:text="″"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_lat_title"
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:layout_below="@+id/et_lon_degree"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:text="@string/location_lat"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+
+    <EditText
+        android:id="@+id/et_lat_degree"
+        android:layout_width="70dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tv_lat_title"
+        android:layout_marginLeft="15dp"
+        android:background="@drawable/corner_rectangle_et_bg"
+        android:hint="@string/location_degree"
+        android:inputType="numberDecimal"
+        android:maxLength="2"
+        android:paddingLeft="10dp"
+        android:paddingRight="3dp"
+        android:singleLine="true"
+        android:textColorHint="@color/gray_lite"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tv_lat_title"
+        android:layout_marginLeft="2dp"
+        android:layout_toRightOf="@+id/et_lat_degree"
+        android:text="°"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/et_lat_minute"
+        android:layout_width="70dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tv_lat_title"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@+id/et_lat_degree"
+        android:background="@drawable/corner_rectangle_et_bg"
+        android:hint="@string/location_minute"
+        android:inputType="numberDecimal"
+        android:maxLength="2"
+        android:paddingLeft="10dp"
+        android:paddingRight="3dp"
+        android:singleLine="true"
+        android:textColorHint="@color/gray_lite"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tv_lat_title"
+        android:layout_marginLeft="2dp"
+        android:layout_toRightOf="@+id/et_lat_minute"
+        android:text="′"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/et_lat_second"
+        android:layout_width="70dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tv_lat_title"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@+id/et_lat_minute"
+        android:background="@drawable/corner_rectangle_et_bg"
+        android:hint="@string/location_second"
+        android:inputType="numberDecimal"
+        android:maxLength="2"
+        android:paddingLeft="10dp"
+        android:paddingRight="3dp"
+        android:singleLine="true"
+        android:textColorHint="@color/gray_lite"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tv_lat_title"
+        android:layout_marginLeft="2dp"
+        android:layout_toRightOf="@+id/et_lat_second"
+        android:text="″"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/ll_layout"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_caculate"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="0.75dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_selector_tv"
+            android:gravity="center"
+            android:text="@string/location_caculate"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tv_back"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="0.75dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_selector_tv"
+            android:gravity="center"
+            android:text="@string/location_back"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+    </LinearLayout>
+
+</RelativeLayout>

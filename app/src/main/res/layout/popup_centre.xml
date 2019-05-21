@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/centretv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/popup_location"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/loctiontv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="10dp"
+        android:textSize="13sp" />
+
+    <RelativeLayout
+        android:id="@+id/popup_directive"
+        android:layout_width="328dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/btn_popup_selector" >
+
+        <ImageView
+            android:id="@+id/pop_cen1"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="100dp"
+            android:background="@drawable/zhiling_28" />
+
+        <TextView
+            android:id="@+id/poptv1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/_send_command"
+            android:textColor="@color/blue_word"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/pop_cen2"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="25dp"
+            android:background="@drawable/banck_28" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/popup_security"
+        android:layout_width="328dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/btn_popup_selector" >
+
+        <ImageView
+            android:id="@+id/pop_cen3"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="100dp"
+            android:background="@drawable/anquanquyu_28" />
+
+        <TextView
+            android:id="@+id/poptv2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="135dp"
+            android:text="@string/_security_dis"
+            android:textColor="@color/blue_word"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/pop_cen4"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="25dp"
+            android:background="@drawable/banck_28" />
+    </RelativeLayout>
+
+</LinearLayout>

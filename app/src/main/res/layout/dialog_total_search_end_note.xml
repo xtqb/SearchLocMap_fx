@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="260dp"
+    android:background="#E2E4ED">
+
+    <TextView
+        android:id="@+id/tv_search_title"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/green_little"
+        android:gravity="center"
+        android:text="@string/total_search_msg"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_search_num_title"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@+id/tv_search_title"
+        android:layout_marginLeft="30dp"
+        android:gravity="center_vertical"
+        android:text="@string/total_search_num"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_search_num"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignTop="@+id/tv_search_num_title"
+        android:layout_toRightOf="@+id/tv_search_num_title"
+        android:gravity="center_vertical"
+        android:text="12次"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_search_total_title"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignTop="@+id/tv_search_num_title"
+        android:layout_marginLeft="60dp"
+        android:layout_toRightOf="@+id/tv_search_num_title"
+        android:gravity="center_vertical"
+        android:text="@string/total_person_num"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_search_total"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignTop="@+id/tv_search_total_title"
+        android:layout_toRightOf="@+id/tv_search_total_title"
+        android:gravity="center_vertical"
+        android:text="12人"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_search_success_title"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@+id/tv_search_total_title"
+        android:layout_marginLeft="30dp"
+        android:gravity="center_vertical"
+        android:text="@string/total_person_success_num"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_search_success"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignTop="@+id/tv_search_success_title"
+        android:layout_toRightOf="@+id/tv_search_success_title"
+        android:gravity="center_vertical"
+        android:text="12人"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_search_fail_title"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@+id/tv_search_success_title"
+        android:layout_marginLeft="30dp"
+        android:gravity="center_vertical"
+        android:text="@string/total_person_fail_num"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_search_fail"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignTop="@+id/tv_search_fail_title"
+        android:layout_toRightOf="@+id/tv_search_fail_title"
+        android:gravity="center_vertical"
+        android:text="12人"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/tv_search_fail"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center"
+        android:text="是否上传数据?"
+        android:textColor="@color/red"
+        android:textSize="16sp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/dialog_upload"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginRight="0.5dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_selector_tv"
+            android:text="@string/plots_load"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/dialog_timer_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="0.5dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_selector_tv"
+            android:text="@string/dialog_note_cancel"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</RelativeLayout>

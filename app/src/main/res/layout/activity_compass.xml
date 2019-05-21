@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#3A3A3A">
+
+    <ImageView
+        android:id="@+id/im_compass_pan"
+        android:layout_width="330dp"
+        android:layout_height="330dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:background="@drawable/icon_compass_pan1" />
+
+    <com.lhzw.searchlocmap.view.CompassView
+        android:id="@+id/im_compass_point"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="82.5dp"
+        android:src="@drawable/icon_compass_point2" />
+
+    <TextView
+        android:id="@+id/tv_orientation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp"
+        android:layout_marginLeft="120dp"
+        android:layout_marginTop="60dp"
+        android:textColor="@color/white"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/tv_orientation_degree"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="60dp"
+        android:layout_marginRight="120dp"
+        android:layout_marginTop="50dp"
+        android:textColor="@color/white"
+        android:textSize="22sp" />
+
+</RelativeLayout>

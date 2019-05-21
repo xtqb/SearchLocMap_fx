@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:descendantFocusability="blocksDescendants">
+
+    <ImageView
+        android:id="@+id/sos"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerVertical="true"
+        android:background="@drawable/icon_settings_sos" />
+
+    <TextView
+        android:id="@+id/name_child"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="6dp"
+        android:layout_toRightOf="@+id/sos"
+        android:focusable="false"
+        android:singleLine="true"
+        android:textSize="15sp" />
+    <!-- android:layout_centerVertical="true" -->
+    <!-- android:layout_alignBaseline="@+id/sos" -->
+
+    <TextView
+        android:id="@+id/address_child"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name_child"
+        android:layout_marginLeft="3dp"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/sos"
+        android:focusable="false"
+        android:singleLine="true"
+        android:textSize="15sp" />
+    <!-- android:layout_centerVertical="true" -->
+    <!-- android:layout_marginLeft="42dp" -->
+
+    <ImageView
+        android:id="@+id/im_location"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="13dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/dingxiangsouxun_28"
+        android:textSize="15sp" />
+
+</RelativeLayout>

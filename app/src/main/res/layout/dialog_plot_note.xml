@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="155dp"
+    android:background="@color/white">
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <TextView
+        android:id="@+id/tv_plot_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="18dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/diglog_plot_title"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/et_plot_name"
+        android:layout_width="fill_parent"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tv_plot_title"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
+        android:focusable="true"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/corner_rectangle_et_bg"
+        android:hint="@string/plot_name_note"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:singleLine="true"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_height="40dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/bt_plot_save"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="40dp"
+            android:layout_marginRight="0.5dp"
+            android:background="@drawable/bg_selector_tv"
+            android:text="@string/save"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+
+        <Button
+            android:id="@+id/bt_plot_cancle"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="40dp"
+            android:layout_marginLeft="0.5dp"
+            android:background="@drawable/bg_selector_tv"
+            android:text="@string/dialog_cancel"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+    </LinearLayout>
+
+</RelativeLayout>

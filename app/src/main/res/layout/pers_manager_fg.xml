@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/green_little">
+
+        <TextView
+            android:id="@+id/personlist"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/personlist"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_add"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_selector_tv"
+            android:gravity="center"
+            android:text="@string/person_manager_add"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#cccccc" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"
+        android:layout_margin="5.0dip">
+
+        <EditText
+            android:id="@+id/per_keyWord"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5.0dp"
+            android:layout_marginRight="5.0dp"
+            android:background="@drawable/decorate"
+            android:hint="@string/input_key_word"
+            android:maxLength="20"
+            android:paddingLeft="32.0dp"
+            android:paddingRight="7dp"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="16.0sp" />
+
+        <View
+            android:id="@+id/per_searchButton"
+            android:layout_width="17dp"
+            android:layout_height="17dp"
+            android:layout_alignLeft="@+id/per_keyWord"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/icon_search" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_background" />
+
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/tv_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:text="@string/total"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/im_delete"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/bg_selector_delete"
+            android:padding="5dp" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/gray_background" />
+
+    <ListView
+        android:id="@+id/personal_listview"
+        android:layout_width="match_parent"
+        android:layout_height="347dp"
+        android:background="@color/white"
+        android:divider="@drawable/lines"></ListView>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_marginTop="3dp"
+        android:background="#E8E8E8"
+        android:gravity="center_vertical">
+
+        <CheckBox
+            android:id="@+id/select"
+            style="@style/custom_checkbox_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="3dp"
+            android:text="@string/all"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/delete"
+            android:layout_width="75dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/bg_selector_personmanager_tv"
+            android:gravity="center"
+            android:text="@string/delete"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+    </RelativeLayout>
+
+</LinearLayout>

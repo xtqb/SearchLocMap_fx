@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="180dp"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tv_input_distance"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="0.75dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/bg_selector_mesure_tv"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:text="@string/mesure_input_distance"
+        android:textColor="@color/white"
+        android:textSize="17sp" />
+
+    <TextView
+        android:id="@+id/tv_click_mesure"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/tv_input_distance"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/bg_selector_mesure_tv"
+        android:gravity="center"
+        android:text="@string/mesure_click_distance"
+        android:textColor="@color/white"
+        android:textSize="17sp" />
+
+    <TextView
+        android:id="@+id/tv_cancel"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/tv_click_mesure"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/bg_selector_mesure_tv"
+        android:gravity="center"
+        android:text="@string/dialog_note_cancel"
+        android:textColor="@color/white"
+        android:textSize="17sp" />
+
+</RelativeLayout>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:descendantFocusability="blocksDescendants">
+
+    <CheckBox
+        android:id="@+id/choose"
+        style="@style/custom_checkbox_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="15dp"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/im_potrait"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@+id/choose"
+        android:background="@drawable/icon_qita2" />
+
+    <TextView
+        android:id="@+id/name_tv"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="5dp"
+        android:gravity="center_vertical"
+        android:layout_toRightOf="@+id/im_potrait"
+        android:focusable="false"
+        android:maxLines="1"
+        android:layout_centerVertical="true"
+        android:singleLine="true"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/address_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@+id/name_tv"
+        android:layout_centerVertical="true"
+        android:focusable="false"
+        android:singleLine="true"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/spread"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/icon_close_32"
+        android:padding="5dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="49dp"
+        android:background="@color/gray_lite" />
+
+</RelativeLayout>

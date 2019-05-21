@@ -1,0 +1,379 @@
+package com.lhzw.searchlocmap.fragment;
+
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.j256.ormlite.dao.Dao;
+import com.lhzw.searchlocmap.R;
+import com.lhzw.searchlocmap.bean.HttpPersonInfo;
+import com.lhzw.searchlocmap.bean.HttpRequstInfo;
+import com.lhzw.searchlocmap.constants.Constants;
+import com.lhzw.searchlocmap.constants.SPConstants;
+import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
+import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
+import com.lhzw.searchlocmap.ui.BDSettingActivity;
+import com.lhzw.searchlocmap.ui.CompassActivity;
+import com.lhzw.searchlocmap.ui.DipperNumSettingtActivity;
+import com.lhzw.searchlocmap.ui.LocInfoRegisterActivity;
+import com.lhzw.searchlocmap.ui.LocalInfoActivity;
+import com.lhzw.searchlocmap.ui.MainActivity;
+import com.lhzw.searchlocmap.ui.OfflineMapManagerActivity;
+import com.lhzw.searchlocmap.ui.ReportSosActivity;
+import com.lhzw.searchlocmap.ui.RescueServerActivity;
+import com.lhzw.searchlocmap.ui.SearchTimeSettingActivity;
+import com.lhzw.searchlocmap.ui.UpdateAppListActivity;
+import com.lhzw.searchlocmap.ui.UploadPersonInfoActivity;
+import com.lhzw.searchlocmap.utils.BaseUtils;
+import com.lhzw.searchlocmap.utils.NetUtils;
+import com.lhzw.searchlocmap.utils.SpUtils;
+import com.lhzw.searchlocmap.view.ShowProgressDialog;
+import com.lhzw.searchlocmap.view.ToggleButtonView;
+import com.lhzw.searchlocmap.view.ToggleButtonView.onToggleClickListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
+
+public class SettingFragment extends Fragment implements OnClickListener,
+        onToggleClickListener {
+    private View view;
+    private TextView tv_back;
+    private ToggleButtonView toggle_bell;
+    private ToggleButtonView toggle_vibrator;
+    private RelativeLayout rl_sos_upload;
+    private RelativeLayout rl_person_upload;
+    private RelativeLayout rl_time_setting;
+    private RelativeLayout rl_loc_register;
+    private RelativeLayout rl_loc_rescue;
+    private RelativeLayout rl_loc_info;
+    private RelativeLayout rl_offline_map;
+    private RelativeLayout rl_compass;
+    private boolean isPlaySound;
+    private boolean isVibrate;
+    private AlerDialogshow alertdialog;
+    private RelativeLayout rl_bd_setting;
+    private RelativeLayout rl_bd_service;
+    private RelativeLayout rl_bd_num_setting;
+    private RelativeLayout rl_update;
+    private RelativeLayout rl_sync_data;
+    private ShowProgressDialog progress;
+    private Toast mGlobalToast;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.setting_fg, container, false);
+        initView();
+        initData();
+        setListener();
+        return view;
+    }
+
+    private void initView() {
+        tv_back = (TextView) view.findViewById(R.id.tv_back);
+        rl_sos_upload = (RelativeLayout) view.findViewById(R.id.rl_sos_upload);
+        rl_person_upload = (RelativeLayout) view
+                .findViewById(R.id.rl_person_upload);
+        rl_time_setting = (RelativeLayout) view
+                .findViewById(R.id.rl_time_setting);
+        rl_loc_register = (RelativeLayout) view
+                .findViewById(R.id.rl_loc_register);
+        rl_bd_setting = (RelativeLayout) view
+                .findViewById(R.id.rl_bd_setting);
+        rl_bd_service = (RelativeLayout) view.findViewById(R.id.rl_bd_service);
+        rl_loc_rescue = (RelativeLayout) view.findViewById(R.id.rl_loc_rescue);
+        rl_loc_info = (RelativeLayout) view.findViewById(R.id.rl_loc_info);
+        rl_offline_map = (RelativeLayout) view
+                .findViewById(R.id.rl_offline_map);
+        rl_compass = (RelativeLayout) view.findViewById(R.id.rl_compass);
+        toggle_bell = (ToggleButtonView) view.findViewById(R.id.toggle_bell);
+        toggle_vibrator = (ToggleButtonView) view
+                .findViewById(R.id.toggle_vibrator);
+        rl_bd_num_setting = (RelativeLayout) view.findViewById(R.id.rl_bd_num_setting);
+        rl_update = (RelativeLayout) view.findViewById(R.id.rl_update);
+        rl_sync_data = (RelativeLayout) view.findViewById(R.id.rl_sync_data);
+    }
+
+    private void initData() {
+        isPlaySound = SpUtils.getBoolean(SPConstants.SLIDE_SOUND, true);
+        isVibrate = SpUtils.getBoolean(SPConstants.SLIDE_VIBRATOR, true);
+        toggle_bell.setSliderState(isPlaySound);
+        toggle_vibrator.setSliderState(isVibrate);
+    }
+
+    private void setListener() {
+        tv_back.setOnClickListener(this);
+        toggle_bell.setOnToggleClickListener(this);
+        toggle_vibrator.setOnToggleClickListener(this);
+        rl_sos_upload.setOnClickListener(this);
+        rl_person_upload.setOnClickListener(this);
+        rl_time_setting.setOnClickListener(this);
+        rl_loc_register.setOnClickListener(this);
+        rl_loc_rescue.setOnClickListener(this);
+        rl_loc_info.setOnClickListener(this);
+        rl_offline_map.setOnClickListener(this);
+        rl_compass.setOnClickListener(this);
+        rl_bd_setting.setOnClickListener(this);
+        rl_bd_service.setOnClickListener(this);
+        rl_bd_num_setting.setOnClickListener(this);
+        rl_update.setOnClickListener(this);
+        rl_sync_data.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        // TODO Auto-generated method stub
+        switch (v.getId()) {
+            case R.id.tv_back:
+                alertdialog = new AlerDialogshow(getActivity());
+                alertdialog.show();
+                alertdialog
+                        .setContent(getString(R.string.security_system_back_note));
+                alertdialog.setListener(this);
+                break;
+            case R.id.rl_sos_upload:
+                startActivity(new Intent(getActivity(), ReportSosActivity.class));
+                break;
+            case R.id.rl_loc_info:
+                startActivity(new Intent(getActivity(), LocalInfoActivity.class));
+                break;
+            case R.id.rl_person_upload:
+                startActivity(new Intent(getActivity(),
+                        UploadPersonInfoActivity.class));
+                break;
+            case R.id.rl_time_setting:
+                startActivity(new Intent(getActivity(),
+                        SearchTimeSettingActivity.class));
+                break;
+            case R.id.rl_loc_register:
+                startActivity(new Intent(getActivity(),
+                        LocInfoRegisterActivity.class));
+                break;
+            case R.id.rl_loc_rescue:
+                startActivity(new Intent(getActivity(), RescueServerActivity.class));
+                break;
+            case R.id.rl_offline_map:
+                startActivity(new Intent(getActivity(), OfflineMapManagerActivity.class));
+                break;
+            case R.id.rl_compass:
+                startActivity(new Intent(getActivity(), CompassActivity.class));
+                break;
+            case R.id.tv_cancel:
+                alertdialog.dismiss();
+                alertdialog = null;
+                break;
+            case R.id.tv_sure:
+                // 主动搜救
+                alertdialog.dismiss();
+                getActivity().finish();
+                break;
+            case R.id.rl_bd_setting:
+                startActivity(new Intent(getActivity(), BDSettingActivity.class));
+                break;
+            case R.id.rl_bd_service:
+                try {
+                    startActivity(new Intent("com.lhzw.intent.action_UPLOAD_SERVICE"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.rl_bd_num_setting:
+                startActivity(new Intent(getActivity(), DipperNumSettingtActivity.class));
+                break;
+            case R.id.rl_update:
+                startActivity(new Intent(getActivity(), UpdateAppListActivity.class));
+                break;
+            case R.id.rl_sync_data:
+                if(!BaseUtils.isNetConnected(getActivity())) {
+                    showToast(getString(R.string.net_net_connect_fail));
+                    return;
+                }
+                new AyncLoginTask().execute();
+                break;
+        }
+    }
+
+    @Override
+    public void onToggleClick(View view) {
+        // TODO Auto-generated method stub
+        switch (view.getId()) {
+            case R.id.toggle_bell:
+                SpUtils.putBoolean(SPConstants.SLIDE_SOUND,
+                        !SpUtils.getBoolean(SPConstants.SLIDE_SOUND, true));
+                break;
+            case R.id.toggle_vibrator:
+                SpUtils.putBoolean(SPConstants.SLIDE_VIBRATOR,
+                        !SpUtils.getBoolean(SPConstants.SLIDE_VIBRATOR, true));
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private class AlerDialogshow extends AlertDialog {
+        private TextView tv_content;
+        private TextView tv_cancel;
+        private TextView tv_sure;
+
+        public AlerDialogshow(Context context) {
+            super(context);
+            // TODO Auto-generated constructor stub
+        }
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            // TODO Auto-generated method stub
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.dialog_show_note);
+            init();
+        }
+
+        private void init() {
+            setCancelable(false);
+            tv_content = (TextView) findViewById(R.id.tv_content);
+            tv_cancel = (TextView) findViewById(R.id.tv_cancel);
+            tv_sure = (TextView) findViewById(R.id.tv_sure);
+        }
+
+        public void setListener(View.OnClickListener listener) {
+            tv_cancel.setOnClickListener(listener);
+            tv_sure.setOnClickListener(listener);
+        }
+
+        public void setContent(String content) {
+            tv_content.setText(content);
+        }
+    }
+
+    private class AyncLoginTask extends AsyncTask<Object, Integer, Boolean> {
+        private DatabaseHelper helper;
+        private Dao<HttpPersonInfo, Integer> httpPerDao;
+        private boolean isInitMax = false;
+
+        @Override
+        protected void onPreExecute() {
+            helper = DatabaseHelper.getHelper(getActivity());
+            httpPerDao = helper.getHttpPerDao();
+            ShowProgressDialog();
+        }
+
+        @Override
+        protected Boolean doInBackground(Object[] params) {
+            boolean isSuccess = false;
+            //清空数据
+            try {
+                CommonDBOperator.deleteAllItems(httpPerDao);
+                Integer[] values = new Integer[2];
+                String token = SpUtils.getString(Constants.HTTP_TOOKEN, "");
+                String rev = NetUtils.doHttpGetClient(token, Constants.USER_PATH);
+                if (rev != null) {
+                    JSONObject obj = new JSONObject(rev);
+                    int code = obj.getInt("code");
+                    if (code == 0) {
+                        String data = obj.getString("data");
+                        List<HttpRequstInfo> list = new Gson().fromJson(data, new TypeToken<List<HttpRequstInfo>>() {
+                        }.getType());
+                        values[0] = list.size();
+                        Log.e("Tag", "size : " + list.size());
+                        int delay = 40 * 100 / list.size();
+                        int counter = 0;
+                        for (HttpRequstInfo info : list) {
+                            counter++;
+                            values[1] = counter;
+                            publishProgress(values);
+                            CommonDBOperator.saveToDB(httpPerDao, translationItem(info));
+                            Thread.sleep(delay);
+                        }
+                        isSuccess = true;
+                        list.clear();
+                     }
+                } else {
+                    isSuccess = true;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return isSuccess;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer[] values) {
+            if (!isInitMax) {
+                progress.setMaxSeekBar(values[0]);
+                isInitMax = true;
+            } else {
+                progress.setSeekBar(values[1], values[1] * 100 / values[0]);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                showToast(getString(R.string.settings_sync_data_note));
+            } else {
+                showToast(getString(R.string.net_request_fail));
+            }
+            cancelProgressDialog();
+        }
+    }
+
+    private HttpPersonInfo translationItem(HttpRequstInfo item) {
+        HttpPersonInfo bean = null;
+        if(item != null){
+            bean = new HttpPersonInfo();
+            bean.setDeviceNumbers(item.getDeviceNumbers());
+            if(item.getDevice() != null) {
+                bean.setDeviceType(item.getDevice().getDeviceType());
+            } else {
+                bean.setDeviceType(0);
+            }
+            bean.setGender(item.getGender());
+            bean.setId(item.getId());
+            bean.setLoginName(item.getLoginName());
+            bean.setOrg(item.getOrg());
+            bean.setOrgName(item.getOrgName());
+            bean.setRealName(item.getRealName());
+            bean.setXynumber(item.getXynumber());
+        }
+        return bean;
+    }
+
+    private void ShowProgressDialog() {
+        progress = new ShowProgressDialog(getActivity());
+        progress.show();
+    }
+
+    private void cancelProgressDialog() {
+        if (progress != null) {
+            progress.dismiss();
+        }
+    }
+    public void showToast(String text) {
+        if (mGlobalToast == null) {
+            mGlobalToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+            mGlobalToast.show();
+        } else {
+            mGlobalToast.setText(text);
+            mGlobalToast.setDuration(Toast.LENGTH_SHORT);
+            mGlobalToast.show();
+        }
+    }
+}

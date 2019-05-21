@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F6F4F5">
+
+    <TextView
+        android:id="@+id/tv_login_title"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#0B9798"
+        android:gravity="center"
+        android:text="@string/login_title"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/im_login_logo"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_below="@+id/tv_login_title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/icon_login" />
+
+
+    <RelativeLayout
+        android:id="@+id/rl_name"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/im_login_logo"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="120dp"
+        android:background="@drawable/icon_login_input_bg">
+
+        <ImageView
+            android:id="@+id/im_name_potrait"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/icon_login_name" />
+
+        <EditText
+            android:id="@+id/et_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
+            android:layout_toLeftOf="@+id/im_name_del"
+            android:layout_toRightOf="@+id/im_name_potrait"
+            android:background="@null"
+            android:maxEms="15"
+            android:maxLines="1"
+            android:text="admin" />
+
+
+        <ImageView
+            android:id="@+id/im_name_del"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/icon_login_clean_bg" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_password"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/rl_name"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:background="@drawable/icon_login_input_bg">
+
+        <ImageView
+            android:id="@+id/im_password_potrait"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/icon_login_password" />
+
+        <EditText
+            android:id="@+id/et_user_password"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/im_password_potrait"
+            android:background="@null"
+            android:maxEms="15"
+            android:maxLines="1"
+            android:text="admin" />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/bt_login"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_below="@+id/rl_password"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/icon_login_default"
+        android:gravity="center_horizontal"
+        android:paddingTop="7dp"
+        android:text="@string/login"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+</RelativeLayout>

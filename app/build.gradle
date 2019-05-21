@@ -1,0 +1,47 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion '27.0.3'
+    useLibrary 'org.apache.http.legacy'
+    defaultConfig {
+        applicationId "com.lhzw.searchlocmap"
+        minSdkVersion 23
+        targetSdkVersion 23
+        versionCode 3
+        versionName "1.3e"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+            java.srcDirs = ['src/main/java', 'src/main/aidl']
+            resources.srcDirs = ['src/main/java', 'src/main/aidl']
+            aidl.srcDirs = ['src/main/aidl']
+            res.srcDirs = ['src/main/res']
+            assets.srcDirs = ['src/main/assets']
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:23.3.0'
+    implementation files('libs/ormlite-android-4.48.jar')
+    implementation files('libs/libcc.jar')
+    implementation files('libs/egt_jni4java.jar')
+    implementation files('libs/gtgraphic-v1.0.1.jar')
+    implementation files('libs/gtmapbase-v1.2.2.jar')
+    implementation files('libs/android-support-v7-recyclerview.jar')
+    implementation files('libs/gson-2.2.4.jar')
+    implementation files('libs/swipelistview.jar')
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_num"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:gravity="center"
+        android:text="1"
+        android:textColor="#0B0B0B"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginLeft="0dp"
+        android:layout_toRightOf="@+id/tv_num"
+        android:gravity="center"
+        android:text="2019-12-21 12:30:45"
+        android:textColor="#0B0B0B"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_state"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="30dp"
+        android:gravity="center"
+        android:text="确认中"
+        android:textColor="#0B0B0B"
+        android:textSize="16sp" />
+
+</RelativeLayout>

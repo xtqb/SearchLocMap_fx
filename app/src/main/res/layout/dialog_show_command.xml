@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="240dp"
+    android:background="@drawable/bg_search_rectangle">
+
+    <TextView
+        android:id="@+id/tv_command_title"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_search_conner_top_rectangle"
+        android:gravity="center"
+        android:text="@string/dialog_note_command_title"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/tv_command_cancel"
+        android:layout_below="@+id/tv_command_title"
+        android:divider="@color/alltransparent_gray"
+        android:dividerHeight="1dp" />
+
+    <TextView
+        android:id="@+id/tv_command_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="0.75dp"
+        android:background="@drawable/bg_selector_conner_bottom_tv"
+        android:gravity="center"
+        android:text="@string/notify_note_command_cancel"
+        android:textColor="@color/white"
+        android:textSize="17sp" />
+
+</RelativeLayout>

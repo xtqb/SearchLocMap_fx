@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="sms_records_long_click_menu">
+        <item>删除</item>
+        <item>取消</item>
+    </string-array>
+    <string-array name="per_status">
+        <item>离线人员</item>
+        <item>在线人员</item>
+    </string-array>
+    <string-array name="main_picker_id">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="main_picker_name">
+        <item>500米</item>
+        <item>1000米</item>
+        <item>1500米</item>
+        <item>2000米</item>
+        <item>2500米</item>
+        <item>3000米</item>
+        <item>3500米</item>
+        <item>4000米</item>
+        <item>4500米</item>
+        <item>5000米</item>
+    </string-array>
+    <string-array name="pick_hour_arr">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+    <string-array name="pick_minute_second_arr">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>28</item>
+        <item>29</item>
+        <item>30</item>
+        <item>41</item>
+        <item>42</item>
+        <item>43</item>
+        <item>44</item>
+        <item>45</item>
+        <item>46</item>
+        <item>47</item>
+        <item>48</item>
+        <item>49</item>
+        <item>50</item>
+        <item>51</item>
+        <item>52</item>
+        <item>53</item>
+        <item>54</item>
+        <item>55</item>
+        <item>56</item>
+        <item>57</item>
+        <item>58</item>
+        <item>59</item>
+    </string-array>
+    <string-array name="pick_minute_second_id">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>28</item>
+        <item>29</item>
+        <item>30</item>
+        <item>41</item>
+        <item>42</item>
+        <item>43</item>
+        <item>44</item>
+        <item>45</item>
+        <item>46</item>
+        <item>47</item>
+        <item>48</item>
+        <item>49</item>
+        <item>50</item>
+        <item>51</item>
+        <item>52</item>
+        <item>53</item>
+        <item>54</item>
+        <item>55</item>
+        <item>56</item>
+        <item>57</item>
+        <item>58</item>
+        <item>59</item>
+        <item>60</item>
+    </string-array>
+    <string-array name="pick_hour_id">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+    </string-array>
+
+    <string-array name="lat_lon_arr">
+        <item>116.2945508 39.9876102</item>
+        <item>116.2945503 39.9877087</item>
+        <item>116.2945613 39.9876581</item>
+        <item>116.2945384 39.9877097</item>
+        <item>116.2944666 39.987709</item>
+        <item>116.2945472 39.9877509</item>
+        <item>116.2944963 39.9877132</item>
+        <item>116.2945174 39.98778</item>
+        <item>116.2945056 39.9876875</item>
+        <item>116.2945036 39.9876753</item>
+        <item>116.2944283 39.9877561</item>
+        <item>116.2945586 39.9876811</item>
+        <item>116.2945618 39.9877567</item>
+        <item>116.294541 39.9877735</item>
+        <item>116.2945178 39.9876701</item>
+        <item>116.2944778 39.9876941</item>
+        <item>116.2945051 39.9876626</item>
+        <item>116.294511 39.9877394</item>
+        <item>116.2945655 39.9876962</item>
+        <item>116.2945701 39.9876962</item>
+        <item>116.2944683 39.9877129</item>
+        <item>116.2944671 39.987718</item>
+        <item>116.2945413 39.9877034</item>
+        <item>116.2945035 39.9877232</item>
+        <item>116.2945257 39.9877316</item>
+        <item>116.2945868 39.9877834</item>
+        <item>116.2945935 39.9876412</item>
+        <item>116.2944625 39.9877226</item>
+        <item>116.2945251 39.9877165</item>
+        <item>116.2945132 39.987678</item>
+        <item>116.2945184 39.9877772</item>
+        <item>116.2945643 39.987718</item>
+        <item>116.2945781 39.9876638</item>
+        <item>116.2945389 39.9876562</item>
+        <item>116.2945033 39.9876209</item>
+        <item>116.2945839 39.9876806</item>
+        <item>116.2945217 39.9876629</item>
+        <item>116.2945914 39.9876883</item>
+        <item>116.2945397 39.9876127</item>
+        <item>116.2945634 39.9876892</item>
+        <item>116.2945311 39.9876967</item>
+        <item>116.2945442 39.987735</item>
+        <item>116.294561 39.9877485</item>
+        <item>116.2943858 39.9877385</item>
+        <item>116.2945556 39.9877127</item>
+        <item>116.2944917 39.987751</item>
+        <item>116.2945997 39.9877765</item>
+        <item>116.2945105 39.9876715</item>
+        <item>116.2944834 39.987683</item>
+        <item>116.29459 39.9877394</item>
+        <item>116.2945768 39.9876857</item>
+        <item>116.2946398 39.987771</item>
+        <item>116.2944714 39.9877048</item>
+        <item>116.2945223 39.9876228</item>
+        <item>116.2945529 39.9876686</item>
+        <item>116.2945126 39.987729</item>
+        <item>116.2944996 39.987703</item>
+        <item>116.2944927 39.9877077</item>
+        <item>116.294449 39.9876868</item>
+        <item>116.294547 39.9876875</item>
+        <item>116.2945342 39.9876495</item>
+        <item>116.2946993 39.9877059</item>
+        <item>116.2945772 39.9876859</item>
+        <item>116.2945153 39.987695</item>
+        <item>116.2945543 39.9876682</item>
+        <item>116.2945239 39.9877249</item>
+        <item>116.2945249 39.9876666</item>
+        <item>116.2945819 39.9876389</item>
+        <item>116.2945413 39.9877022</item>
+    </string-array>
+
+    <string-array name="dipper_type">
+        <item>基指</item>
+        <item>前指</item>
+        <item>移动终端</item>
+    </string-array>
+
+    <integer-array name="dipper_type_id">
+        <item>5</item>
+        <item>1</item>
+        <item>10</item>
+    </integer-array>
+
+    <string-array name="pick_time_arr">
+        <item>10 分钟</item>
+        <item>20 分钟</item>
+        <item>30 分钟</item>
+        <item>40 分钟</item>
+        <item>50 分钟</item>
+        <item>60 分钟</item>
+
+    </string-array>
+
+    <string-array name="pick_time">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+    </string-array>
+
+    <string-array name="command_action_arr">
+        <item>集合</item>
+        <item>开饭</item>
+        <item>休息</item>
+        <item>报坐标</item>
+        <item>清理火场</item>
+        <item>看守火场</item>
+        <item>撤离火场</item>
+        <item>拦截火头</item>
+        <item>向我靠拢</item>
+        <item>开设隔离</item>
+        <item>扑打</item>
+        <item>救护</item>
+        <item>散开</item>
+        <item>清点人</item>
+        <item>打开对讲</item>
+        <item>加油</item>
+        <item>突破</item>
+        <item>发报</item>
+        <item>启动水泵</item>
+        <item>强攻</item>
+    </string-array>
+
+    <string-array name="signal_channel">
+        <item>信道 1</item>
+        <item>信道 2</item>
+        <item>信道 3</item>
+        <item>信道 4</item>
+        <item>信道 5</item>
+        <item>信道 6</item>
+        <item>信道 7</item>
+        <item>信道 8</item>
+        <item>信道 9</item>
+        <item>信道 10</item>
+    </string-array>
+
+    <string-array name="signal_channel_id">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+
+</resources>

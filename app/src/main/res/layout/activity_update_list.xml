@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rl_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/green_little">
+
+        <Button
+            android:id="@+id/bt_update_back"
+            android:layout_width="54dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/btn_back_state"
+            android:gravity="center"
+            android:paddingLeft="20dp" />
+
+        <TextView
+            android:id="@+id/tv_update_title"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:gravity="center_vertical"
+            android:text="@string/app_update_list"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_search_map"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_below="@+id/rl_title_bar"
+        android:background="@drawable/rl_background">
+
+        <ImageView
+            android:id="@+id/im_search_map"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:background="@drawable/icon_laucher_search" />
+
+        <TextView
+            android:id="@+id/tv_search_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/im_search_map"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/im_search_map"
+            android:text="@string/settings_search_map"
+            android:textSize="16sp" />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/splite"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/rl_search_map"
+        android:background="@color/gray_background" />
+
+    <RelativeLayout
+        android:id="@+id/rl_upload_service"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_below="@+id/splite"
+        android:background="@drawable/rl_background">
+
+        <ImageView
+            android:id="@+id/im_upload_service"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:background="@drawable/icon_laucher_upload" />
+
+        <TextView
+            android:id="@+id/tv_upload_servicee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/im_upload_service"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/im_upload_service"
+            android:text="@string/settings_upload_service"
+            android:textSize="16sp" />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/splite1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/rl_upload_service"
+        android:background="@color/gray_background" />
+
+</RelativeLayout>

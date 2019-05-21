@@ -1,0 +1,51 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="MyCheckBox" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/check_selector</item>
+        <item name="android:maxHeight">10.0dip</item>
+    </style>
+
+    <style name="custom_checkbox_style" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/bg_selector_checkbox</item>
+    </style>
+
+    <style name="dialog_animation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/dialog_enter</item>
+        <!-- 进入时的动画 -->
+        <item name="android:windowExitAnimation">@anim/dialog_exit</item>
+        <!-- 退出时的动画 -->
+    </style>
+
+    <style name="dialog_setting" parent="@android:style/Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <!-- 无标题 -->
+        <item name="android:windowBackground">@color/transparent</item>
+        <!-- 背景设置为透明 -->
+    </style>
+
+    <style name="Dialog_FS">   <item name="android:windowBackground">
+        @android:color/transparent</item>   <item name="android:windowFrame">@null</item>   
+        <item name="android:windowNoTitle">true</item>   <item name="android:windowIsFloating">
+            true</item>   <item name="android:windowIsTranslucent">true</item>   
+        <item name="android:windowContentOverlay">@null</item>   
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>   
+        <item name="android:windowFullscreen">true</item>   
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+</resources>

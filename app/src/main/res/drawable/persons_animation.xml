@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false">
+    <item
+        android:drawable="@drawable/icon_dynamic_01"
+        android:duration="115"></item>
+    <item
+        android:drawable="@drawable/icon_dynamic_02"
+        android:duration="115"></item>
+    <item
+        android:drawable="@drawable/icon_dynamic_03"
+        android:duration="115"></item>
+    <item
+        android:drawable="@drawable/icon_dynamic_04"
+        android:duration="115"></item>
+    <item
+        android:drawable="@drawable/icon_dynamic_05"
+        android:duration="115"></item>
+    <item
+        android:drawable="@drawable/icon_dynamic_06"
+        android:duration="115"></item>
+
+</animation-list>

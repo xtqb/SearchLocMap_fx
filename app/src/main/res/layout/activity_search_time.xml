@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#454545">
+
+    <RelativeLayout
+        android:id="@+id/rl_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/green_little">
+
+        <ImageView
+            android:id="@+id/im_set_time_back"
+            android:layout_width="54dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/btn_back_state"
+            android:gravity="center"
+            android:paddingLeft="20dp" />
+
+        <TextView
+            android:id="@+id/tv_set_time"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:gravity="center_vertical"
+            android:text="@string/time_settings_title"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_view"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="horizontal">
+
+        <com.lhzw.searchlocmap.picker.PickerScrollView
+            android:id="@+id/pick_hour_view"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:layout_weight="1" />
+
+        <com.lhzw.searchlocmap.picker.PickerScrollView
+            android:id="@+id/pick_minute_view"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:layout_weight="1" />
+
+        <com.lhzw.searchlocmap.picker.PickerScrollView
+            android:id="@+id/pick_second_view"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_register_commit"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:background="@drawable/bg_selector_register_commit"
+        android:gravity="center"
+        android:text="@string/time_settings_sure"
+        android:textColor="@color/white" />
+
+</RelativeLayout>

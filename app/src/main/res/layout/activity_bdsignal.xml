@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_search_rectangle"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/ll_bdsignal"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@drawable/bg_search_conner_top_rectangle">
+
+        <TextView
+            android:id="@+id/tv_bd_signal"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:gravity="center_vertical"
+            android:text="信号强度"
+            android:textColor="#9C9C9C"
+            android:textSize="16sp" />
+
+        <com.lhzw.searchlocmap.view.HistogramBar
+            android:id="@+id/his_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="4dp"
+            android:layout_toRightOf="@+id/tv_bd_signal" />
+
+        <TextView
+            android:id="@+id/tv_signal_level_title"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/tv_signal_level"
+            android:gravity="center_vertical"
+            android:text="信号状态"
+            android:textColor="#9C9C9C"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_signal_level"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:background="@color/red"
+            android:gravity="center"
+            android:text="弱"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
+    <com.lhzw.searchlocmap.view.StateTreeView
+        android:id="@+id/his_state_tree"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ll_bdsignal"
+        android:layout_marginTop="15dp" />
+
+    <TextView
+        android:id="@+id/tv_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/his_state_tree"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="22dp"
+        android:enabled="true"
+        android:gravity="center"
+        android:text="@string/search_detail"
+        android:textColor="@color/green_dark" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/ll_bdsignal"
+        android:layout_marginTop="180.5dp"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/dialog_timer_close"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginRight="0.5dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_selector_left_tv"
+            android:text="停止"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/dialog_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="0.5dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_selector_right_tv"
+            android:text="关闭"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </LinearLayout>
+</RelativeLayout>

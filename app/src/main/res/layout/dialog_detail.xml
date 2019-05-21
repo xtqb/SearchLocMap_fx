@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_search_rectangle">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/bg_search_conner_top_rectangle"
+        android:gravity="center"
+        android:text="搜索明细"
+        android:textColor="#9C9C9C"
+        android:textSize="16sp" />
+
+    <RelativeLayout
+        android:id="@+id/rl_search"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/tv_title"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/tv_total_title"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:gravity="center"
+            android:text="总数："
+            android:textColor="@color/green_dark"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_total"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:layout_toRightOf="@+id/tv_total_title"
+            android:gravity="center"
+            android:text="20"
+            android:textColor="@color/green_dark"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_succeess_title"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_toRightOf="@+id/tv_total"
+            android:gravity="center"
+            android:text="成功："
+            android:textColor="@color/green_dark"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_succeess"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:layout_toRightOf="@+id/tv_succeess_title"
+            android:gravity="center"
+            android:text="12"
+            android:textColor="@color/green_dark"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_fail_title"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_toRightOf="@+id/tv_succeess"
+            android:gravity="center"
+            android:text="失败："
+            android:textColor="@color/green_dark"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_fail"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:layout_toRightOf="@+id/tv_fail_title"
+            android:gravity="center"
+            android:text="8"
+            android:textColor="@color/green_dark"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/splite"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/rl_search"
+        android:background="#F1F1F1" />
+
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@+id/splite"
+        android:background="@color/white"
+        android:divider="@color/gray_lite"
+        android:dividerHeight="0.75dp"
+        android:listSelector="@drawable/bg_selector_drawlayout_rl"></ListView>
+
+    <Button
+        android:id="@+id/dialog_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/listview"
+        android:background="@drawable/bg_selector_conner_bottom_tv"
+        android:text="知道了"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+
+</RelativeLayout>

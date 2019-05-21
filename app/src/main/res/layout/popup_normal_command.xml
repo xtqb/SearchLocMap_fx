@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00000000">
+
+    <RelativeLayout
+        android:id="@+id/normal_card"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:background="@color/white">
+
+        <View
+            android:id="@+id/normal_card_view"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentTop="true"
+            android:background="#cccccc" />
+
+        <TextView
+            android:id="@+id/normal_pop_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/name"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/normal_pop_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_toRightOf="@+id/normal_pop_name"
+            android:maxLength="25"
+            android:paddingLeft="10dp"
+            android:singleLine="true"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/normal_pop_sex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/normal_pop_name"
+            android:layout_marginLeft="16dp"
+            android:paddingTop="2dp"
+            android:text="@string/sex"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/normal_pop_sex_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/normal_pop_name"
+            android:layout_toRightOf="@+id/normal_pop_sex"
+            android:maxLength="2"
+            android:paddingLeft="10dp"
+            android:paddingTop="2dp"
+            android:singleLine="true"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/normal_pop_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/normal_pop_sex"
+            android:layout_marginLeft="16dp"
+            android:paddingTop="2dp"
+            android:text="@string/popuphone"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/normal_pop_phone_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/normal_pop_sex_tv"
+            android:layout_toRightOf="@+id/normal_pop_phone"
+            android:maxLength="20"
+            android:paddingLeft="10dp"
+            android:paddingTop="2dp"
+            android:singleLine="true"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/normal_pop_urgency_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/normal_pop_phone"
+            android:layout_marginLeft="16dp"
+            android:paddingTop="2dp"
+            android:text="@string/phone1"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/normal_pop_urgency_phone_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/normal_pop_phone_tv"
+            android:layout_toRightOf="@+id/normal_pop_urgency_phone"
+            android:maxLength="20"
+            android:paddingLeft="10dp"
+            android:paddingTop="2dp"
+            android:singleLine="true"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/normal_pop_urgency_phone2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/normal_pop_urgency_phone"
+            android:layout_marginLeft="16dp"
+            android:paddingTop="2dp"
+            android:text="@string/phone2"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/normal_pop_urgency_phone_tv2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/normal_pop_urgency_phone_tv"
+            android:layout_toRightOf="@+id/normal_pop_urgency_phone2"
+            android:maxLength="20"
+            android:paddingLeft="10dp"
+            android:paddingTop="2dp"
+            android:singleLine="true"
+            android:textSize="13sp" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/normal_distanceinfer"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/btn_navi_state" />
+
+    <TextView
+        android:id="@+id/normal_distancetv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/normal_distanceinfer"
+        android:layout_marginRight="30dp"
+        android:textColor="@color/blue_word"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tv_issue_command"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bg_selector_tv"
+        android:gravity="center"
+        android:text="@string/normal_order"
+        android:textColor="@color/white"
+        android:textSize="13sp" />
+
+</RelativeLayout>
