@@ -1,5 +1,6 @@
 package com.lhzw.searchlocmap.ui;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.BDManager;
 import android.content.Context;
@@ -130,6 +131,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         viewPager.setAdapter(adapter);
     }
 
+    @SuppressLint("WrongConstant")
     private void initData() {
         mBDManager = (BDManager) getSystemService(Context.BD_SERVICE);
         if (SpUtils.getBoolean(SPConstants.AUTO_REPORT, true)) {
