@@ -1,5 +1,7 @@
 package com.lhzw.searchlocmap.constants;
 
+import android.os.Environment;
+
 public class Constants {
 	public static final String DB_NAME = "DB_NAME.db";
 	public static final int FAILED = -1;
@@ -91,7 +93,16 @@ public class Constants {
 
 	public static final String HTTP_TOOKEN = "x-access-token";
 	public static final String USER_PATH = "/security/user";
+	public static final String APK_PATH = "/apks/latest";
+	public static final String APK_OLD = "old";
+	public static final String APK_NEW = "new";
+	public static final String APK_BD = "bd";
+	public static final String APK_map = "map";
 	public static final int CHANNEL_DEF = 0;//默认信道
-
+//	public static final String IP_ADD = "http://47.104.109.138::8080";
+	public static final String IP_ADD = "http://192.168.1.119:8070";
 	public static final int SEND_ID_DEF = 1;
+	public static final String SAVEPATH = Environment.getExternalStorageDirectory().getPath()+"/apk/";
+
+
 }

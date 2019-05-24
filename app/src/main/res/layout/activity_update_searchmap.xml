@@ -62,7 +62,7 @@
             android:layout_below="@+id/tv_search_app_name"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="4dp"
-            android:text="@string/version_app_already"
+            android:text="@string/version_app"
             android:textColor="@color/text_color"
             android:textSize="16sp" />
 
@@ -76,48 +76,6 @@
             android:text="Search 1.0"
             android:textColor="@color/progressbar"
             android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/tv_linked_apk"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_search_version_code"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="4dp"
-            android:autoLink="web"
-            android:text="http://u.163.com/GYu4En7R"
-            android:textSize="14sp" />
-
-        <LinearLayout
-            android:id="@+id/ll_linked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_linked_apk"
-            android:layout_centerHorizontal="true"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/tv_linked_code_tile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="提取码："
-                android:textColor="@color/text_color"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/tv_linked_code"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tv_linked_apk"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="4dp"
-                android:text="GMwMzmPC"
-                android:textColor="@color/red"
-                android:textIsSelectable="true"
-                android:textSize="14sp" />
-        </LinearLayout>
     </RelativeLayout>
 
     <Button

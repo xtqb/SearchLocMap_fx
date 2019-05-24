@@ -1,8 +1,11 @@
 package com.lhzw.searchlocmap.utils;
 
+import android.annotation.SuppressLint;
 import android.content.BDManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -274,7 +277,7 @@ public class BaseUtils {
      * 查北斗卡号
      */
     public static String getDipperNum(Context mContext) {
-        BDManager bd = (BDManager) mContext
+        @SuppressLint("WrongConstant") BDManager bd = (BDManager) mContext
                 .getSystemService(Context.BD_SERVICE);
         return bd.getBDCardNumber();
     }
@@ -286,7 +289,7 @@ public class BaseUtils {
             Toast.makeText(mContext, mContext.getString(R.string.dipper_switch_check_note), Toast.LENGTH_LONG).show();
             return null;
         }
-        final BDManager mBDManager = (BDManager) mContext.getSystemService(Context.BD_SERVICE);
+        @SuppressLint("WrongConstant") final BDManager mBDManager = (BDManager) mContext.getSystemService(Context.BD_SERVICE);
         //检查北斗卡
         if (BaseUtils.isStringEmpty(mBDManager.getBDCardNumber())) {
             Toast.makeText(mContext, mContext.getString(R.string.dipper_card_check_note), Toast.LENGTH_LONG).show();
@@ -430,7 +433,7 @@ public class BaseUtils {
         return path;
     }
 
-    private static String getFilesAllName() {
+    public static String getFilesAllName() {
         File file = new File("/storage");
         File[] files = file.listFiles();
         String paths = "";
@@ -439,7 +442,7 @@ public class BaseUtils {
             return null;
         }
         for (int i = 0; i < files.length; i++) {
-            if(!files[i].getAbsolutePath().equals("/storage/emulated") && !files[i].getAbsolutePath().equals("/storage/self")){
+            if (!files[i].getAbsolutePath().equals("/storage/emulated") && !files[i].getAbsolutePath().equals("/storage/self")) {
                 paths = files[i].getAbsolutePath();
                 break;
             }
@@ -447,7 +450,7 @@ public class BaseUtils {
         return paths;
     }
 
-    public static boolean isPathExist(String path){
+    public static boolean isPathExist(String path) {
         File mFile = new File(path);
         return mFile.exists();
     }
@@ -462,4 +465,30 @@ public class BaseUtils {
                 "application/vnd.android.package-archive");
         mContext.startActivity(intent);
     }
+
+    public static int getPackageCode(Context context) {
+        PackageManager manager = context.getPackageManager();
+        int code = 0;
+        try {
+            PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
+            code = info.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return code;
+    }
+
+    public static String getPackageName(Context context) {
+        PackageManager manager = context.getPackageManager();
+        String name = null;
+        try {
+            PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
+            name = info.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return name;
+    }
 }
+

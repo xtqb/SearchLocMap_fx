@@ -62,7 +62,7 @@
             android:layout_below="@+id/tv_app_name"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="4dp"
-            android:text="@string/version_app_already"
+            android:text="@string/version_app"
             android:textColor="@color/text_color"
             android:textSize="16sp" />
 

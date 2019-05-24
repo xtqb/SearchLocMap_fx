@@ -14,13 +14,6 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 /**
  * Created by xtqb on 2019/3/29.
  */
@@ -35,7 +28,7 @@ public class NetUtils {
             //第一步：创建HttpClient对象
             HttpClient httpCient = new DefaultHttpClient(httpParams);
             //第二步：创建代表请求的对象,参数是访问的服务器地址
-            String url = "http://47.104.109.138:8080/security/login?loginName=" + name + "&password=" + password + "&savePassword=true";
+            String url = Constants.IP_ADD + "/security/login?loginName=" + name + "&password=" + password + "&savePassword=true";
             HttpGet httpGet = new HttpGet(url);
             //第三步：执行请求，获取服务器发还的相应对象
             HttpResponse httpResponse = httpCient.execute(httpGet);
@@ -56,13 +49,15 @@ public class NetUtils {
         return null;
     }
 
-    public static String obtainAppClient(String url) {
+    public static String reqAppClient(String token, String type, String subPath) {
         //开始请求接口数据
         try {
             HttpClient httpclient = new DefaultHttpClient();
-            String uri = url;
+            String uri = Constants.IP_ADD + subPath;
             HttpGet get = new HttpGet(uri);
             //添加http头信息
+            get.addHeader(Constants.HTTP_TOOKEN, token);
+            get.addHeader("type", type);
             get.addHeader("Content-Type", "application/json");
             get.addHeader("User-Agent", "your agent");
             HttpResponse response = httpclient.execute(get);
@@ -71,6 +66,8 @@ public class NetUtils {
             if (code == 200) {
                 String rev = EntityUtils.toString(response.getEntity(), "utf-8");
                 return rev;
+            } else {
+                return null;
             }
         } catch (Exception e) {
             Log.e("Tag", "doHttpGetClient fail, message : " + e.getMessage());
@@ -81,7 +78,7 @@ public class NetUtils {
     public static String doHttpGetClient(String token, String subPath) {
         try {
             HttpClient httpclient = new DefaultHttpClient();
-            String uri = "http://47.104.109.138:8080" + subPath;
+            String uri = Constants.IP_ADD + subPath;
             HttpGet get = new HttpGet(uri);
             //添加http头信息
             get.addHeader(Constants.HTTP_TOOKEN, token);
@@ -99,6 +96,4 @@ public class NetUtils {
         }
         return null;
     }
-
-
 }

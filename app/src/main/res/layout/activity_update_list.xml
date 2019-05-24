@@ -34,14 +34,14 @@
     <RelativeLayout
         android:id="@+id/rl_search_map"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="64dp"
         android:layout_below="@+id/rl_title_bar"
-        android:background="@drawable/rl_background">
+        android:background="@color/white">
 
         <ImageView
             android:id="@+id/im_search_map"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="16dp"
             android:background="@drawable/icon_laucher_search" />
@@ -51,11 +51,45 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/im_search_map"
-            android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
             android:layout_toRightOf="@+id/im_search_map"
             android:text="@string/settings_search_map"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_map_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/im_search_map"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="35dp"
+            android:layout_toRightOf="@+id/im_search_map"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_map_new_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/im_search_map"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="35dp"
+            android:layout_toRightOf="@+id/tv_map_version"
+            android:textColor="@color/red"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_map_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/im_search_map"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:text="下载更新"
+            android:textColor="@color/red"
+            android:textSize="16sp"
+            android:visibility="gone" />
 
     </RelativeLayout>
 
@@ -69,28 +103,59 @@
     <RelativeLayout
         android:id="@+id/rl_upload_service"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="64dp"
         android:layout_below="@+id/splite"
-        android:background="@drawable/rl_background">
+        android:background="@color/white">
 
         <ImageView
             android:id="@+id/im_upload_service"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="16dp"
             android:background="@drawable/icon_laucher_upload" />
 
         <TextView
-            android:id="@+id/tv_upload_servicee"
+            android:id="@+id/tv_bd_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/im_upload_service"
-            android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
             android:layout_toRightOf="@+id/im_upload_service"
             android:text="@string/settings_upload_service"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_bd_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="35dp"
+            android:layout_toRightOf="@+id/im_upload_service"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_bd_new_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="35dp"
+            android:layout_toRightOf="@+id/tv_bd_version"
+            android:textColor="@color/red"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_bd_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:padding="5dp"
+            android:text="下载更新"
+            android:textColor="@color/red"
+            android:textSize="16sp"
+            android:visibility="gone" />
 
     </RelativeLayout>
 
