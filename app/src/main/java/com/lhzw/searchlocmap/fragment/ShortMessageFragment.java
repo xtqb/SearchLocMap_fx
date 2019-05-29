@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -18,6 +19,8 @@ import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 import com.lhzw.searchlocmap.event.EventBusBean;
 import com.lhzw.searchlocmap.ui.ShortMessUploadActivity;
 import com.lhzw.searchlocmap.utils.LogUtil;
+import com.lhzw.searchlocmap.view.PopupWindowList;
+import com.lhzw.searchlocmap.view.ShowAlertDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -86,6 +89,54 @@ public class ShortMessageFragment extends BaseLazyFragment {
                 intent.putExtra("org", httpPersonInfo.getOrgName());
                 intent.putExtra("bdNum",httpPersonInfo.getDeviceNumbers());
                 startActivity(intent);
+            }
+        });
+        mAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+                HttpPersonInfo httpPersonInfo = (HttpPersonInfo) adapter.getItem(position);
+                showPopWindows(view,httpPersonInfo,position);
+                return false;
+            }
+        });
+    }
+
+    private PopupWindowList mPopupWindowList;
+    private void showPopWindows(View view, final HttpPersonInfo httpPersonInfo,final int itemPosition){
+        List<String> dataList = new ArrayList<>();
+            dataList.add("删除该聊天");
+
+        if (mPopupWindowList == null){
+            mPopupWindowList = new PopupWindowList(view.getContext());
+        }
+        mPopupWindowList.setAnchorView(view);
+        mPopupWindowList.setItemData(dataList);
+        mPopupWindowList.setModal(true);
+        mPopupWindowList.show();
+        mPopupWindowList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mPopupWindowList.hide();
+                final ShowAlertDialog dialog = new ShowAlertDialog(getActivity());
+                dialog.show();
+                dialog.setContent("删除后,将清空该聊天的消息记录");
+                dialog.setListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(v.getId() == R.id.tv_sure){
+                            mAdapter.remove(itemPosition);
+                            CommonDBOperator.deleteByKeys(mMesgInfoDao,"ID",String.valueOf(httpPersonInfo.getId()));
+                            if(mAdapter.getData().size() == 0){
+                                tvNoMessage.setVisibility(View.VISIBLE);
+                            }else {
+                                tvNoMessage.setVisibility(View.GONE);
+                            }
+
+                        }
+                        dialog.dismiss();
+                    }
+                });
+
             }
         });
     }

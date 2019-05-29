@@ -147,7 +147,7 @@ public class ShortMessUploadActivity extends Activity implements
 			sendMesgToServer();
 			break;
 		}
-	};
+	}
 
 	private void sendMesgToServer() {
 		// TODO Auto-generated method stub
