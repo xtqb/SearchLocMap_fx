@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lhzw.searchlocmap.R;
+import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.fragment.PersManagerFragment;
 import com.lhzw.searchlocmap.fragment.SecurityFragment;
@@ -62,6 +63,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SearchLocMapApplication.getInstance().bindService();
         initTabLine();
         initView();
         initData();

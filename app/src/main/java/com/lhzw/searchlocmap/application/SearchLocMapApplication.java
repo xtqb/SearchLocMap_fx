@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.constants.SPConstants;
@@ -32,12 +33,14 @@ public class SearchLocMapApplication extends Application implements View.OnClick
     public void onCreate() {
         super.onCreate();
         instance = SearchLocMapApplication.this;
+        Logger.addLogAdapter(new AndroidLogAdapter());//添加日志库
+    }
+
+    public void bindService(){
         mIntent = new Intent();
         mIntent.setAction("com.lhzw.uploadmms.service.UPLOADMMS");
         mIntent.setPackage("com.lhzw.uploadmms");
         Log.e("Service", "state = "+getApplicationContext().bindService(mIntent, serviceConnect, Context.BIND_AUTO_CREATE));
-
-        Logger.addLogAdapter(new AndroidLogAdapter());//添加日志库
     }
 
     public static SearchLocMapApplication getInstance(){
@@ -91,17 +94,19 @@ public class SearchLocMapApplication extends Application implements View.OnClick
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             // TODO Auto-generated method stub
-
-            LogUtil.e("北斗服务已断开连接");
             //断开时  重新绑定
+            Toast.makeText(getApplicationContext(), "北斗服务连接失败", Toast.LENGTH_LONG).show();
            // getApplicationContext().bindService(mIntent, serviceConnect, Context.BIND_AUTO_CREATE);
-            uploadEvent = null;
+            Intent intent = new Intent();
+            intent.setAction("com.lhzw.uploadmms.service.UPLOADMMS");
+            intent.setPackage("com.lhzw.uploadmms");
+            Log.e("Service", "state = "+getApplicationContext().bindService(intent, serviceConnect, Context.BIND_AUTO_CREATE));
         }
 
         @Override
         public void onServiceConnected(ComponentName arg0, IBinder ibinder) {
             LogUtil.e("北斗服务成功连接");
-
+            Toast.makeText(getApplicationContext(), "北斗服务成功连接", Toast.LENGTH_LONG).show();
             uploadEvent = BDUploadEvent.Stub.asInterface(ibinder);
             if(uploadEvent == null) {
                 Log.e("Tag", "null point");
@@ -112,13 +117,13 @@ public class SearchLocMapApplication extends Application implements View.OnClick
     };
 
     public BDUploadEvent getUploadService(){
-        if(uploadEvent == null) {
-            Intent intent = new Intent();
-            intent.setAction("com.lhzw.uploadmms.service.UPLOADMMS");
-            intent.setPackage("com.lhzw.uploadmms");
-            Log.e("Service", "state = "+getApplicationContext().bindService(intent, serviceConnect, Context.BIND_AUTO_CREATE));
-            return getUploadService();
-        }
+//        if(uploadEvent == null) {
+//            Intent intent = new Intent();
+//            intent.setAction("com.lhzw.uploadmms.service.UPLOADMMS");
+//            intent.setPackage("com.lhzw.uploadmms");
+//            Log.e("Service", "state = "+getApplicationContext().bindService(intent, serviceConnect, Context.BIND_AUTO_CREATE));
+//            return getUploadService();
+//        }
         return uploadEvent;
     }
 
