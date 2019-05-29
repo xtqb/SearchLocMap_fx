@@ -1,5 +1,6 @@
 package com.lhzw.searchlocmap.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BDManager;
 import android.content.BroadcastReceiver;
@@ -83,10 +84,10 @@ public class ShortMessUploadActivity extends Activity implements
 		im_bd_signal = (ImageView) findViewById(R.id.im_bd_signal);
 		tv_mess_upload = (TextView) findViewById(R.id.tv_mess_upload);
 	}
-
+	@SuppressLint("WrongConstant")
 	private void initData() {
 		initTitle();
-		BDManager mBDManager = (BDManager) this.getSystemService(Context.BD_SERVICE);
+		 BDManager mBDManager = (BDManager) this.getSystemService(Context.BD_SERVICE);
 		mBDManager.systemCheck(2+"");
 		helper = DatabaseHelper.getHelper(ShortMessUploadActivity.this);
 		mesDao = helper.getMesgInfoDao();
@@ -134,10 +135,10 @@ public class ShortMessUploadActivity extends Activity implements
 			this.finish();
 			break;
 		case R.id.tv_send_mes:
-//			if(BDSignal.value <2) {
-//				showToast(getString(R.string.upload_signal_strength_low_note));
-//				return;
-//			}
+			if(BDSignal.value <= 2) {
+				showToast(getString(R.string.upload_signal_strength_low_note));
+				return;
+			}
 			body = ed_content.getText().toString();
 			if (BaseUtils.isStringEmpty(body.trim())) {
 				showToast(getString(R.string.short_mess_send_fail_note));
