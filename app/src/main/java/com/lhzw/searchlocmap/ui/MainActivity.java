@@ -82,7 +82,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             }
             SpUtils.putBoolean(SPConstants.ISJUMP, false);
         }
-//        mBDManager.systemCheck(2 + "");
+//        mBDManager.systemCheck(6 + "");
         mBDManager.queryBDPower("6");
     }
 

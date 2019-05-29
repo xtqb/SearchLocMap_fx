@@ -1,6 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+        }
+    }
     compileSdkVersion 23
     buildToolsVersion '27.0.3'
     useLibrary 'org.apache.http.legacy'
@@ -8,16 +12,16 @@ android {
         applicationId "com.lhzw.searchlocmap"
         minSdkVersion 23
         targetSdkVersion 23
-        versionCode 4
-        versionName "1.4e"
+        versionCode 7
+        versionName "1.7.2e"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
-
     sourceSets {
         main {
             manifest.srcFile 'src/main/AndroidManifest.xml'
@@ -29,7 +33,6 @@ android {
             jniLibs.srcDirs = ['libs']
         }
     }
-
 }
 
 dependencies {

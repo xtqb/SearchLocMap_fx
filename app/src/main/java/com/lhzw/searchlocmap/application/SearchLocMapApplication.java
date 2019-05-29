@@ -85,6 +85,7 @@ public class SearchLocMapApplication extends Application implements View.OnClick
         public void onServiceDisconnected(ComponentName arg0) {
             // TODO Auto-generated method stub
 //			uploadEvent = null;
+            uploadEvent = null;
         }
 
         @Override
@@ -99,6 +100,13 @@ public class SearchLocMapApplication extends Application implements View.OnClick
     };
 
     public BDUploadEvent getUploadService(){
+        if(uploadEvent == null) {
+            Intent intent = new Intent();
+            intent.setAction("com.lhzw.uploadmms.service.UPLOADMMS");
+            intent.setPackage("com.lhzw.uploadmms");
+            Log.e("Service", "state = "+getApplicationContext().bindService(intent, serviceConnect, Context.BIND_AUTO_CREATE));
+            return getUploadService();
+        }
         return uploadEvent;
     }
 

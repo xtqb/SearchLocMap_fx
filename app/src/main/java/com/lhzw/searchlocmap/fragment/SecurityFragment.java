@@ -1,5 +1,6 @@
 package com.lhzw.searchlocmap.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.BDManager;
 import android.content.Context;
@@ -460,6 +461,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         }
     }
 
+    @SuppressLint("WrongConstant")
     private void initData() {
         helper = DatabaseHelper.getHelper(getActivity());
         persondao = helper.getPersonalInfoDao();
@@ -2620,7 +2622,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         }
         if(sendID == BaseUtils.getSendID()) {
             content[9] = "2";
-            treeDialog.refleshView(content);
+            if(treeDialog != null) {
+                treeDialog.refleshView(content);
+            }
         }
     }
 

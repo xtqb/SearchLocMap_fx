@@ -100,8 +100,8 @@ public class BDUploadReceiver extends BroadcastReceiver {
                             Intent bgsinal_list = new Intent(Constants.BD_SIGNAL_LIST);
                             bgsinal_list.putExtra("values", values);
                             mContext.sendBroadcast(bgsinal_list);
+                            BDSignal.value = tmp;
                             if (BDSignal.value != tmp) {
-                                BDSignal.value = tmp;
                                 Intent sinalIntent = new Intent(Constants.BD_SIG_ACTION);
                                 mContext.sendBroadcast(sinalIntent);
                                 Log.e("Tag", "value = " + tmp);
@@ -116,26 +116,57 @@ public class BDUploadReceiver extends BroadcastReceiver {
     }
 
     private int obtainMaxValue(Bundle bundle) {
-        int max = 0;
+        int[] maxArr = new int[3];
+        int strength = 1;
         try {
             for (int pos = 0; pos < SIG_INFO.length; pos++) {
                 String value = bundle.getString(SIG_INFO[pos]);
                 if (!BaseUtils.isStringEmpty(value)) {
                     int tmp = Integer.parseInt(value);
-                    if (tmp > max) {
-                        max = tmp;
+                    for (int i = 0; i < 3; i++) {
+                        if (maxArr[i] < tmp) {
+                            int temp = maxArr[i];
+                            maxArr[i] = tmp;
+                            tmp = temp;
+                        }
                     }
                     values[pos] = Float.valueOf(value) / 4;
                 } else {
                     values[pos] = 0;
                 }
-
+            }
+            int total = maxArr[0] + maxArr[1] + maxArr[2];
+            if(total >= 9) {
+                strength = 4;
+            } else if (total == 8 || total == 7) {
+                strength = 3;
+            } else if(total == 6) {
+                if((maxArr[0] == 4 && maxArr[1] == 1 && maxArr[2] == 1) ||
+                        (maxArr[0] == 1 && maxArr[1] == 4 && maxArr[2] == 1) || (
+                        maxArr[0] == 1 && maxArr[1] == 1 && maxArr[2] == 4)) {
+                    strength = 2;
+                } else {
+                    strength = 3;
+                }
+            } else if(total == 5) {
+                if((maxArr[0] == 3 && maxArr[1] == 2 && maxArr[2] == 0) ||
+                        (maxArr[0] == 3 && maxArr[1] == 0 && maxArr[2] == 2) ||
+                        (maxArr[0] == 2 && maxArr[1] == 3 && maxArr[2] == 0) ||
+                        (maxArr[0] == 2 && maxArr[1] == 0 && maxArr[2] == 3) ||
+                        (maxArr[0] == 0 && maxArr[1] == 2 && maxArr[2] == 3) ||
+                        (maxArr[0] == 0 && maxArr[1] == 3 && maxArr[2] == 2)){
+                    strength = 2;
+                } else {
+                    strength = 1;
+                }
+            } else {
+                strength = 1;
             }
         } catch (NumberFormatException e) {
             // TODO Auto-generated catch block
-            return max;
+            return strength;
         }
-        return max;
+        return strength;
     }
 
     public void showNotifcationInfo(Context mContext, String num, int id) {

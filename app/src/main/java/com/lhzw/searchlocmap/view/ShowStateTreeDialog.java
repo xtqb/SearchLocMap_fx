@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.lhzw.searchlocmap.R;
+import com.lhzw.searchlocmap.bdsignal.BDSignal;
 import com.lhzw.searchlocmap.constants.Constants;
 
 public class ShowStateTreeDialog extends AlertDialog implements DialogInterface.OnDismissListener, View.OnClickListener {
@@ -93,7 +95,9 @@ public class ShowStateTreeDialog extends AlertDialog implements DialogInterface.
     }
 
     public void refleshView(String[] data) {
-        his_state_tree.refleshView(data);
+        if(data != null) {
+            his_state_tree.refleshView(data);
+        }
     }
 
     public void setEnable(boolean state){
@@ -117,24 +121,23 @@ public class ShowStateTreeDialog extends AlertDialog implements DialogInterface.
             // 刷新 柱状图
             float[] values = intent.getFloatArrayExtra("values");
             his_bar.refleshView(values);
-            float temp = 0;
-            for(int pos = 0; pos < values.length; pos ++) {
-                if(temp < values[pos]) {
-                    temp = values[pos];
-                }
-            }
-            if(bdValue != temp) {
-                if(temp <= 0.3f) {
-                    tv_signal_level.setBackgroundResource(R.color.red);
-                    tv_signal_level.setText("弱");
-                } else if (temp >0.3f && temp <= 0.7f) {
-                    tv_signal_level.setBackgroundResource(R.color.text_being);
+            switch (BDSignal.value) {
+                case 1:
+                    tv_signal_level.setText("差");
+                    tv_signal_level.setBackgroundColor(mContext.getResources().getColor(R.color.red));
+                    break;
+                case 2:
+                    tv_signal_level.setText("中");
+                    tv_signal_level.setBackgroundColor(mContext.getResources().getColor(R.color.yellow));
+                    break;
+                case 3:
                     tv_signal_level.setText("良");
-                } else {
-                    tv_signal_level.setBackgroundResource(R.color.his_paint);
+                    tv_signal_level.setBackgroundColor(mContext.getResources().getColor(R.color.green3));
+                    break;
+                case 4:
                     tv_signal_level.setText("优");
-                }
-                bdValue = temp;
+                    tv_signal_level.setBackgroundColor(mContext.getResources().getColor(R.color.green));
+                    break;
             }
         }
     };

@@ -359,26 +359,4 @@
                 android:scrollbars="none" />
         </LinearLayout>
     </com.lhzw.searchlocmap.view.MyDrawerLayout>
-
-    <TextView
-        android:id="@+id/tv_conmnication_num"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="2dp"
-        android:layout_marginTop="107dp"
-        android:background="@drawable/bg_round_rect"
-        android:gravity="center"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp"
-        android:text="1"
-        android:textColor="@color/white"
-        android:textSize="10sp" />
-
-    <ImageView
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/icon_center" />
 </RelativeLayout>

@@ -52,8 +52,8 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="15dp"
             android:background="@color/red"
+            android:text="差"
             android:gravity="center"
-            android:text="弱"
             android:textColor="@color/white" />
     </RelativeLayout>
 

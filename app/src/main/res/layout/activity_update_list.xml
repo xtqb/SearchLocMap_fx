@@ -86,8 +86,10 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="15dp"
+            android:background="@color/agray_background"
+            android:padding="5dp"
             android:text="下载更新"
-            android:textColor="@color/red"
+            android:textColor="@color/blue"
             android:textSize="16sp"
             android:visibility="gone" />
 
@@ -151,9 +153,10 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="15dp"
+            android:background="@color/agray_background"
             android:padding="5dp"
             android:text="下载更新"
-            android:textColor="@color/red"
+            android:textColor="@color/blue"
             android:textSize="16sp"
             android:visibility="gone" />
 
