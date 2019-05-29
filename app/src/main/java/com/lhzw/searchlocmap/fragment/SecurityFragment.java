@@ -1778,9 +1778,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
     private void setTouched(int id) {
         for (Map.Entry<Integer, PersonalInfo> entry : tatolMap.entrySet()) {
             if (entry.getKey() == id) {
-                mGraphicOverlay.SetFeatureProp(entry.getKey(), PROP_NAME.Width, "30.0", SOILDERINFO_LAYER_NAME);
+                if(mGraphicOverlay!=null){
+                    mGraphicOverlay.SetFeatureProp(entry.getKey(), PROP_NAME.Width, "30.0", SOILDERINFO_LAYER_NAME);
+                }
             } else {
-                mGraphicOverlay.SetFeatureProp(entry.getKey(), PROP_NAME.Width, "20.0", SOILDERINFO_LAYER_NAME);
+                if (mGraphicOverlay!=null){
+                    mGraphicOverlay.SetFeatureProp(entry.getKey(), PROP_NAME.Width, "20.0", SOILDERINFO_LAYER_NAME);
+                }
             }
         }
         refreshMap();
@@ -2558,8 +2562,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
 
     //刷新地图
     private void refreshMap() {
-        mGraphicOverlay.setModified();
-        mMapView.postInvalidate();
+        if(mGraphicOverlay!=null){
+            mGraphicOverlay.setModified();
+            mMapView.postInvalidate();
+        }
     }
 
     @Override
