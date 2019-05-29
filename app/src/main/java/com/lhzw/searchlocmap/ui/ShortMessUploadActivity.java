@@ -7,10 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,21 +20,24 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
-import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bdsignal.BDSignal;
 import com.lhzw.searchlocmap.bean.MessageInfoIBean;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
+import com.lhzw.searchlocmap.event.EventBusBean;
 import com.lhzw.searchlocmap.utils.BDUtils;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.LogWrite;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.uploadmms.UploadInfoBean;
-import java.util.ArrayList;
+
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,10 +134,10 @@ public class ShortMessUploadActivity extends Activity implements
 			this.finish();
 			break;
 		case R.id.tv_send_mes:
-			if(BDSignal.value <2) {
-				showToast(getString(R.string.upload_signal_strength_low_note));
-				return;
-			}
+//			if(BDSignal.value <2) {
+//				showToast(getString(R.string.upload_signal_strength_low_note));
+//				return;
+//			}
 			body = ed_content.getText().toString();
 			if (BaseUtils.isStringEmpty(body.trim())) {
 				showToast(getString(R.string.short_mess_send_fail_note));
@@ -197,6 +198,9 @@ public class ShortMessUploadActivity extends Activity implements
 	}
 
 	private void updateState() {
+		/**
+		 * 将此人的未读消息全部改为已读状态
+		 */
 		Map<String, String> map = new HashMap<>();
 		map.put("type", ShortMessUploadActivity.MESSAGE_RECEIVE + "");
 		map.put("state", Constants.MESSAGE_UNREAD + "");
@@ -210,6 +214,17 @@ public class ShortMessUploadActivity extends Activity implements
 		if(msgList != null && msgList.size() > 0) {
 			msgList.clear();
 		}
+
+		// 刷新安全监管页未读数据
+		EventBusBean eventBusBean = new EventBusBean();
+		eventBusBean.setCode(Constants.EVENT_CODE_REFRESH_MSG_NUM);
+		EventBus.getDefault().post(eventBusBean);
+
+		//通知最近联系人列表刷新
+		EventBusBean eventBusBean1 = new EventBusBean();
+		eventBusBean1.setCode(Constants.EVENT_CODE_REFRESH_MSG_LIST);
+		EventBus.getDefault().post(eventBusBean1);
+
 	}
 
 	private BaseAdapter adapter = new BaseAdapter() {
@@ -401,6 +416,8 @@ public class ShortMessUploadActivity extends Activity implements
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			setResult(7);
 			this.finish();
+
+
 		}
 		return super.onKeyDown(keyCode, event);
 	}

@@ -1,9 +1,6 @@
 package com.lhzw.searchlocmap.ui;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +13,7 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.Toast;
+
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.adapter.PerStateListAdapter;
@@ -24,7 +22,12 @@ import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 
-public class PerStateActivity extends BaseActivity implements OnClickListener,
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class PerStateActivity extends Activity implements OnClickListener,
 		OnChildClickListener {
 	private ExpandableListView exlistview;
 	private PerStateListAdapter adapter;
@@ -163,7 +166,6 @@ public class PerStateActivity extends BaseActivity implements OnClickListener,
 	}
 
 	// 广播接收后重新查数据库
-	@Override
 	protected void signalChange() {
 		// TODO Auto-generated method stub
 		initExListViewDataSet();

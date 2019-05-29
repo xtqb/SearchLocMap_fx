@@ -9,13 +9,16 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import com.lhzw.searchlocmap.R;
 
+import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.interfaces.OnDipperCancelListener;
+import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.searchlocmap.view.ShowAlertDialog;
 import com.lhzw.uploadmms.BDUploadEvent;
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 
 public class SearchLocMapApplication extends Application implements View.OnClickListener{
     private static SearchLocMapApplication instance;
@@ -23,14 +26,18 @@ public class SearchLocMapApplication extends Application implements View.OnClick
     private ShowAlertDialog alertdialog;
     private OnDipperCancelListener cancelListener;
     private Context mContext;
+    private Intent mIntent;
+
     @Override
     public void onCreate() {
         super.onCreate();
         instance = SearchLocMapApplication.this;
-        Intent intent = new Intent();
-        intent.setAction("com.lhzw.uploadmms.service.UPLOADMMS");
-        intent.setPackage("com.lhzw.uploadmms");
-        Log.e("Service", "state = "+getApplicationContext().bindService(intent, serviceConnect, Context.BIND_AUTO_CREATE));
+        mIntent = new Intent();
+        mIntent.setAction("com.lhzw.uploadmms.service.UPLOADMMS");
+        mIntent.setPackage("com.lhzw.uploadmms");
+        Log.e("Service", "state = "+getApplicationContext().bindService(mIntent, serviceConnect, Context.BIND_AUTO_CREATE));
+
+        Logger.addLogAdapter(new AndroidLogAdapter());//添加日志库
     }
 
     public static SearchLocMapApplication getInstance(){
@@ -84,12 +91,17 @@ public class SearchLocMapApplication extends Application implements View.OnClick
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             // TODO Auto-generated method stub
-//			uploadEvent = null;
+
+            LogUtil.e("北斗服务已断开连接");
+            //断开时  重新绑定
+           // getApplicationContext().bindService(mIntent, serviceConnect, Context.BIND_AUTO_CREATE);
             uploadEvent = null;
         }
 
         @Override
         public void onServiceConnected(ComponentName arg0, IBinder ibinder) {
+            LogUtil.e("北斗服务成功连接");
+
             uploadEvent = BDUploadEvent.Stub.asInterface(ibinder);
             if(uploadEvent == null) {
                 Log.e("Tag", "null point");

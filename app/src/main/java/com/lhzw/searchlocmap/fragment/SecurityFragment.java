@@ -99,6 +99,7 @@ import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
+import com.lhzw.searchlocmap.event.EventBusBean;
 import com.lhzw.searchlocmap.interfaces.OnHoriItemClickListener;
 import com.lhzw.searchlocmap.overlay.DEMPointOverlay;
 import com.lhzw.searchlocmap.overlay.MeasureAreaOverlay;
@@ -106,7 +107,7 @@ import com.lhzw.searchlocmap.overlay.MeasureDistanceOverlay;
 import com.lhzw.searchlocmap.overlay.MeasureOverlayManager;
 import com.lhzw.searchlocmap.overlay.OverlayFactory;
 import com.lhzw.searchlocmap.overlay.P2pviewAnalysisOverlay;
-import com.lhzw.searchlocmap.ui.DipperCommunicationActivity;
+import com.lhzw.searchlocmap.ui.CommunicationListActivity;
 import com.lhzw.searchlocmap.ui.LocationTrackActivity;
 import com.lhzw.searchlocmap.ui.PerStateActivity;
 import com.lhzw.searchlocmap.ui.PlotItemListActivity;
@@ -114,6 +115,7 @@ import com.lhzw.searchlocmap.ui.ShortMessUploadActivity;
 import com.lhzw.searchlocmap.ui.TreeStateListActivity;
 import com.lhzw.searchlocmap.utils.BDUtils;
 import com.lhzw.searchlocmap.utils.BaseUtils;
+import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.LogWrite;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.searchlocmap.view.HorizontalListView;
@@ -126,6 +128,10 @@ import com.lhzw.searchlocmap.view.ShowStateTreeDialog;
 import com.lhzw.searchlocmap.view.ShowTimerCloseDialog;
 import com.lhzw.searchlocmap.view.ShowTimerDialog;
 import com.lhzw.uploadmms.UploadInfoBean;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -254,6 +260,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        EventBus.getDefault().register(this);
         view = inflater.inflate(R.layout.security_fg, container, false);
         initView();
         initData();
@@ -859,7 +867,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
 //        super.onClick(v);
         switch (v.getId()) {
             case R.id.communication_btn:
-                startActivityForResult(new Intent(getActivity(), DipperCommunicationActivity.class), 0x7866);
+               // startActivityForResult(new Intent(getActivity(), DipperCommunicationActivity.class), 0x7866);
+                //todo 新页面
+                startActivity(new Intent(getActivity(),CommunicationListActivity.class));
                 break;
             case R.id.bt_plot_list:
                 drawer.setScrimColor(Color.TRANSPARENT);
@@ -1997,6 +2007,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
     @Override
     public void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
         try {
             if (locManager != null && locManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 locManager.removeUpdates(this);
@@ -2647,5 +2658,17 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                 loRaManager.changeWatchType(type);
             }
         }).start();
+    }
+
+    @Subscribe(threadMode= ThreadMode.MAIN)
+    public void getEventBus(EventBusBean eventBusBean){
+        if(eventBusBean!=null){
+            switch (eventBusBean.getCode()){
+                case Constants.EVENT_CODE_REFRESH_MSG_NUM://刷新未读消息数
+                    LogUtil.d("eventBus有新的未读消息");
+                    initMessageNum();
+                    break;
+            }
+        }
     }
 }

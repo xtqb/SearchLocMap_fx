@@ -143,6 +143,9 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustResize"></activity>
+        <!--联系人页-->
+        <activity android:name=".ui.CommunicationListActivity"/>
+
         <receiver android:name="com.lhzw.searchlocmap.receiver.WatchSignalReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.bspsos" /> <!-- 非密 -->

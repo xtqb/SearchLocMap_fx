@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:windowNoTitle">true</item>
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
@@ -48,4 +48,14 @@
         <item name="android:windowBackground">@android:color/white</item>
         <item name="android:backgroundDimEnabled">true</item>
     </style>
+
+<!--仿微信滑动切换底部菜单-->
+    <declare-styleable name="TabMenu">
+        <attr name="selected" format="integer"/>
+        <attr name="itemCount" format="integer"/>
+        <attr name="android:textSize"/>
+        <attr name="text_color" format="color"/>
+        <attr name="text_select_color" format="color"/>
+        <attr name="item_bg" format="color"/>
+    </declare-styleable>
 </resources>

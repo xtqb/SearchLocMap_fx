@@ -10,19 +10,22 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
+import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.bdsignal.BDSignal;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.MessageInfoIBean;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
+import com.lhzw.searchlocmap.event.EventBusBean;
 import com.lhzw.searchlocmap.ui.ShortMessUploadActivity;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.uploadmms.UploadInfoBean;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
-import com.lhzw.searchlocmap.R;
 
 public class BDUploadReceiver extends BroadcastReceiver {
     private DatabaseHelper<?> helper;
@@ -86,6 +89,10 @@ public class BDUploadReceiver extends BroadcastReceiver {
                                 mmsIntent.putExtra("ID", msg_Id);
                                 mContext.sendBroadcast(mmsIntent);
                                 showNotifcationInfo(mContext, dipList.get(0).getRealName(), R.drawable.icon_chat);
+                                //收到消息  更新完信息数据库,通知最近联系人列表刷新
+                                EventBusBean eventBusBean = new EventBusBean();
+                                eventBusBean.setCode(Constants.EVENT_CODE_REFRESH_MSG_LIST);
+                                EventBus.getDefault().post(eventBusBean);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

@@ -2,11 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        release {
+        key {
+            keyAlias 'lhzw'
+            keyPassword '123456'
+            storeFile file('D:/Android_HECUNCUN/app/keystore')
+            storePassword '123456'
         }
     }
     compileSdkVersion 23
-    buildToolsVersion '27.0.3'
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "com.lhzw.searchlocmap"
@@ -17,11 +20,15 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.key
+        }
+        debug {
+            signingConfig signingConfigs.key
         }
     }
+
     sourceSets {
         main {
             manifest.srcFile 'src/main/AndroidManifest.xml'
@@ -38,13 +45,24 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
-    implementation 'com.android.support:appcompat-v7:23.3.0'
+    implementation 'com.android.support:appcompat-v7:23.4.0'
+    implementation 'com.android.support:recyclerview-v7:23.4.0'
     implementation files('libs/ormlite-android-4.48.jar')
     implementation files('libs/libcc.jar')
     implementation files('libs/egt_jni4java.jar')
     implementation files('libs/gtgraphic-v1.0.1.jar')
     implementation files('libs/gtmapbase-v1.2.2.jar')
-    implementation files('libs/android-support-v7-recyclerview.jar')
     implementation files('libs/gson-2.2.4.jar')
     implementation files('libs/swipelistview.jar')
+    //butterknife  https://github.com/JakeWharton/butterknife
+    implementation 'com.jakewharton:butterknife:8.4.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+    //eventBus
+    implementation 'org.greenrobot:eventbus:3.0.0'
+    //https://github.com/orhanobut/logger  更加直观的日志库
+    implementation 'com.orhanobut:logger:2.2.0'
+    //汉字-拼音工具
+    implementation files('libs/pinyin4j-2.5.0.jar')
+    //https://www.jianshu.com/p/b343fcff51b0  强大的RecyclerAdapter框架
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
 }

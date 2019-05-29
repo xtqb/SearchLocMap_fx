@@ -102,6 +102,13 @@ public class Constants {
 	public static final String IP_ADD = "http://47.104.109.138:8080";
 //	public static final String IP_ADD = "http://192.168.1.119:8070";
 	public static final int SEND_ID_DEF = 1;
+
+
+
+
+	//EventBusBean 发送信息的Code值
+	public static final int EVENT_CODE_REFRESH_MSG_LIST=0X888;//刷新短消息页面
+	public static final int EVENT_CODE_REFRESH_MSG_NUM=0X887;//刷新安全监测页的未读消息
 	public static final String SAVEPATH = Environment.getExternalStorageDirectory().getPath()+"/apk/";
 
 

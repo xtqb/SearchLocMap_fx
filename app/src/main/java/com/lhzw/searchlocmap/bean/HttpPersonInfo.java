@@ -32,6 +32,36 @@ public class HttpPersonInfo implements Serializable{
     private int deviceType;
 
 
+    private String letters;//真实名字的首字母
+    private Long CurrentMsgTime;//最近的消息时间
+    private int UnReadMsgNum;//未读消息数
+
+    public int getUnReadMsgNum() {
+        return UnReadMsgNum;
+    }
+
+    public void setUnReadMsgNum(int unReadMsgNum) {
+        UnReadMsgNum = unReadMsgNum;
+    }
+
+    public String getLetters() {
+        return letters;
+    }
+
+    public void setLetters(String letters) {
+        this.letters = letters;
+    }
+
+
+
+    public Long getCurrentMsgTime() {
+        return CurrentMsgTime;
+    }
+
+    public void setCurrentMsgTime(Long currentMsgTime) {
+        CurrentMsgTime = currentMsgTime;
+    }
+
     public HttpPersonInfo(int id, String loginName, String realName, String org, int gender, String orgName, String xynumber, String deviceNumbers, int deviceType) {
         this.id = id;
         this.loginName = loginName;

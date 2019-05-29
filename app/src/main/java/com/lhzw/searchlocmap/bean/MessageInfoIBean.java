@@ -1,9 +1,9 @@
 package com.lhzw.searchlocmap.bean;
 
-import java.io.Serializable;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import java.io.Serializable;
 
 @DatabaseTable(tableName = "MessageInfoIBean")
 public class MessageInfoIBean implements Serializable {
@@ -97,5 +97,18 @@ public class MessageInfoIBean implements Serializable {
 
 	public void setID(int ID) {
 		this.ID = ID;
+	}
+
+	@Override
+	public String toString() {
+		return "MessageInfoIBean{" +
+				"_Id=" + _Id +
+				", time=" + time +
+				", body='" + body + '\'' +
+				", type=" + type +
+				", num='" + num + '\'' +
+				", state=" + state +
+				", ID=" + ID +
+				'}';
 	}
 }
