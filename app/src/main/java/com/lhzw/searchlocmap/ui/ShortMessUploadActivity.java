@@ -134,10 +134,10 @@ public class ShortMessUploadActivity extends Activity implements
 			this.finish();
 			break;
 		case R.id.tv_send_mes:
-//			if(BDSignal.value <2) {
-//				showToast(getString(R.string.upload_signal_strength_low_note));
-//				return;
-//			}
+			if(BDSignal.value <2) {
+				showToast(getString(R.string.upload_signal_strength_low_note));
+				return;
+			}
 			body = ed_content.getText().toString();
 			if (BaseUtils.isStringEmpty(body.trim())) {
 				showToast(getString(R.string.short_mess_send_fail_note));
