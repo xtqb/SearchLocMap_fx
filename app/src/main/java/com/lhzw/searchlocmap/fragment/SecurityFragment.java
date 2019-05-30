@@ -88,6 +88,7 @@ import com.lhzw.searchlocmap.adapter.PortaitAdapter;
 import com.lhzw.searchlocmap.adapter.TimerSearchAdapter;
 import com.lhzw.searchlocmap.adapter.UndeterminedAdapter;
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
+import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.LocTrackBean;
 import com.lhzw.searchlocmap.bean.MessageInfoIBean;
 import com.lhzw.searchlocmap.bean.PersonalInfo;
@@ -257,6 +258,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
     private final int REFLESH_TV = 0x7700;
     private boolean demAnalysis;
     private PointD pd;
+    private Dao<HttpPersonInfo, Integer> mHttpDao;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -273,20 +275,20 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
 
     private void initDEMData() {
         String url = Environment.getExternalStorageDirectory().getPath();
-        String configPath = url+"/gtmap/config4and/";
+        String configPath = url + "/gtmap/config4and/";
         //获取运行环境
-        if(new File(configPath).exists()){
+        if (new File(configPath).exists()) {
             demAnalysis = com.egt.gis.interfaces.Map.setConfigPath(configPath);
         }
-        if(demAnalysis){
+        if (demAnalysis) {
             com.egt.gis.interfaces.Map.initialize();
             //注册组件
             Raster.registerRasterComponent();
             Analyse.registerAnalyserComponent();
             //初始化DEM数据文件
             String url_tld = Config.MAP_ROOT_PATH + "/tiles/100wdem/100wDEM.tld";
-            boolean load=Raster.loadRasterMapByFileName(url_tld, RasterType.RASTER_DEM);
-            if(load){
+            boolean load = Raster.loadRasterMapByFileName(url_tld, RasterType.RASTER_DEM);
+            if (load) {
                 showToast("高程数据初始化完成");
             }
         }
@@ -303,7 +305,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
     private void initMapConfig() {
         Config.DATA_CODE = "20190417";
         String mapPath = BaseUtils.getStoragePath();
-        if(BaseUtils.isPathExist(mapPath)){
+        if (BaseUtils.isPathExist(mapPath)) {
             Config.MAP_ROOT_PATH = mapPath;
             Log.e("Tag", "Path : " + mapPath);
         }
@@ -472,6 +474,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
     @SuppressLint("WrongConstant")
     private void initData() {
         helper = DatabaseHelper.getHelper(getActivity());
+        mHttpDao = helper.getHttpPerDao();
         persondao = helper.getPersonalInfoDao();
         plotDao = helper.getPlotItemDao();
         treeDao = helper.getTreeStateDao();
@@ -821,7 +824,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         }
 
         //绘制sos
-        if(sosList != null && sosList.size() > 0) {
+        if (sosList != null && sosList.size() > 0) {
             for (PersonalInfo item : sosList) {
                 int plot_id = mGraphicOverlay.AddPicturePlaceMark(new GeoPoint(Double.valueOf(item.getLatitude()),
                         Double.valueOf(item.getLongitude())), sos_bitmap, item.getName(), 20.0, SOILDERINFO_LAYER_NAME);
@@ -840,7 +843,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         }
 
         //绘制common
-        if(commonList != null && commonList.size() > 0) {
+        if (commonList != null && commonList.size() > 0) {
             for (PersonalInfo item : commonList) {
                 int plot_id = mGraphicOverlay.AddPicturePlaceMark(new GeoPoint(Double.valueOf(item.getLatitude()),
                         Double.valueOf(item.getLongitude())), common_bitmap, item.getName(), 20.0, SOILDERINFO_LAYER_NAME);
@@ -867,9 +870,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
 //        super.onClick(v);
         switch (v.getId()) {
             case R.id.communication_btn:
-               // startActivityForResult(new Intent(getActivity(), DipperCommunicationActivity.class), 0x7866);
+                // startActivityForResult(new Intent(getActivity(), DipperCommunicationActivity.class), 0x7866);
                 //todo 新页面
-                startActivity(new Intent(getActivity(),CommunicationListActivity.class));
+                startActivity(new Intent(getActivity(), CommunicationListActivity.class));
                 break;
             case R.id.bt_plot_list:
                 drawer.setScrimColor(Color.TRANSPARENT);
@@ -1131,7 +1134,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                 showToast(getString(R.string.send_command_success_note));
                 break;
             case R.id.dialog_timer_search:
-                if(total == 0) {
+                if (total == 0) {
                     showToast(getString(R.string.note_input_person_note));
                     return;
                 }
@@ -1360,34 +1363,35 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         mMapView.postInvalidate();
     }
 
-    private void measureDEMPoint(){
-        if(demAnalysis){
+    private void measureDEMPoint() {
+        if (demAnalysis) {
             DEMPointOverlay demOverlay = (DEMPointOverlay) overlayManager.getOverlay(OverlayFactory.MEASUREDEM);
-            if(demOverlay == null){
-                demOverlay =(DEMPointOverlay)OverlayFactory.createOverlayInstance(OverlayFactory.MEASUREDEM,getActivity());
+            if (demOverlay == null) {
+                demOverlay = (DEMPointOverlay) OverlayFactory.createOverlayInstance(OverlayFactory.MEASUREDEM, getActivity());
                 mMapView.getOverlayManager().add(demOverlay);
-                overlayManager.addOverlay(OverlayFactory.MEASUREDEM,demOverlay);
+                overlayManager.addOverlay(OverlayFactory.MEASUREDEM, demOverlay);
             }
             overlayManager.setOverlays(OverlayFactory.MEASUREDEM);
             mMapView.postInvalidate();
         }
     }
 
-    private void p2pViewAnalysis(){
-        if(demAnalysis){
+    private void p2pViewAnalysis() {
+        if (demAnalysis) {
             P2pviewAnalysisOverlay p2pOverlay = (P2pviewAnalysisOverlay) overlayManager.getOverlay(OverlayFactory.P2PVIEWANALYSIS);
-            if(p2pOverlay == null){
-                p2pOverlay = (P2pviewAnalysisOverlay) OverlayFactory.createOverlayInstance(OverlayFactory.P2PVIEWANALYSIS,getActivity());
+            if (p2pOverlay == null) {
+                p2pOverlay = (P2pviewAnalysisOverlay) OverlayFactory.createOverlayInstance(OverlayFactory.P2PVIEWANALYSIS, getActivity());
                 mMapView.getOverlayManager().add(p2pOverlay);
-                overlayManager.addOverlay(OverlayFactory.P2PVIEWANALYSIS,p2pOverlay);
+                overlayManager.addOverlay(OverlayFactory.P2PVIEWANALYSIS, p2pOverlay);
             }
             overlayManager.setOverlays(OverlayFactory.P2PVIEWANALYSIS);
         }
     }
+
     //获取分析结果
-    private List<SectionChartPoint> getP2pAnalysisPoints(){
+    private List<SectionChartPoint> getP2pAnalysisPoints() {
         P2pviewAnalysisOverlay p2pOverlay = (P2pviewAnalysisOverlay) overlayManager.getOverlay(OverlayFactory.P2PVIEWANALYSIS);
-        if(p2pOverlay!=null){
+        if (p2pOverlay != null) {
             List<SectionChartPoint> points = p2pOverlay.getPoints();
             Collections.sort(points);
             return points;
@@ -1530,7 +1534,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                         }
                         Log.e("Tag", "body : " + body + "  offset : " + offset + "  bdNum : " + register);
                         UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), body, locTime, offset, local_latlon,
-                                SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID():-1);
+                                SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1);
                         uploadList.add(bean);
                         if (SpUtils.getInt(SPConstants.SP_BD_MODE, Constants.UOLOAD_STATE_0) == Constants.UOLOAD_STATE_1) {
                             bean.setTx_type(Constants.TX_QZH);
@@ -1618,8 +1622,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                 case REFLESH_TV:
                     StringBuilder builder = new StringBuilder();
                     int counter = 1;
-                    for(PersonalInfo item : sosList) {
-                        if(counter == sosList.size()) {
+                    for (PersonalInfo item : sosList) {
+                        if (counter == sosList.size()) {
                             builder.append(item.getName());
                             builder.append(",");
                             builder.append(item.getNum());
@@ -1629,14 +1633,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                             builder.append(item.getNum());
                             builder.append("-");
                         }
-                        counter ++;
+                        counter++;
                     }
                     counter = 1;
-                    if(sosList != null && sosList.size() > 0 && commonList != null && commonList.size() > 0) {
+                    if (sosList != null && sosList.size() > 0 && commonList != null && commonList.size() > 0) {
                         builder.append("-");
                     }
-                    for(PersonalInfo item : commonList) {
-                        if(counter == commonList.size()) {
+                    for (PersonalInfo item : commonList) {
+                        if (counter == commonList.size()) {
                             builder.append(item.getName());
                             builder.append(",");
                             builder.append(item.getNum());
@@ -1646,14 +1650,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                             builder.append(item.getNum());
                             builder.append("-");
                         }
-                        counter ++;
+                        counter++;
                     }
                     counter = 1;
-                    if(((sosList != null && sosList.size() > 0) || (commonList != null && commonList.size() > 0)) && undetermined_List != null && undetermined_List.size() > 0) {
+                    if (((sosList != null && sosList.size() > 0) || (commonList != null && commonList.size() > 0)) && undetermined_List != null && undetermined_List.size() > 0) {
                         builder.append("-");
                     }
-                    for(PersonalInfo item : undetermined_List) {
-                        if(counter == undetermined_List.size()) {
+                    for (PersonalInfo item : undetermined_List) {
+                        if (counter == undetermined_List.size()) {
                             builder.append(item.getName());
                             builder.append(",");
                             builder.append(item.getNum());
@@ -1663,7 +1667,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                             builder.append(item.getNum());
                             builder.append("-");
                         }
-                        counter ++;
+                        counter++;
                     }
                     treeDialog.initDetail(total, sucess, fail, builder.toString());
                     treeDialog.setEnable(true);
@@ -1778,11 +1782,11 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
     private void setTouched(int id) {
         for (Map.Entry<Integer, PersonalInfo> entry : tatolMap.entrySet()) {
             if (entry.getKey() == id) {
-                if(mGraphicOverlay!=null){
+                if (mGraphicOverlay != null) {
                     mGraphicOverlay.SetFeatureProp(entry.getKey(), PROP_NAME.Width, "30.0", SOILDERINFO_LAYER_NAME);
                 }
             } else {
-                if (mGraphicOverlay!=null){
+                if (mGraphicOverlay != null) {
                     mGraphicOverlay.SetFeatureProp(entry.getKey(), PROP_NAME.Width, "20.0", SOILDERINFO_LAYER_NAME);
                 }
             }
@@ -2075,12 +2079,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         isUploading = false;
         isRuuning = false;
         SpUtils.putBoolean(SPConstants.COMMON_SWITCH, false);
-        if(isUpload) {
+        if (isUpload) {
             //保存数据
             StringBuilder builder = new StringBuilder();
             int counter = 1;
-            for(PersonalInfo item : sosList) {
-                if(counter == sosList.size()) {
+            for (PersonalInfo item : sosList) {
+                if (counter == sosList.size()) {
                     builder.append(item.getName());
                     builder.append(",");
                     builder.append(item.getNum());
@@ -2090,14 +2094,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                     builder.append(item.getNum());
                     builder.append("-");
                 }
-                counter ++;
+                counter++;
             }
             counter = 1;
-            if(sosList != null && sosList.size() > 0 && commonList != null && commonList.size() > 0) {
+            if (sosList != null && sosList.size() > 0 && commonList != null && commonList.size() > 0) {
                 builder.append("-");
             }
-            for(PersonalInfo item : commonList) {
-                if(counter == commonList.size()) {
+            for (PersonalInfo item : commonList) {
+                if (counter == commonList.size()) {
                     builder.append(item.getName());
                     builder.append(",");
                     builder.append(item.getNum());
@@ -2107,14 +2111,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                     builder.append(item.getNum());
                     builder.append("-");
                 }
-                counter ++;
+                counter++;
             }
             counter = 1;
-            if(((sosList != null && sosList.size() > 0) || (commonList != null && commonList.size() > 0)) && undetermined_List != null && undetermined_List.size() > 0) {
+            if (((sosList != null && sosList.size() > 0) || (commonList != null && commonList.size() > 0)) && undetermined_List != null && undetermined_List.size() > 0) {
                 builder.append("-");
             }
-            for(PersonalInfo item : undetermined_List) {
-                if(counter == undetermined_List.size()) {
+            for (PersonalInfo item : undetermined_List) {
+                if (counter == undetermined_List.size()) {
                     builder.append(item.getName());
                     builder.append(",");
                     builder.append(item.getNum());
@@ -2124,7 +2128,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                     builder.append(item.getNum());
                     builder.append("-");
                 }
-                counter ++;
+                counter++;
             }
             TreeStateBean bean = new TreeStateBean(System.currentTimeMillis(), content[0], content[1], content[2], content[3], content[4],
                     content[5], content[6], content[7], content[8], content[9], BaseUtils.getSendID(), total, sucess, fail, builder.toString());
@@ -2562,7 +2566,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
 
     //刷新地图
     private void refreshMap() {
-        if(mGraphicOverlay!=null){
+        if (mGraphicOverlay != null) {
             mGraphicOverlay.setModified();
             mMapView.postInvalidate();
         }
@@ -2606,23 +2610,38 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         return geo;
     }
 
-
     @Override
     public void initMessageNum() {
+        int unReadMsgCount = 0;//初始化未读数字为0
+        //1.先查出所有的未读消息
         Map<String, String> map = new HashMap<>();
         map.put("type", ShortMessUploadActivity.MESSAGE_RECEIVE + "");
         map.put("state", Constants.MESSAGE_UNREAD + "");
         Dao<MessageInfoIBean, Integer> msgDao = helper.getMesgInfoDao();
         List<MessageInfoIBean> list = CommonDBOperator.queryByMultiKeys(msgDao, map);
-        if (list == null || list.size() == 0) {
+
+        if (list != null && list.size() > 0) {
+            //计算可通信的未读消息
+            for (int i = 0; i < list.size(); i++) {
+                //根据消息关联人的ID 查设备类型0 1
+                List<HttpPersonInfo> personInfos = CommonDBOperator.queryByKeys(mHttpDao, "id", String.valueOf(list.get(i).getID()));
+                if(personInfos != null && personInfos.size() > 0){
+                    if(personInfos.get(0).getDeviceType() == 0 || personInfos.get(0).getDeviceType() == 1){//是可接受的消息
+                        unReadMsgCount++;
+                    }
+                }
+
+            }
+        }
+        if (unReadMsgCount == 0) {
             tv_conmnication_num.setText("");
             tv_conmnication_num.setVisibility(View.GONE);
         } else {
             tv_conmnication_num.setVisibility(View.VISIBLE);
-            if (list.size() > 99) {
+            if (unReadMsgCount > 99) {
                 tv_conmnication_num.setText("99+");
             } else {
-                tv_conmnication_num.setText(list.size() + "");
+                tv_conmnication_num.setText(String.valueOf(unReadMsgCount));
             }
             list.clear();
         }
@@ -2632,14 +2651,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
     @Override
     protected void updateFeedback(int sendID) {
         List<TreeStateBean> list = CommonDBOperator.queryByKeys(treeDao, "SEND_ID", sendID + "");
-        if(list != null && list.size() > 0) {
+        if (list != null && list.size() > 0) {
             list.get(0).setcState("2");
             CommonDBOperator.updateItem(treeDao, list.get(0));
             list.clear();
         }
-        if(sendID == BaseUtils.getSendID()) {
+        if (sendID == BaseUtils.getSendID()) {
             content[9] = "2";
-            if(treeDialog != null) {
+            if (treeDialog != null) {
                 treeDialog.refleshView(content);
             }
         }
@@ -2666,10 +2685,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         }).start();
     }
 
-    @Subscribe(threadMode= ThreadMode.MAIN)
-    public void getEventBus(EventBusBean eventBusBean){
-        if(eventBusBean!=null){
-            switch (eventBusBean.getCode()){
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void getEventBus(EventBusBean eventBusBean) {
+        if (eventBusBean != null) {
+            switch (eventBusBean.getCode()) {
                 case Constants.EVENT_CODE_REFRESH_MSG_NUM://刷新未读消息数
                     LogUtil.d("eventBus有新的未读消息");
                     initMessageNum();

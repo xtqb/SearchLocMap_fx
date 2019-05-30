@@ -185,23 +185,37 @@ public class ShortMessageFragment extends BaseLazyFragment {
             while (entries.hasNext()) {
                 Map.Entry<Integer, Long> entry = entries.next();
                // System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-                //3.根据hashMap的key查所有的人表的信息,并设置最近消息的时间到bean
+                //3.根据hashMap的key==ID查所有的人表的信息,查到后再设置最近消息的时间到bean
                 List<HttpPersonInfo> list = CommonDBOperator.queryByKeys(mHttpPerDao, "id", entry.getKey() + "");
-                HttpPersonInfo info = list.get(0);
-                //根据消息关联人的ID 和state  查未读消息数
-                Map<String, String> msgMap = new HashMap<>();
-                msgMap.put("ID", entry.getKey()+ "");
-                msgMap.put("state", Constants.MESSAGE_UNREAD + "");
-                int count = (int)CommonDBOperator.countByMultiKeys(mMesgInfoDao, msgMap);
-                info.setUnReadMsgNum(count);//此人的未读消息数
-                info.setCurrentMsgTime(entry.getValue());//设置最近消息时间
-                mPersonInfoList.add(info);
+                if( list != null && list.size() > 0 ){//只有收到表里的人才能显示未读消息   防止越界
+                    HttpPersonInfo info = list.get(0);
+                    //根据消息关联人的ID 和state  查未读消息数
+                    Map<String, String> msgMap = new HashMap<>();
+                    msgMap.put("ID", entry.getKey()+ "");
+                    msgMap.put("state", Constants.MESSAGE_UNREAD + "");
+                    int count = (int)CommonDBOperator.countByMultiKeys(mMesgInfoDao, msgMap);
+                    info.setUnReadMsgNum(count);//此人的未读消息数
+                    info.setCurrentMsgTime(entry.getValue());//设置最近消息时间
+                    mPersonInfoList.add(info);
+                }
+
             }
-            //4.展示bean到列表
-            LogUtil.d("最近联系人个数=="+mPersonInfoList.size());
-            //排序
-            sortByTimeCurrentToLast(mPersonInfoList);
-            mAdapter.setNewData(mPersonInfoList);
+
+
+            if(mPersonInfoList.size() > 0){//过滤掉不可通信的
+                for (int i = 0; i <mPersonInfoList.size() ; i++) {
+                      if(mPersonInfoList.get(i).getDeviceType() != 0 && mPersonInfoList.get(i).getDeviceType() != 1 ){//此人的不是可以通信的人
+                          mPersonInfoList.remove(i);
+                      }
+
+                }
+                //4.展示bean到列表
+                LogUtil.d("最近联系人个数=="+mPersonInfoList.size());
+                //排序
+                sortByTimeCurrentToLast(mPersonInfoList);
+                mAdapter.setNewData(mPersonInfoList);
+            }
+
     }else {
             tvNoMessage.setVisibility(View.VISIBLE);
         }
