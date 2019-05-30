@@ -61,7 +61,7 @@ public class ContactFragment extends BaseLazyFragment {
         values = new ArrayList<>();
         values.add("0");
         values.add("1");
-        SourceDateList = CommonDBOperator.queryByMultiKeysEqual(mHttpPerDao, "deviceType", values);//查询到的所有联系人
+        SourceDateList = CommonDBOperator.queryByMultiKeysEqual(mHttpPerDao, "deviceType", values);//查询到的所有联系人deviceType 为0和1的
         values.clear();
         LogUtil.d("所有的联系人 mList.size()==" + SourceDateList.size());
 
