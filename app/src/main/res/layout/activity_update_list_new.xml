@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:background="@color/gray_background"
               android:orientation="vertical">
 
     <RelativeLayout
@@ -101,6 +102,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:paddingTop="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp_16"
@@ -181,6 +183,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:paddingTop="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="通信服务"
