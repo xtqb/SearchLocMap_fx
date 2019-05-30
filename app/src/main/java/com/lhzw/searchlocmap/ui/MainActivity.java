@@ -63,7 +63,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SearchLocMapApplication.getInstance().bindService();
         initTabLine();
         initView();
         initData();
@@ -72,6 +71,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     protected void onResume() {
+        SearchLocMapApplication.getInstance().bindService();
         super.onResume();
         if (SpUtils.getBoolean(SPConstants.ISJUMP, false)) {
             if (Settings.Global.getInt(getContentResolver(), Settings.Global.BD_MODE_ON, 0) != 1) {

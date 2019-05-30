@@ -17,9 +17,13 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.bean.ApkBean;
+import com.lhzw.searchlocmap.bean.DipperInfoBean;
 import com.lhzw.searchlocmap.constants.Constants;
+import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
+import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.NetUtils;
 import com.lhzw.searchlocmap.utils.SpUtils;
@@ -58,6 +62,7 @@ public class UpdateSearchMapActivity extends Activity implements View.OnClickLis
     private String dowloadApk = "/attachments/@";
     private int attachments = -1;
     private ShowProgressDialog progress;
+    private Dao<DipperInfoBean, Integer> dipDao;
 
 
     @Override
@@ -82,6 +87,7 @@ public class UpdateSearchMapActivity extends Activity implements View.OnClickLis
 
     private void initData() {
         tv_search_version_code.setText(getString(R.string.update_search_version) + "\t\t" + BaseUtils.getPackageName(this));
+        dipDao = DatabaseHelper.getHelper(this).getDipperDao();
     }
 
     private void initView() {
@@ -116,6 +122,18 @@ public class UpdateSearchMapActivity extends Activity implements View.OnClickLis
             case R.id.dialog_update:
                 Log.e("Tag", "Update apk");
                 updateDialog.dismiss();
+                if(!"0337009".equals(SpUtils.getString(Constants.UPLOAD_JZH_NUM, "0337009"))) {
+                    SpUtils.putString(Constants.UPLOAD_JZH_NUM, "0337009");
+                }
+                List<DipperInfoBean> list = CommonDBOperator.queryByKeys(dipDao, "type", Constants.TX_JZH+"");
+                if(list != null && list.size() > 0) {
+                    list.get(0).setNum("0337009");
+                    CommonDBOperator.updateItem(dipDao, list.get(0));
+                    list.clear();
+                } else {
+                    DipperInfoBean item = new DipperInfoBean("0337009", Constants.TX_JZH, "", "");
+                    CommonDBOperator.saveToDB(dipDao, item);
+                }
                 downloadApk(Constants.IP_ADD + dowloadApk.replace("@", attachments + ""));
                 break;
         }

@@ -108,11 +108,9 @@ public class BDUploadReceiver extends BroadcastReceiver {
                             bgsinal_list.putExtra("values", values);
                             mContext.sendBroadcast(bgsinal_list);
                             BDSignal.value = tmp;
-                            if (BDSignal.value != tmp) {
-                                Intent sinalIntent = new Intent(Constants.BD_SIG_ACTION);
-                                mContext.sendBroadcast(sinalIntent);
-                                Log.e("Tag", "value = " + tmp);
-                            }
+                            Intent sinalIntent = new Intent(Constants.BD_SIG_ACTION);
+                            mContext.sendBroadcast(sinalIntent);
+                            Log.e("Tag", "value = " + tmp);
                         }
                     }
                 }

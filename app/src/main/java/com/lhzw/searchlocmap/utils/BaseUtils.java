@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.storage.StorageManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
@@ -25,9 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -327,14 +323,16 @@ public class BaseUtils {
 
     public static long byteArrToTime(byte[] data) {
         long floatLocInfo = 0;
-
+        String log = "";
         if (data == null) {
             return floatLocInfo;
         }
         for (int i = 0; i < data.length; i++) {
+            log += Integer.toHexString(data[i] & 0xff) + " ";
             floatLocInfo <<= 8;
             floatLocInfo |= (data[i] & 0xff);
         }
+        Log.e("Tag", "locTime : " + log);
         return floatLocInfo * 1000;
     }
 

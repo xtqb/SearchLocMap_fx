@@ -49,6 +49,7 @@ public class BDSettingActivity extends Activity implements
                 rb_jqzh.setChecked(true);
                 break;
         }
+        rb_jqzh.setEnabled(false);
     }
 
     private void setListener() {

@@ -87,7 +87,7 @@ public class ShortMessUploadActivity extends Activity implements
 	@SuppressLint("WrongConstant")
 	private void initData() {
 		initTitle();
-		 BDManager mBDManager = (BDManager) this.getSystemService(Context.BD_SERVICE);
+		BDManager mBDManager = (BDManager) this.getSystemService(Context.BD_SERVICE);
 		mBDManager.systemCheck(2+"");
 		helper = DatabaseHelper.getHelper(ShortMessUploadActivity.this);
 		mesDao = helper.getMesgInfoDao();
