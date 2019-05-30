@@ -1,2 +1,0 @@
-# SearchLocMap
-SearchLocMap
