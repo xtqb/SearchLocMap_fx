@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        key {
-            keyAlias 'lhzw'
-            keyPassword '123456'
-            storeFile file('D:/Android_HECUNCUN/app/keystore')
-            storePassword '123456'
-        }
+//        key {
+//            keyAlias 'lhzw'
+//            keyPassword '123456'
+//            storeFile file('D:/Android_HECUNCUN/app/keystore')
+//            storePassword '123456'
+//        }
 //        key {
 //            keyAlias 'lhzw'
 //            keyPassword '123456'
@@ -21,18 +21,18 @@ android {
         applicationId "com.lhzw.searchlocmap"
         minSdkVersion 23
         targetSdkVersion 23
-        versionCode 8
-        versionName "1.8.1e"
+        versionCode 10
+        versionName "2.1.0e"
     }
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.key
-        }
-        debug {
-            signingConfig signingConfigs.key
-        }
+//        release {
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.key
+//        }
+//        debug {
+//            signingConfig signingConfigs.key
+//        }
     }
 
     sourceSets {

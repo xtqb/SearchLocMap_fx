@@ -96,7 +96,7 @@ public class ShortMessUploadActivity extends Activity implements
 		isCurrentActivity = true;
 		registerBroadcastReceiver();
 		updateState();
-		im_bd_signal.setImageLevel(BDSignal.value);
+		im_bd_signal.setImageLevel(0);
 		isDestroy = false;
 	}
 
@@ -406,7 +406,21 @@ public class ShortMessUploadActivity extends Activity implements
 					showToast("接收成功");
 				}
 			}else if (intent.getAction().equals(Constants.BD_SIG_ACTION)) {
-				im_bd_signal.setImageLevel(BDSignal.value);
+				switch (BDSignal.value){
+					case 4:
+						im_bd_signal.setImageLevel(4);
+						break;
+					case 3:
+						im_bd_signal.setImageLevel(3);
+						break;
+					case 2:
+						im_bd_signal.setImageLevel(2);
+						break;
+					case 1:
+						im_bd_signal.setImageLevel(0);
+						break;
+				}
+
 			}
 		}
 	};

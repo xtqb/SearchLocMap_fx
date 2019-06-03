@@ -1,20 +1,5 @@
 package com.lhzw.searchlocmap.fragment;
 
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.lhzw.searchlocmap.R;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -44,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.j256.ormlite.dao.Dao;
+import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.adapter.PerManageAdapter;
 import com.lhzw.searchlocmap.bean.LocPersonalInfo;
 import com.lhzw.searchlocmap.bean.PersonalInfo;
@@ -54,6 +40,11 @@ import com.lhzw.searchlocmap.ui.PerDetailsActivity;
 import com.lhzw.searchlocmap.ui.PerItemAddActivity;
 import com.lhzw.searchlocmap.utils.CheckBoxState;
 import com.lhzw.searchlocmap.utils.SpUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PersManagerFragment extends Fragment implements
         OnClickListener, OnItemClickListener,
@@ -256,6 +247,7 @@ public class PersManagerFragment extends Fragment implements
             perList = (ArrayList<LocPersonalInfo>) CommonDBOperator
                     .queryByMultiKeysFuzzy(persondao, map);
             peradapter.setList(perList);
+            peradapter.initList();
             peradapter.notifyDataSetChanged();
         }
     };
