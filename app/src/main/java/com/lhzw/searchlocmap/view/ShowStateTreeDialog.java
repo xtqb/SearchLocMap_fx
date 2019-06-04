@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -21,7 +20,7 @@ public class ShowStateTreeDialog extends AlertDialog implements DialogInterface.
     private Button bt_timer_cancel;
     private ListView listview;
     private HistogramBar his_bar;
-    private StateTreeView his_state_tree;
+    private StateTreeView1 his_state_tree;
     private Button dialog_timer_close;
     private Button dialog_cancel;
     private Context mContext;
@@ -68,7 +67,7 @@ public class ShowStateTreeDialog extends AlertDialog implements DialogInterface.
 
     private void initView() {
         his_bar = (HistogramBar) findViewById(R.id.his_bar);
-        his_state_tree = (StateTreeView) findViewById(R.id.his_state_tree);
+        his_state_tree = (StateTreeView1) findViewById(R.id.his_state_tree);
         dialog_timer_close = (Button) findViewById(R.id.dialog_timer_close);
         dialog_cancel = (Button) findViewById(R.id.dialog_cancel);
         tv_detail = (TextView) findViewById(R.id.tv_detail);

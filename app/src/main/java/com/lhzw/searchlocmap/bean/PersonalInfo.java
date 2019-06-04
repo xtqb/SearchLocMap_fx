@@ -1,9 +1,9 @@
 package com.lhzw.searchlocmap.bean;
 
-import java.io.Serializable;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import java.io.Serializable;
 
 @DatabaseTable(tableName = "PersonalInfo")
 // 数据库表的名字
@@ -49,6 +49,8 @@ public class PersonalInfo implements Serializable {
     private long locTime;
     @DatabaseField(columnName = "offset")
     private int offset;
+    @DatabaseField(columnName = "feedback")
+    private int feedback;
 
     /**
      *
@@ -86,6 +88,29 @@ public class PersonalInfo implements Serializable {
         this.longitude = longitude;
         this.time = time;
         this.locTime = locTime;
+    }
+
+    public PersonalInfo(int markerId, String num, String name, int age, String sex, String phone,
+                        String contact1, String contact2, String bloodtype, String allergy, String state,
+                        String state1, String latitude, String longitude, long time, long locTime, int offset, int feedback) {
+        this.markerId = markerId;
+        this.num = num;
+        this.name = name;
+        this.age = age;
+        this.sex = sex;
+        this.phone = phone;
+        this.contact1 = contact1;
+        this.contact2 = contact2;
+        this.bloodtype = bloodtype;
+        this.allergy = allergy;
+        this.state = state;
+        this.state1 = state1;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.time = time;
+        this.locTime = locTime;
+        this.offset = offset;
+        this.feedback = feedback;
     }
 
     /**
@@ -226,5 +251,13 @@ public class PersonalInfo implements Serializable {
     }
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    public int getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(int feedback) {
+        this.feedback = feedback;
     }
 }

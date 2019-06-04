@@ -2,7 +2,6 @@ package com.lhzw.searchlocmap.db.dao;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
@@ -37,7 +36,7 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
 	private static DatabaseHelper<?> instance;
 
 	private DatabaseHelper(Context context) {
-		super(context, Constants.DB_NAME, null, 1);// 数据库的名字
+		super(context, Constants.DB_NAME, null, 2);// 数据库的名字
 		// TODO Auto-generated constructor stub
 	}
 
@@ -75,6 +74,9 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
 	public void onUpgrade(SQLiteDatabase database,
 			ConnectionSource connectionsource, int oldVersion, int newVersion) {
 		try {
+			if(oldVersion < 2) {
+				TableUtils.createTableIfNotExists(connectionsource, PersonalInfo.class);
+			}
 			TableUtils.dropTable(connectionSource, PersonalInfo.class, true);
 			TableUtils.dropTable(connectionSource, LocPersonalInfo.class, true);
 			TableUtils.dropTable(connectionSource, MessageInfoIBean.class, true);

@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.lhzw.searchlocmap.R;
 
 public class ShowStateDetailDialog extends AlertDialog implements DialogInterface.OnDismissListener, View.OnClickListener {
-    private StateTreeView his_state_tree;
+    private StateTreeView1 his_state_tree;
     private Button dialog_cancel;
     private TextView tv_detail;
     private Context mContext;
@@ -55,7 +55,7 @@ public class ShowStateDetailDialog extends AlertDialog implements DialogInterfac
     }
 
     private void initView() {
-        his_state_tree = (StateTreeView) findViewById(R.id.his_state_tree);
+        his_state_tree = (StateTreeView1) findViewById(R.id.his_state_tree);
         dialog_cancel = (Button) findViewById(R.id.dialog_cancel);
         tv_detail = (TextView) findViewById(R.id.tv_detail);
     }

@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -176,6 +178,7 @@ public class PersManagerFragment extends Fragment implements
     /**
      * 隐藏输入法
      */
+    @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
     private void hideInputMethod() {
         // 隐藏输入法
         InputMethodManager imm = (InputMethodManager) getActivity()

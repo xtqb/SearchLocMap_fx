@@ -131,7 +131,7 @@ public class TreeStateListActivity extends Activity implements View.OnClickListe
         dialog.show();
         WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
         params.width = getWindowManager().getDefaultDisplay().getWidth() - 80;
-        params.height = 782;
+        params.height = 644;
         dialog.getWindow().setAttributes(params);
         TreeStateBean item = list.get(pos);
         String[] data = new String[]{item.getsMonth(), item.getsTime(), item.getsMonth(), item.getsTime(), item.getcMonth(), item.getcTime(), item.getsState(), item.getNum(), item.getsState(), item.getcState()};

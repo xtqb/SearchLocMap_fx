@@ -1,7 +1,6 @@
 package com.lhzw.searchlocmap.ui;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,7 +32,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -62,16 +60,18 @@ public class UpdateAppListActivity extends Activity implements View.OnClickListe
     private TextView tv_map_update;
     private TextView tv_bd_update;
     private TextView tv_map_version;
-    private TextView tv_map_new_version;
+   private TextView tv_map_new_version;
     private TextView tv_bd_version;
     private TextView tv_bd_new_version;
     private boolean isCancel;
     private Button bt_update_back;
+    private RelativeLayout mRlSearchMapNew;
+    private RelativeLayout mRlBdServiceNew;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_update_list);
+        setContentView(R.layout.activity_update_list_new);
         initView();
         initData();
         setListener();
@@ -86,8 +86,8 @@ public class UpdateAppListActivity extends Activity implements View.OnClickListe
     private void initData() {
         isCancel = false;
         initServiceInfo();
-        tv_map_version.setText("version:\t" + BaseUtils.getPackageName(this));
-        tv_bd_version.setText("version:\t" + upload_packageName);
+        tv_map_version.setText("version:\t" + BaseUtils.getPackageName(this)+"  当前版本号");
+        tv_bd_version.setText("version:\t" + upload_packageName+"  当前版本号");
         if (!BaseUtils.isNetConnected(this)) {
             showToast(getString(R.string.net_net_connect_fail));
             return;
@@ -117,6 +117,8 @@ public class UpdateAppListActivity extends Activity implements View.OnClickListe
 
         tv_bd_version = (TextView) findViewById(R.id.tv_bd_version);
         tv_bd_new_version = (TextView) findViewById(R.id.tv_bd_new_version);
+        mRlSearchMapNew = (RelativeLayout) findViewById(R.id.rl_search_map_new);
+        mRlBdServiceNew = (RelativeLayout) findViewById(R.id.rl_bd_service_new);
     }
 
     @Override
@@ -197,22 +199,26 @@ public class UpdateAppListActivity extends Activity implements View.OnClickListe
             } else {
                 // 下载apk 安装apk
                 Log.e("Tag", "request success");
-                if(attachments[0] == -1) {
+                if(attachments[0] == -1) {//没有新版本
                     tv_map_new_version.setVisibility(View.GONE);
                     tv_map_update.setVisibility(View.GONE);
-                } else {
-                    tv_map_new_version.setText("version:" + versionNmaes[0]);
-                    tv_map_new_version.setVisibility(View.VISIBLE);
+                    mRlSearchMapNew.setVisibility(View.GONE);
+                } else {//有新版本
+                   tv_map_new_version.setText("version:" + versionNmaes[0]+"\t最新版本号");
+                   tv_map_new_version.setVisibility(View.VISIBLE);
                     tv_map_update.setVisibility(View.VISIBLE);
+                    mRlSearchMapNew.setVisibility(View.VISIBLE);
                 }
 
                 if(attachments[1] == -1) {
-                    tv_bd_update.setVisibility(View.GONE);
-                    tv_bd_new_version.setVisibility(View.GONE);
+                   tv_bd_update.setVisibility(View.GONE);
+                   tv_bd_new_version.setVisibility(View.GONE);
+                    mRlBdServiceNew.setVisibility(View.GONE);
                 } else {
-                    tv_bd_new_version.setText("version\t" + versionNmaes[1]);
+                    tv_bd_new_version.setText("version\t" + versionNmaes[1]+"\t最新版本号");
                     tv_bd_new_version.setVisibility(View.VISIBLE);
                     tv_bd_update.setVisibility(View.VISIBLE);
+                    mRlBdServiceNew.setVisibility(View.VISIBLE);
                 }
 //                showUpdateApkNote();
             }

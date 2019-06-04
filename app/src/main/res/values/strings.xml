@@ -54,7 +54,7 @@
     <string name="person_status_list">人员状态表</string>
     <string name="security_title">安全监控</string>
     <string name="undetermine_title">待定区域:</string>
-    <string name="persons_search">单次搜救</string>
+    <string name="persons_search">上报</string>
     <string name="auto_search">自动搜救</string>
     <string name="total_persons_search">搜救功能</string>
     <string name="search_function_select">搜索功能</string>
@@ -350,4 +350,5 @@
     <string name="download_apk_progress">当前应用下载进度：</string>
     <string name="update_search_version">search</string>
     <string name="communication_service_package_name">com.lhzw.uploadmms</string>
+    <string name="undetermined_function">待定功能</string>
 </resources>

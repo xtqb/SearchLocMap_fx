@@ -128,8 +128,8 @@ public class ShowDetailDialog extends AlertDialog implements DialogInterface.OnD
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            holder.tv_num.setText((position + 1) + " " + list.get(position).getName() + "   ");
-            holder.tv_time.setText(list.get(position).getNum());
+            holder.tv_num.setText((position + 1) + "");
+            holder.tv_time.setText(list.get(position).getNum()+"(" + list.get(position).getName() + ")");
             if ("成功".equals(list.get(position).getState())) {
                 holder.tv_state.setTextColor(mContext.getResources().getColor(R.color.text_color));
             } else {

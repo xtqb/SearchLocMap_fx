@@ -523,13 +523,19 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                 GM_EditGlobalFunc.GM_GetEgraphicGlobalPropertySetPtr().SetBoolProperty("GM_EDIT2_KEEP_CREATE", true);
                 switch (position) {
                     case 0:
+                        mGraphicOverlay.SelectTool(GM_TypeDefines.GM_TOOL_EDIT_CREATE, mMapView); //禁止拖动  -1  可以拖动
                         GM_PnlGlobalFunc.SetCreatingInfo(GM_TypeDefines.GM_FEATURE_TYPE_SITUATION_POINT, 2001, 47);  //火点
                         break;
                     case 1:
+                        mGraphicOverlay.SelectTool(GM_TypeDefines.GM_TOOL_EDIT_CREATE, mMapView); //禁止拖动  -1  可以拖动
                         GM_PnlGlobalFunc.SetCreatingInfo(GM_TypeDefines.GM_FEATURE_TYPE_BASE_LINE, 2001, 10047);     //火线
                         break;
+                    default:
+                        mGraphicOverlay.SelectTool(-1, mMapView);
+                        showToast(getString(R.string.undetermined_function));
+                        break;
                 }
-                mGraphicOverlay.SelectTool(GM_TypeDefines.GM_TOOL_EDIT_CREATE, mMapView); //禁止拖动  -1  可以拖动
+
                 mGraphicOverlay.SetSelectable(false, SOILDERINFO_LAYER_NAME);             //
             }
 
@@ -895,7 +901,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                         treeDialog.showDialog();
                         WindowManager.LayoutParams params = treeDialog.getWindow().getAttributes();
                         params.width = getActivity().getWindowManager().getDefaultDisplay().getWidth() - 80;
-                        params.height = 794;
+                        params.height = 644;
                         treeDialog.setOnSearchCancelListener(this);
                         treeDialog.getWindow().setAttributes(params);
                         treeDialog.refleshView(content);
@@ -1143,7 +1149,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                 treeDialog.showDialog();
                 WindowManager.LayoutParams params = treeDialog.getWindow().getAttributes();
                 params.width = getActivity().getWindowManager().getDefaultDisplay().getWidth() - 80;
-                params.height = 794;
+                params.height = 644;
                 treeDialog.getWindow().setAttributes(params);
                 treeDialog.setOnSearchCancelListener(this);
                 treeDialog.setEnable(false);
@@ -1262,6 +1268,19 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
     }
 
     private void tatolSearch() {
+        String[] date = BaseUtils.obtainDate(getActivity());
+        content[0] = date[0];
+        content[1] = date[1];
+        content[2] = date[0];
+        content[3] = date[1];
+        content[6] = "2";
+        content[7] = "0";
+        content[8] = "1";
+        content[9] = "0";
+        mHandler.sendEmptyMessage(TREE_REFLESH);
+        mHandler.sendEmptyMessage(REFLESH_TV);
+        mHandler.sendEmptyMessageDelayed(SEARCH_NOTE, 3000);
+        /*
         cleanDatabase();
         SpUtils.putBoolean(SPConstants.COMMON_SWITCH, true);
         isRuuning = true;
@@ -1304,6 +1323,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                             list.clear();
                         }
                     }
+
                     String[] date = BaseUtils.obtainDate(getActivity());
                     content[2] = date[0];
                     content[3] = date[1];
@@ -1317,6 +1337,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                 }
             }
         }).start();
+        */
     }
 
     private void showSearchEndNoteDialog(int searchNum, int total, int sucess, int fail) {
