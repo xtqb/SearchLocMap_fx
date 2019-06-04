@@ -71,13 +71,14 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 	private void initDB(ProtocolParser parser) {
 		// TODO Auto-generated method stub
 		byte[] typeKey = parser.getCmdKey();
+		Log.e("Tag", "  cmd : " + Integer.toHexString(typeKey[0]));
 		if (SpUtils.getBoolean(SPConstants.COMMON_SWITCH, false)                  // 搜索状态停止，禁止接收搜索信息
-				|| typeKey[0] == ((byte) 0x12) || typeKey[0] == ((byte) 0xA1)) {
+				|| typeKey[0] == ((byte) 0x12) || typeKey[0] == ((byte) 0xA1) || typeKey[0] == ((byte) 0x19)) {
 			double lon = BaseUtils.ByteToStringForLocInfo(parser.getLongitude());
 			double lat = BaseUtils.ByteToStringForLocInfo(parser.getLatitude());
 			String register_num = BaseUtils.traslation(parser.getPersonNum()).substring(0, 10);
 			long locTime = BaseUtils.byteArrToTime(parser.getTimeStamp());
-			Log.e("Tag", "locTime : " + BaseUtils.getDateStr(locTime));
+			Log.e("Tag", "locTime : " + BaseUtils.getDateStr(locTime) + "  register : " + register_num);
 			List<PersonalInfo> list = CommonDBOperator.queryByKeys(persondao, "num", register_num);
 			if (list != null && list.size() > 0) {
 				Intent sosflash = new Intent("com.lhzw.soildersos.change");
