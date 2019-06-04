@@ -25,16 +25,6 @@ android {
         versionName "2.1.0e"
     }
     buildTypes {
-<<<<<<< HEAD
-//        release {
-//            minifyEnabled false
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//            signingConfig signingConfigs.key
-//        }
-//        debug {
-//            signingConfig signingConfigs.key
-//        }
-=======
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -43,7 +33,6 @@ android {
         debug {
            // signingConfig signingConfigs.key
         }
->>>>>>> 4a14119ce21f90019bf3ca844531db69e8b1e397
     }
 
     sourceSets {
