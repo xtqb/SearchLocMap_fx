@@ -55,8 +55,8 @@
     <string name="security_title">安全监控</string>
     <string name="undetermine_title">待定区域:</string>
     <string name="persons_search">上报</string>
-    <string name="auto_search">自动搜救</string>
-    <string name="total_persons_search">搜救功能</string>
+    <string name="auto_search">自动搜索</string>
+    <string name="total_persons_search">搜索功能</string>
     <string name="search_function_select">搜索功能</string>
     <string name="timer_search_note">定时搜索已开启，是否退出</string>
     <string name="persons_search_function">搜救功能</string>
@@ -351,4 +351,7 @@
     <string name="update_search_version">search</string>
     <string name="communication_service_package_name">com.lhzw.uploadmms</string>
     <string name="undetermined_function">待定功能</string>
+    <string name="dialog_upload">上传</string>
+    <string name="dialog_loctime_update">已更新</string>
+    <string name="dialog_loctime_no">未更新</string>
 </resources>

@@ -17,6 +17,7 @@ import com.lhzw.searchlocmap.bean.PlotItemInfo;
 import com.lhzw.searchlocmap.bean.SyncFireLine;
 import com.lhzw.searchlocmap.bean.TreeStateBean;
 import com.lhzw.searchlocmap.bean.UploadInfo;
+import com.lhzw.searchlocmap.bean.WatchLastLocTime;
 import com.lhzw.searchlocmap.constants.Constants;
 
 import java.sql.SQLException;
@@ -33,6 +34,7 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
 	private Dao<LocTrackBean, Integer> locTrckDao;
 	private Dao<HttpPersonInfo, Integer> httpPerDao;
 	private Dao<TreeStateBean, Integer> treeDao;
+	private Dao<WatchLastLocTime, Integer> lastLocDao;
 	private static DatabaseHelper<?> instance;
 
 	private DatabaseHelper(Context context) {
@@ -63,6 +65,7 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, LocTrackBean.class);
 			TableUtils.createTable(connectionSource, HttpPersonInfo.class);
 			TableUtils.createTable(connectionSource, TreeStateBean.class);
+			TableUtils.createTable(connectionSource, WatchLastLocTime.class);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,9 +77,6 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
 	public void onUpgrade(SQLiteDatabase database,
 			ConnectionSource connectionsource, int oldVersion, int newVersion) {
 		try {
-			if(oldVersion < 2) {
-				TableUtils.createTableIfNotExists(connectionsource, PersonalInfo.class);
-			}
 			TableUtils.dropTable(connectionSource, PersonalInfo.class, true);
 			TableUtils.dropTable(connectionSource, LocPersonalInfo.class, true);
 			TableUtils.dropTable(connectionSource, MessageInfoIBean.class, true);
@@ -86,6 +86,7 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, LocTrackBean.class, true);
 			TableUtils.dropTable(connectionSource, HttpPersonInfo.class, true);
 			TableUtils.dropTable(connectionSource, TreeStateBean.class, true);
+			TableUtils.dropTable(connectionSource, WatchLastLocTime.class, true);
 			onCreate(database, connectionSource);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -224,6 +225,17 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
 		return treeDao;
 	}
 
+	public Dao<WatchLastLocTime, Integer> getLastLocTimeDao() {
+		if(lastLocDao == null) {
+			try {
+				lastLocDao = getDao(WatchLastLocTime.class);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return lastLocDao;
+	}
+
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub
@@ -233,6 +245,7 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
 		mesgInfoDao = null;
 		syncDao = null;
 		httpPerDao = null;
+		lastLocDao = null;
 	}
 
 }

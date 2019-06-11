@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
+
 import com.gtmap.common.GT_GeoArithmetic;
 import com.gtmap.util.GeoPoint;
 import com.j256.ormlite.dao.Dao;
@@ -27,6 +28,7 @@ import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.LogWrite;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.uploadmms.UploadInfoBean;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +73,6 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 	private void initDB(ProtocolParser parser) {
 		// TODO Auto-generated method stub
 		byte[] typeKey = parser.getCmdKey();
-		Log.e("Tag", "  cmd : " + Integer.toHexString(typeKey[0]));
 		if (SpUtils.getBoolean(SPConstants.COMMON_SWITCH, false)                  // 搜索状态停止，禁止接收搜索信息
 				|| typeKey[0] == ((byte) 0x12) || typeKey[0] == ((byte) 0xA1) || typeKey[0] == ((byte) 0x19)) {
 			double lon = BaseUtils.ByteToStringForLocInfo(parser.getLongitude());

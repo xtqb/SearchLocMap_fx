@@ -96,6 +96,7 @@ import com.lhzw.searchlocmap.bean.PlotItem;
 import com.lhzw.searchlocmap.bean.PlotItemInfo;
 import com.lhzw.searchlocmap.bean.SectionChartPoint;
 import com.lhzw.searchlocmap.bean.TreeStateBean;
+import com.lhzw.searchlocmap.bean.WatchLastLocTime;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
@@ -128,6 +129,7 @@ import com.lhzw.searchlocmap.view.ShowSearchEndNoteDialog;
 import com.lhzw.searchlocmap.view.ShowStateTreeDialog;
 import com.lhzw.searchlocmap.view.ShowTimerCloseDialog;
 import com.lhzw.searchlocmap.view.ShowTimerDialog;
+import com.lhzw.searchlocmap.view.ShowUploadDetailDialog;
 import com.lhzw.uploadmms.UploadInfoBean;
 
 import org.greenrobot.eventbus.EventBus;
@@ -259,6 +261,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
     private boolean demAnalysis;
     private PointD pd;
     private Dao<HttpPersonInfo, Integer> mHttpDao;
+    private ShowUploadDetailDialog uploadDetail;
+    private TreeStateBean uploadLocTimeBean;
+    private Dao<WatchLastLocTime, Integer> locTimeDao;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -478,6 +483,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         persondao = helper.getPersonalInfoDao();
         plotDao = helper.getPlotItemDao();
         treeDao = helper.getTreeStateDao();
+        locTimeDao = helper.getLastLocTimeDao();
         plotItemDao = helper.getPlotItemDao();
         locTrackDao = helper.getLocTrackDao();
         bdUtils = BDUtils.getInstance();
@@ -1144,17 +1150,214 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                     showToast(getString(R.string.note_input_person_note));
                     return;
                 }
-                isUploading = true;
-                treeDialog = new ShowStateTreeDialog(getActivity());
-                treeDialog.showDialog();
-                WindowManager.LayoutParams params = treeDialog.getWindow().getAttributes();
-                params.width = getActivity().getWindowManager().getDefaultDisplay().getWidth() - 80;
-                params.height = 644;
-                treeDialog.getWindow().setAttributes(params);
-                treeDialog.setOnSearchCancelListener(this);
-                treeDialog.setEnable(false);
-                isUpload = false;
-                tatolSearch();
+                List<WatchLastLocTime> locTimelist = CommonDBOperator.getList(locTimeDao);
+                StringBuilder builder = new StringBuilder();
+                String loctime_yes = getString(R.string.dialog_loctime_update);
+                String loctime_no = getString(R.string.dialog_loctime_no);
+                int update = 0;
+                int noUpdate = 0;
+                if(locTimelist == null || locTimelist.size() == 0) {
+                    int counter = 1;
+                    for (PersonalInfo item : sosList) {
+                        if (counter == sosList.size()) {
+                            builder.append(item.getName());
+                            builder.append(",");
+                            builder.append(item.getNum());
+                            builder.append(",");
+                            if(item.getLocTime() > 0) {
+                                builder.append(loctime_yes);
+                                update ++;
+                            } else {
+                                builder.append(loctime_no);
+                                noUpdate ++;
+                            }
+                        } else {
+                            builder.append(item.getName());
+                            builder.append(",");
+                            builder.append(item.getNum());
+                            builder.append(",");
+                            if(item.getLocTime() > 0) {
+                                builder.append(loctime_yes);
+                                update ++;
+                            } else {
+                                builder.append(loctime_no);
+                                noUpdate ++;
+                            }
+                            builder.append("-");
+                        }
+                        counter++;
+                    }
+                    counter = 1;
+                    if (sosList != null && sosList.size() > 0 && commonList != null && commonList.size() > 0) {
+                        builder.append("-");
+                    }
+                    for (PersonalInfo item : commonList) {
+                        if (counter == commonList.size()) {
+                            builder.append(item.getName());
+                            builder.append(",");
+                            builder.append(item.getNum());
+                            builder.append(",");
+                            if(item.getLocTime() > 0) {
+                                builder.append(loctime_yes);
+                                update ++;
+                            } else {
+                                builder.append(loctime_no);
+                                noUpdate ++;
+                            }
+                        } else {
+                            builder.append(item.getName());
+                            builder.append(",");
+                            builder.append(item.getNum());
+                            builder.append(",");
+                            if(item.getLocTime() > 0) {
+                                builder.append(loctime_yes);
+                                update ++;
+                            } else {
+                                builder.append(loctime_no);
+                                noUpdate ++;
+                            }
+                            builder.append("-");
+                        }
+                        counter++;
+                    }
+                    counter = 1;
+                    if (((sosList != null && sosList.size() > 0) || (commonList != null && commonList.size() > 0)) && undetermined_List != null && undetermined_List.size() > 0) {
+                        builder.append("-");
+                    }
+                    for (PersonalInfo item : undetermined_List) {
+                        if (counter == undetermined_List.size()) {
+                            builder.append(item.getName());
+                            builder.append(",");
+                            builder.append(item.getNum());
+                            builder.append(",");
+                            builder.append(loctime_no);
+                        } else {
+                            builder.append(item.getName());
+                            builder.append(",");
+                            builder.append(item.getNum());
+                            builder.append(",");
+                            builder.append(loctime_no);
+                            builder.append("-");
+                        }
+                        noUpdate ++;
+                        counter++;
+                    }
+                } else {
+                    Map<String, Long> locTimeMap = new HashMap<>();
+                    for(WatchLastLocTime bean : locTimelist) {
+                        locTimeMap.put(bean.getNum(), bean.getLocTime());
+                    }
+                    int counter = 1;
+                    for (PersonalInfo item : sosList) {
+                        Long locTime = locTimeMap.get(item.getNum());
+                        if (counter == sosList.size()) {
+                            builder.append(item.getName());
+                            builder.append(",");
+                            builder.append(item.getNum());
+                            builder.append(",");
+                            if(locTime != null){
+                                if(locTime < item.getLocTime()) {
+                                    builder.append(loctime_yes);
+                                    update ++;
+                                } else {
+                                    builder.append(loctime_no);
+                                    noUpdate ++;
+                                }
+                            } else {
+                                builder.append(loctime_yes);
+                                update ++;
+                            }
+                        } else {
+                            builder.append(item.getName());
+                            builder.append(",");
+                            builder.append(item.getNum());
+                            builder.append(",");
+                            if(locTime != null){
+                                if(locTime < item.getLocTime()) {
+                                    builder.append(loctime_yes);
+                                    update ++;
+                                } else {
+                                    builder.append(loctime_no);
+                                    noUpdate ++;
+                                }
+                            } else {
+                                builder.append(loctime_yes);
+                                update ++;
+                            }
+                            builder.append("-");
+                        }
+                        counter++;
+                    }
+                    counter = 1;
+                    if (sosList != null && sosList.size() > 0 && commonList != null && commonList.size() > 0) {
+                        builder.append("-");
+                    }
+                    for (PersonalInfo item : commonList) {
+                        Long locTime = locTimeMap.get(item.getNum());
+                        if (counter == commonList.size()) {
+                            builder.append(item.getName());
+                            builder.append(",");
+                            builder.append(item.getNum());
+                            builder.append(",");
+                            if(locTime != null){
+                                if(locTime < item.getLocTime()) {
+                                    builder.append(loctime_yes);
+                                } else {
+                                    builder.append(loctime_no);
+                                    noUpdate ++;
+                                }
+                            } else {
+                                builder.append(loctime_yes);
+                                update ++;
+                            }
+                        } else {
+                            builder.append(item.getName());
+                            builder.append(",");
+                            builder.append(item.getNum());
+                            builder.append(",");
+                            if(locTime != null){
+                                if(locTime < item.getLocTime()) {
+                                    builder.append(loctime_yes);
+                                } else {
+                                    builder.append(loctime_no);
+                                    noUpdate ++;
+                                }
+                            } else {
+                                builder.append(loctime_yes);
+                                update ++;
+                            }
+                            builder.append("-");
+                        }
+                        counter++;
+                    }
+                    counter = 1;
+                    if (((sosList != null && sosList.size() > 0) || (commonList != null && commonList.size() > 0)) && undetermined_List != null && undetermined_List.size() > 0) {
+                        builder.append("-");
+                    }
+                    for (PersonalInfo item : undetermined_List) {
+                        if (counter == undetermined_List.size()) {
+                            builder.append(item.getName());
+                            builder.append(",");
+                            builder.append(item.getNum());
+                            builder.append(",");
+                            builder.append(loctime_no);
+                        } else {
+                            builder.append(item.getName());
+                            builder.append(",");
+                            builder.append(item.getNum());
+                            builder.append(",");
+                            builder.append(loctime_no);
+                            builder.append("-");
+                        }
+                        noUpdate ++;
+                        counter++;
+                    }
+                    locTimeMap.clear();
+                    locTimelist.clear();
+                }
+                uploadLocTimeBean = new TreeStateBean(System.currentTimeMillis(), content[0], content[1], content[2], content[3], content[4],
+                        content[5], "2", content[7], "2", "1", BaseUtils.getSendID(), update + noUpdate, update, noUpdate, builder.toString());
+                showUploadDetailDialog(update + noUpdate,update,noUpdate,builder.toString());
                 searchDialog.dismiss();
                 break;
             case R.id.dialog_total_search:
@@ -1225,7 +1428,21 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                 mHandler.sendEmptyMessageDelayed(ZOOM_DIMISS, 3000);
                 mMapView.getController().zoomOut();
                 break;
-
+            case R.id.dialog_search_upload:
+                isUploading = true;
+                treeDialog = new ShowStateTreeDialog(getActivity());
+                treeDialog.showDialog();
+                WindowManager.LayoutParams params = treeDialog.getWindow().getAttributes();
+                params.width = getActivity().getWindowManager().getDefaultDisplay().getWidth() - 80;
+                params.height = 644;
+                treeDialog.getWindow().setAttributes(params);
+                treeDialog.setOnSearchCancelListener(this);
+                treeDialog.setEnable(false);
+                isUpload = false;
+                tatolSearch();
+                uploadDetail.dismiss();
+                uploadDetail = null;
+                break;
         }
     }
 
@@ -1249,7 +1466,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         initFirePFireL(-1);
 
     }
-
 
     private byte[] obtainBDNum() {
         if (bdByteArr == null) {
@@ -1277,67 +1493,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         content[7] = "0";
         content[8] = "1";
         content[9] = "0";
+        uploadLocTimeBean.setsMonth(content[0]);
+        uploadLocTimeBean.setsTime(content[1]);
+        uploadLocTimeBean.settMonth(content[2]);
+        uploadLocTimeBean.settTime(content[3]);
+        uploadLocTimeBean.setNum(content[7]);
         mHandler.sendEmptyMessage(TREE_REFLESH);
         mHandler.sendEmptyMessage(REFLESH_TV);
         mHandler.sendEmptyMessageDelayed(SEARCH_NOTE, 3000);
-        /*
-        cleanDatabase();
-        SpUtils.putBoolean(SPConstants.COMMON_SWITCH, true);
-        isRuuning = true;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (isRuuning) {
-                    List<PersonalInfo> list = null;
-                    int counter = 0;
-                    byte[] numByte = obtainBDNum();
-                    for (; counter < 3 && isRuuning; counter++) {
-                        String[] date = BaseUtils.obtainDate(getActivity());
-                        content[0] = date[0];
-                        content[1] = date[1];
-                        content[6] = "1";
-                        content[7] = counter + 1 + "";
-                        content[8] = "0";
-                        content[9] = "0";
-                        mHandler.sendEmptyMessage(TREE_REFLESH);
-                        list = CommonDBOperator.queryByKeys(persondao, "state", Constants.PERSON_OFFLINE + "");
-                        for (PersonalInfo item : list) {
-                            byte[] sndByte = BaseUtils.getPerRegisterByteArr(item.getNum());
-
-                            for (int pos = 0; pos < 4; pos++) {
-                                sndByte[5 + pos] = numByte[pos];
-                            }
-                            sendCMDSearch(sndByte);
-                            Log.e("Tag", "卡号 :" + item.getNum());
-                            try {
-                                Thread.sleep(5000);
-                            } catch (InterruptedException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                            if (!isRuuning) {
-                                return;
-                            }
-                        }
-                        if (list != null && list.size() > 0) {
-                            list.clear();
-                        }
-                    }
-
-                    String[] date = BaseUtils.obtainDate(getActivity());
-                    content[2] = date[0];
-                    content[3] = date[1];
-                    content[6] = "2";
-                    content[8] = "1";
-                    content[9] = "0";
-                    mHandler.sendEmptyMessage(TREE_REFLESH);
-                    mHandler.sendEmptyMessage(REFLESH_TV);
-                    mHandler.sendEmptyMessageDelayed(SEARCH_NOTE, 3000);
-                    SpUtils.putBoolean(SPConstants.COMMON_SWITCH, false);
-                }
-            }
-        }).start();
-        */
     }
 
     private void showSearchEndNoteDialog(int searchNum, int total, int sucess, int fail) {
@@ -1491,6 +1654,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         }
     }
 
+    @SuppressLint("MissingPermission")
     private void startLocation() {
         try {
             if (locManager != null) {
@@ -1633,6 +1797,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                     content[6] = "2";
                     content[8] = "2";
                     content[9] = "1";
+                    uploadLocTimeBean.setcMonth(content[4]);
+                    uploadLocTimeBean.setcTime(content[5]);
                     isUpload = true;
                     treeDialog.refleshView(content);
                     mHandler.sendEmptyMessageDelayed(TIMER_REPORT, 2000);
@@ -1641,56 +1807,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                     treeDialog.refleshView(content);
                     break;
                 case REFLESH_TV:
-                    StringBuilder builder = new StringBuilder();
-                    int counter = 1;
-                    for (PersonalInfo item : sosList) {
-                        if (counter == sosList.size()) {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                        } else {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append("-");
-                        }
-                        counter++;
-                    }
-                    counter = 1;
-                    if (sosList != null && sosList.size() > 0 && commonList != null && commonList.size() > 0) {
-                        builder.append("-");
-                    }
-                    for (PersonalInfo item : commonList) {
-                        if (counter == commonList.size()) {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                        } else {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append("-");
-                        }
-                        counter++;
-                    }
-                    counter = 1;
-                    if (((sosList != null && sosList.size() > 0) || (commonList != null && commonList.size() > 0)) && undetermined_List != null && undetermined_List.size() > 0) {
-                        builder.append("-");
-                    }
-                    for (PersonalInfo item : undetermined_List) {
-                        if (counter == undetermined_List.size()) {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                        } else {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append("-");
-                        }
-                        counter++;
-                    }
-                    treeDialog.initDetail(total, sucess, fail, builder.toString());
+                    treeDialog.initDetail(uploadLocTimeBean.getTotal(), uploadLocTimeBean.getSuccessNum(), uploadLocTimeBean.getFailNum(), uploadLocTimeBean.getContent());
                     treeDialog.setEnable(true);
                     break;
             }
@@ -2102,62 +2219,21 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         SpUtils.putBoolean(SPConstants.COMMON_SWITCH, false);
         if (isUpload) {
             //保存数据
-            StringBuilder builder = new StringBuilder();
-            int counter = 1;
-            for (PersonalInfo item : sosList) {
-                if (counter == sosList.size()) {
-                    builder.append(item.getName());
-                    builder.append(",");
-                    builder.append(item.getNum());
-                } else {
-                    builder.append(item.getName());
-                    builder.append(",");
-                    builder.append(item.getNum());
-                    builder.append("-");
-                }
-                counter++;
-            }
-            counter = 1;
-            if (sosList != null && sosList.size() > 0 && commonList != null && commonList.size() > 0) {
-                builder.append("-");
-            }
-            for (PersonalInfo item : commonList) {
-                if (counter == commonList.size()) {
-                    builder.append(item.getName());
-                    builder.append(",");
-                    builder.append(item.getNum());
-                } else {
-                    builder.append(item.getName());
-                    builder.append(",");
-                    builder.append(item.getNum());
-                    builder.append("-");
-                }
-                counter++;
-            }
-            counter = 1;
-            if (((sosList != null && sosList.size() > 0) || (commonList != null && commonList.size() > 0)) && undetermined_List != null && undetermined_List.size() > 0) {
-                builder.append("-");
-            }
-            for (PersonalInfo item : undetermined_List) {
-                if (counter == undetermined_List.size()) {
-                    builder.append(item.getName());
-                    builder.append(",");
-                    builder.append(item.getNum());
-                } else {
-                    builder.append(item.getName());
-                    builder.append(",");
-                    builder.append(item.getNum());
-                    builder.append("-");
-                }
-                counter++;
-            }
-            TreeStateBean bean = new TreeStateBean(System.currentTimeMillis(), content[0], content[1], content[2], content[3], content[4],
-                    content[5], content[6], content[7], content[8], content[9], BaseUtils.getSendID(), total, sucess, fail, builder.toString());
-            CommonDBOperator.saveToDB(treeDao, bean);
+            CommonDBOperator.saveToDB(treeDao, uploadLocTimeBean);
             BaseUtils.increaseID();
             isUpload = false;
+            //更新数据库
+            CommonDBOperator.deleteAllItems(locTimeDao);
+            List<WatchLastLocTime> watchLastLoc = new ArrayList<>();
+            for(PersonalInfo bean : sosList) {
+                WatchLastLocTime item = new WatchLastLocTime(bean.getNum(), bean.getLocTime());
+                watchLastLoc.add(item);
+            }
+            CommonDBOperator.saveToDBBatch(locTimeDao, watchLastLoc);
+            watchLastLoc.clear();
         }
         content = new String[]{"", "", "", "", "", "", "", "", "", ""};
+        treeDialog = null;
     }
 
     @Override
@@ -2689,6 +2765,17 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         searchDialog = new ShowDialogSearch(getActivity());
         searchDialog.show();
         searchDialog.setListner(this);
+    }
+
+    /**
+     * 上传dialog
+     */
+
+    public void showUploadDetailDialog(int total, int success, int fail, String body){
+        uploadDetail = new ShowUploadDetailDialog(getActivity(), total, success, fail, body);
+        uploadDetail.show();
+        uploadDetail.intContent();
+        uploadDetail.setOnClickListener(this);
     }
 
     private void showHandleDialog() {

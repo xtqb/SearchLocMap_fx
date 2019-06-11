@@ -18,7 +18,7 @@ import com.lhzw.searchlocmap.bean.DetailItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShowDetailDialog extends AlertDialog implements DialogInterface.OnDismissListener, View.OnClickListener {
+public class ShowUploadDetailDialog extends AlertDialog implements DialogInterface.OnDismissListener, View.OnClickListener {
 
     private Button dialog_cancel;
     private ListView listview;
@@ -31,13 +31,14 @@ public class ShowDetailDialog extends AlertDialog implements DialogInterface.OnD
     private TextView tv_succeess;
     private TextView tv_fail;
     private Context mContext;
+    private Button dialog_search_upload;
 
-    private ShowDetailDialog(Context mContext, int theme) {
+    private ShowUploadDetailDialog(Context mContext, int theme) {
         super(mContext, theme);
         // TODO Auto-generated constructor stub
     }
 
-    public ShowDetailDialog(Context mContext, int total, int success, int fail, String body) {
+    public ShowUploadDetailDialog(Context mContext, int total, int success, int fail, String body) {
         super(mContext);
         // TODO Auto-generated constructor stub
         this.mContext = mContext;
@@ -51,7 +52,7 @@ public class ShowDetailDialog extends AlertDialog implements DialogInterface.OnD
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.dialog_detail);
+        setContentView(R.layout.dialog_lastloc_detail);
         init();
     }
 
@@ -70,6 +71,7 @@ public class ShowDetailDialog extends AlertDialog implements DialogInterface.OnD
         tv_total = (TextView) findViewById(R.id.tv_total);
         tv_succeess = (TextView) findViewById(R.id.tv_succeess);
         tv_fail = (TextView) findViewById(R.id.tv_fail);
+        dialog_search_upload = (Button) findViewById(R.id.dialog_search_upload);
     }
 
     private void initData() {
@@ -81,7 +83,7 @@ public class ShowDetailDialog extends AlertDialog implements DialogInterface.OnD
         String[] item = body.split("-");
         for (String str : item) {
             String[] bean = str.split(",");
-            DetailItem detail = new DetailItem(bean[0], bean[1], bean[2]);
+            DetailItem detail = detail = new DetailItem(bean[0], bean[1], bean[2]);
             list.add(detail);
         }
     }
@@ -96,6 +98,7 @@ public class ShowDetailDialog extends AlertDialog implements DialogInterface.OnD
 
         @Override
         public int getCount() {
+
             return list.size();
         }
 
@@ -150,6 +153,10 @@ public class ShowDetailDialog extends AlertDialog implements DialogInterface.OnD
                 this.dismiss();
                 break;
         }
+    }
+
+    public void setOnClickListener(View.OnClickListener listener){
+        dialog_search_upload.setOnClickListener(listener);
     }
 
     public void intContent() {

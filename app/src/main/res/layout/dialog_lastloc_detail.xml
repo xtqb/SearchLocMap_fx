@@ -100,15 +100,35 @@
         android:dividerHeight="0.75dp"
         android:listSelector="@drawable/bg_selector_drawlayout_rl"></ListView>
 
-    <Button
-        android:id="@+id/dialog_cancel"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_below="@+id/listview"
-        android:background="@drawable/bg_selector_conner_bottom_tv"
-        android:text="知道了"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:orientation="horizontal"
+        android:weightSum="2">
 
+        <Button
+            android:id="@+id/dialog_cancel"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="0.5dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_selector_left_tv"
+            android:text="@string/dialog_cancel"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/dialog_search_upload"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="0.5dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_selector_right_tv"
+            android:text="@string/dialog_upload"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+    </LinearLayout>
 
 </RelativeLayout>
