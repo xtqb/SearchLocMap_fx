@@ -109,6 +109,7 @@ import com.lhzw.searchlocmap.overlay.MeasureDistanceOverlay;
 import com.lhzw.searchlocmap.overlay.MeasureOverlayManager;
 import com.lhzw.searchlocmap.overlay.OverlayFactory;
 import com.lhzw.searchlocmap.overlay.P2pviewAnalysisOverlay;
+import com.lhzw.searchlocmap.scrolllayout.content.ScrollLayout;
 import com.lhzw.searchlocmap.ui.CommunicationListActivity;
 import com.lhzw.searchlocmap.ui.LocationTrackActivity;
 import com.lhzw.searchlocmap.ui.PerStateActivity;
@@ -145,7 +146,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-public class SecurityFragment extends BaseFragment implements IGT_Observer, LocationListener, OnHoriItemClickListener, ShowTimerDialog.onTimeItemClickListener, PopupWindow.OnDismissListener, PortaitAdapter.OnItemSelectedListener, AdapterView.OnItemLongClickListener, ShowStateTreeDialog.OnSearchCancelListener, MapListener {
+public class SecurityFragment extends BaseFragment implements IGT_Observer,
+        LocationListener, OnHoriItemClickListener, ShowTimerDialog.onTimeItemClickListener,
+        PopupWindow.OnDismissListener, PortaitAdapter.OnItemSelectedListener, AdapterView.OnItemLongClickListener,
+        ShowStateTreeDialog.OnSearchCancelListener, MapListener, ScrollLayout.OnScrollChangedListener {
     private View view;
     private DrawerLayout drawer;
     private boolean list_h_state;
@@ -264,6 +268,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
     private ShowUploadDetailDialog uploadDetail;
     private TreeStateBean uploadLocTimeBean;
     private Dao<WatchLastLocTime, Integer> locTimeDao;
+    private ScrollLayout mScrollLayout;
+    private boolean isOpen = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -272,10 +278,24 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         view = inflater.inflate(R.layout.security_fg, container, false);
         initView();
         initData();
+        initScrollView();
         //动态申请权限
         requestPermission();
         initDEMData();
         return view;
+    }
+
+    private void initScrollView() {
+        /**设置 setting*/
+        mScrollLayout.setMinOffset(0);
+        mScrollLayout.setMaxOffset(1300);
+        mScrollLayout.setExitOffset(0);
+        mScrollLayout.setIsSupportExit(true);
+        mScrollLayout.setAllowHorizontalScroll(false);
+        mScrollLayout.setOnScrollChangedListener(this);
+        mScrollLayout.setToExit();
+        mScrollLayout.getBackground().setAlpha(0);
+
     }
 
     private void initDEMData() {
@@ -444,7 +464,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
             for (int j = 0; j < 4; j++) {
                 codeArr[5 + j] = numByte[j];
             }
-            SpUtils.putBoolean(SPConstants.COMMON_SWITCH, true);
+//            SpUtils.putBoolean(SPConstants.COMMON_SWITCH, true);
             sendCMDSearch(codeArr);
             showToast(getString(R.string.send_command_success_note));
             mHandler.removeMessages(SEARCH_DELAY_CLOSE);
@@ -460,8 +480,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
             initMessageNum();
         } else if (resultCode == 7) {
             //结束搜索
-
-
         }
     }
 
@@ -584,7 +602,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
     private void initView() {
         drawer = (DrawerLayout) view.findViewById(R.id.drawer);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
+        mScrollLayout = (ScrollLayout) view.findViewById(R.id.scrolllayout);
         Button communication_btn = (Button) view.findViewById(R.id.communication_btn);
         communication_btn.setOnClickListener(this);
 
@@ -871,9 +889,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                 item.setMarkerId(plot_id);
                 CommonDBOperator.updateItem(persondao, item);
             }
-            mGraphicOverlay.setModified();
-            mMapView.postInvalidate();
         }
+        mGraphicOverlay.setModified();
+        mMapView.postInvalidate();
     }
 
     @Override
@@ -915,7 +933,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                     showToast(getString(R.string.uploading_note));
                     return;
                 }
-                showSearchDialog();
+                if(isOpen) {
+                    mScrollLayout.scrollToExit();
+                } else {
+                    mScrollLayout.setToOpen();
+                }
+//                showSearchDialog();
                 break;
             case R.id.switch_location_btn:
                 try {
@@ -1294,6 +1317,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                     }
                     for (PersonalInfo item : commonList) {
                         Long locTime = locTimeMap.get(item.getNum());
+                        Log.e("Tag", "last : " + locTimeMap.get(item.getNum()) + "  current : " + item.getLocTime());
                         if (counter == commonList.size()) {
                             builder.append(item.getName());
                             builder.append(",");
@@ -1396,7 +1420,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                     stopAnimation();
                     note_content_tv.setText("");
                     mHandler.removeMessages(SEARCH);
-                    SpUtils.putBoolean(SPConstants.COMMON_SWITCH, false);
+//                    SpUtils.putBoolean(SPConstants.COMMON_SWITCH, false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1438,7 +1462,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                 treeDialog.getWindow().setAttributes(params);
                 treeDialog.setOnSearchCancelListener(this);
                 treeDialog.setEnable(false);
-                isUpload = false;
+                isUpload = true;
                 tatolSearch();
                 uploadDetail.dismiss();
                 uploadDetail = null;
@@ -1755,12 +1779,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                     mHandler.sendEmptyMessageDelayed(SEARCH, delay);
                     break;
                 case SEARCH_DELAY_CLOSE:
-                    SpUtils.putBoolean(SPConstants.COMMON_SWITCH, false);
+//                    SpUtils.putBoolean(SPConstants.COMMON_SWITCH, false);
                     break;
                 case TOTAL_SEARCH_DELAY:
                     try {
                         int counter = (int) msg.obj;
-                        SpUtils.putBoolean(SPConstants.COMMON_SWITCH, false);//关闭搜索
+//                        SpUtils.putBoolean(SPConstants.COMMON_SWITCH, false);//关闭搜索
                         if (total == 0) {
                             showToast(getString(R.string.total_search_person_none));
                             return;
@@ -1800,7 +1824,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                     uploadLocTimeBean.setcMonth(content[4]);
                     uploadLocTimeBean.setcTime(content[5]);
                     isUpload = true;
-                    treeDialog.refleshView(content);
+                    if(treeDialog != null) {
+                        treeDialog.refleshView(content);
+                    }
                     mHandler.sendEmptyMessageDelayed(TIMER_REPORT, 2000);
                     break;
                 case TREE_REFLESH:
@@ -2122,6 +2148,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         locationOverlay.setFocusItemsOnTap(true);
         locationOverlay.setFocusedItem(0);
         mMapView.getOverlayManager().add(locationOverlay);
+//        mGraphicOverlay.setModified();
+        mMapView.postInvalidate();
     }
     /*
     private void addLcoationLayer(GeoPoint gp, double radius) {
@@ -2194,7 +2222,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
             isUploading = true;
             isTimerRuning = true;
             startAnimation();
-            SpUtils.putBoolean(SPConstants.COMMON_SWITCH, true);
+//            SpUtils.putBoolean(SPConstants.COMMON_SWITCH, true);
             delay = Integer.valueOf(searchTimeArr[(int) pos]) * 60 * 1000;
             showSearchToast(getString(R.string.timer_search_start_note));
             mHandler.sendEmptyMessage(SEARCH);
@@ -2216,7 +2244,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
     public void onCancel() {
         isUploading = false;
         isRuuning = false;
-        SpUtils.putBoolean(SPConstants.COMMON_SWITCH, false);
+//        SpUtils.putBoolean(SPConstants.COMMON_SWITCH, false);
         if (isUpload) {
             //保存数据
             CommonDBOperator.saveToDB(treeDao, uploadLocTimeBean);
@@ -2226,6 +2254,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
             CommonDBOperator.deleteAllItems(locTimeDao);
             List<WatchLastLocTime> watchLastLoc = new ArrayList<>();
             for(PersonalInfo bean : sosList) {
+                WatchLastLocTime item = new WatchLastLocTime(bean.getNum(), bean.getLocTime());
+                watchLastLoc.add(item);
+            }
+            for(PersonalInfo bean : commonList) {
+                WatchLastLocTime item = new WatchLastLocTime(bean.getNum(), bean.getLocTime());
+                watchLastLoc.add(item);
+            }
+            for(PersonalInfo bean : undetermined_List) {
                 WatchLastLocTime item = new WatchLastLocTime(bean.getNum(), bean.getLocTime());
                 watchLastLoc.add(item);
             }
@@ -2280,6 +2316,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
 
     @Override
     public boolean onTouch(TouchEvent touchEvent) {
+        if(isOpen) {
+            mScrollLayout.scrollToExit();
+            mScrollLayout.getBackground().setAlpha(0);
+        }
         return false;
     }
 
@@ -2322,9 +2362,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                         }
                     }
                 }
-                if (isUpload && SpUtils.getBoolean(SPConstants.COMMON_SWITCH, false)) {
+//                if (isUpload && SpUtils.getBoolean(SPConstants.COMMON_SWITCH, false)) {
                     mHandler.sendEmptyMessageDelayed(TIMER_REPORT, 60000);  //定时延时后，在延时10秒上报搜索信息
-                }
+//                }
             }
         }
     }
@@ -2697,6 +2737,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
         GeoPoint geo = null;
         switch (firePlots.get(pos).getData_type()) {
             case Constants.TX_FIRELINE:
+            case Constants.TX_SYNCFL:
                 geo = BaseUtils.averagePoint(firePlots.get(pos).getPaths());
                 break;
             case Constants.TX_FIREPOIT:
@@ -2803,5 +2844,41 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer, Loca
                     break;
             }
         }
+    }
+    @Override
+    public void onScrollProgressChanged(float currentProgress) {
+        if (currentProgress >= 0) {
+            float precent = 255 * currentProgress;
+            if (precent > 255) {
+                precent = 255;
+            } else if (precent < 0) {
+                precent = 0;
+            }
+            mScrollLayout.getBackground().setAlpha(255 - (int) precent);
+        }
+        Log.e("Tag", "precent : " + currentProgress);
+    }
+
+    @Override
+    public void onScrollFinished(ScrollLayout.Status currentStatus) {
+        if (currentStatus.equals(ScrollLayout.Status.EXIT)) {
+//            mScrollLayout.getBackground().setAlpha(0);
+            isOpen = false;
+            if(mGraphicOverlay != null && mMapView != null) {
+                mGraphicOverlay.SelectTool(-1, mMapView);
+            }
+        }  else {
+            mScrollLayout.setBackgroundColor(getResources().getColor(R.color.tra_gray));
+            isOpen = true;
+            if(mGraphicOverlay != null && mMapView != null) {
+                mGraphicOverlay.SelectTool(GM_TypeDefines.GM_TOOL_EDIT_CREATE, mMapView); //禁止拖动  -1  可以拖动
+            }
+
+        }
+    }
+
+    @Override
+    public void onChildScroll(int top) {
+
     }
 }

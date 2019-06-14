@@ -77,6 +77,10 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
 	public void onUpgrade(SQLiteDatabase database,
 			ConnectionSource connectionsource, int oldVersion, int newVersion) {
 		try {
+			if(oldVersion < 2) {
+				getPersonalInfoDao().executeRawNoArgs("ALTER TABLE PersonalInfo ADD COLUMN feedback INTEGER");
+			}
+			/*
 			TableUtils.dropTable(connectionSource, PersonalInfo.class, true);
 			TableUtils.dropTable(connectionSource, LocPersonalInfo.class, true);
 			TableUtils.dropTable(connectionSource, MessageInfoIBean.class, true);
@@ -88,6 +92,7 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, TreeStateBean.class, true);
 			TableUtils.dropTable(connectionSource, WatchLastLocTime.class, true);
 			onCreate(database, connectionSource);
+			*/
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

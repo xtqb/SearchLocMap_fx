@@ -93,7 +93,8 @@
         android:layout_height="94dp"
         android:layout_alignParentBottom="true"
         android:background="@drawable/bg_border_stroke"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="invisible">
 
         <TextView
             android:id="@+id/tv_undetermine"
@@ -299,6 +300,86 @@
         android:text="@string/curr_location"
         android:textColor="@color/yellow"
         android:textSize="13sp" />
+
+    <com.lhzw.searchlocmap.scrolllayout.content.ScrollLayout
+        android:id="@+id/scrolllayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_search_rectangle">
+
+        <com.lhzw.searchlocmap.scrolllayout.content.content.ContentScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_search_rectangle">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_search_rectangle">
+
+                <RelativeLayout
+                    android:id="@+id/ll_bdsignal"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_search_conner_top_rectangle"
+                    android:focusable="false">
+
+                    <TextView
+                        android:id="@+id/tv_bd_signal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="center_vertical"
+                        android:text="信号强度"
+                        android:textColor="#9C9C9C"
+                        android:textSize="16sp" />
+
+                    <com.lhzw.searchlocmap.view.HistogramBar
+                        android:id="@+id/his_bar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_toRightOf="@+id/tv_bd_signal" />
+
+                    <TextView
+                        android:id="@+id/tv_signal_level_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="10dp"
+                        android:layout_toLeftOf="@+id/tv_signal_level"
+                        android:gravity="center_vertical"
+                        android:text="信号状态"
+                        android:textColor="#9C9C9C"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_signal_level"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="15dp"
+                        android:background="@color/red"
+                        android:gravity="center"
+                        android:text="差"
+                        android:textColor="@color/white" />
+                </RelativeLayout>
+
+                <ListView
+                    android:id="@+id/scroll_listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="350dp"
+                    android:layout_below="@+id/ll_bdsignal"></ListView>
+
+
+            </RelativeLayout>
+        </com.lhzw.searchlocmap.scrolllayout.content.content.ContentScrollView>
+    </com.lhzw.searchlocmap.scrolllayout.content.ScrollLayout>
 
     <LinearLayout
         android:id="@+id/ll_plot_tools"

@@ -8,7 +8,7 @@ public class SPConstants {
 	public static String PERSON_ENTER = "PERSON_ENTER"; // 是否人员录入
 	public static String SLIDE_SOUND = "SLIDE_SOUND"; // 声音
 	public static String SLIDE_VIBRATOR = "SLIDE_VIBRATOR"; // 震动
-	public static String COMMON_SWITCH = "COMMON_SWITCH";
+//	public static String COMMON_SWITCH = "COMMON_SWITCH";
 	public static String AUTO_REPORT = "REPORT_SWITCH";// 人员上报
 
 	public static String SETTING_HOUR = "SETTING_HOUR";// 小时

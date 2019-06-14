@@ -6,6 +6,7 @@ package com.lhzw.uploadmms;
 import java.util.List;
 
 import com.lhzw.uploadmms.UploadInfoBean;
+import com.lhzw.uploadmms.BDNum;
 
 interface BDUploadEvent {
 	void doTask(in List<UploadInfoBean> list);
@@ -14,4 +15,5 @@ interface BDUploadEvent {
 	void continueTask();
 	void reuestData(in double lat, in double lon);
 	void setNum(in int tx_type, in String num);
+	void updateBDNum(in List<BDNum> list);
 }

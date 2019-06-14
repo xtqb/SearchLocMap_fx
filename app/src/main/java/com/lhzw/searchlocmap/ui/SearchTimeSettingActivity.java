@@ -147,12 +147,14 @@ public class SearchTimeSettingActivity extends Activity implements
 			}
 			break;
 		case R.id.tv_register_commit:
+			/*
 			if (SpUtils.getBoolean(SPConstants.COMMON_SWITCH, false)) {
 				showAlertDialogNotify(
 						getString(R.string.time_settings_time_search_note),
 						R.layout.dialog_show_notigy1);
 				return;
 			}
+			*/
 			if ((hour * 3600 + minute * 60 + second) >= 60) {
 				SpUtils.putInt(SPConstants.SETTING_HOUR, hour);
 				SpUtils.putInt(SPConstants.SETTING_MINUTE, minute);

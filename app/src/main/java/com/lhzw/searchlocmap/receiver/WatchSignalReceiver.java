@@ -73,120 +73,120 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 	private void initDB(ProtocolParser parser) {
 		// TODO Auto-generated method stub
 		byte[] typeKey = parser.getCmdKey();
-		if (SpUtils.getBoolean(SPConstants.COMMON_SWITCH, false)                  // 搜索状态停止，禁止接收搜索信息
-				|| typeKey[0] == ((byte) 0x12) || typeKey[0] == ((byte) 0xA1) || typeKey[0] == ((byte) 0x19)) {
-			double lon = BaseUtils.ByteToStringForLocInfo(parser.getLongitude());
-			double lat = BaseUtils.ByteToStringForLocInfo(parser.getLatitude());
-			String register_num = BaseUtils.traslation(parser.getPersonNum()).substring(0, 10);
-			long locTime = BaseUtils.byteArrToTime(parser.getTimeStamp());
-			Log.e("Tag", "locTime : " + BaseUtils.getDateStr(locTime) + "  register : " + register_num);
-			List<PersonalInfo> list = CommonDBOperator.queryByKeys(persondao, "num", register_num);
-			if (list != null && list.size() > 0) {
-				Intent sosflash = new Intent("com.lhzw.soildersos.change");
-				isUpload = false;
-				data_type = Constants.TX_COMMON;
-				switch (typeKey[0]) {
-				case (byte) 0xA3:// common
-				case (byte) 0x11: // search
+//		if (SpUtils.getBoolean(SPConstants.COMMON_SWITCH, false)                  // 搜索状态停止，禁止接收搜索信息
+//				|| typeKey[0] == ((byte) 0x12) || typeKey[0] == ((byte) 0xA1) || typeKey[0] == ((byte) 0x19)) {
+		double lon = BaseUtils.ByteToStringForLocInfo(parser.getLongitude());
+		double lat = BaseUtils.ByteToStringForLocInfo(parser.getLatitude());
+		String register_num = BaseUtils.traslation(parser.getPersonNum()).substring(0, 10);
+		long locTime = BaseUtils.byteArrToTime(parser.getTimeStamp());
+		Log.e("Tag", "locTime : " + BaseUtils.getDateStr(locTime) + "  register : " + register_num);
+		List<PersonalInfo> list = CommonDBOperator.queryByKeys(persondao, "num", register_num);
+		if (list != null && list.size() > 0) {
+			Intent sosflash = new Intent("com.lhzw.soildersos.change");
+			isUpload = false;
+			data_type = Constants.TX_COMMON;
+			switch (typeKey[0]) {
+			case (byte) 0xA3:// common
+			case (byte) 0x11: // search
+				sosflash.putExtra("has_sos", false);
+				if (Math.abs(lon) < 0.00001 && Math.abs(lat) < 0.00001) {
+					list.get(0).setState(Constants.PERSON_UNDETERMINED);
+					list.get(0).setState1(Constants.PERSON_COMMON);
+				} else {
+					list.get(0).setState(Constants.PERSON_COMMON);
+				}
+				showNotifcationInfo(mContext, register_num, R.drawable.icon_qita2, "COMMON");
+				break;
+			case (byte) 0xA1: // SOS
+			case (byte) 0x12: // SOS
+				data_type = Constants.TX_SOS;
+				isUpload = true;
+				if (Math.abs(lon) < 0.00001 && Math.abs(lat) < 0.00001) {
+					list.get(0).setState(Constants.PERSON_UNDETERMINED);
+					list.get(0).setState1(Constants.PERSON_SOS);
 					sosflash.putExtra("has_sos", false);
-					if (Math.abs(lon) < 0.00001 && Math.abs(lat) < 0.00001) {
-						list.get(0).setState(Constants.PERSON_UNDETERMINED);
-						list.get(0).setState1(Constants.PERSON_COMMON);
-					} else {
-						list.get(0).setState(Constants.PERSON_COMMON);
-					}
-					showNotifcationInfo(mContext, register_num, R.drawable.icon_qita2, "COMMON");
-					break;
-				case (byte) 0xA1: // SOS
-				case (byte) 0x12: // SOS
-					data_type = Constants.TX_SOS;
+				} else {
+					sosflash.putExtra("has_sos", true);
+					list.get(0).setState(Constants.PERSON_SOS);
+				}
+				showNotifcationInfo(mContext, register_num, R.drawable.icon_sos2, "SOS");
+				break;
+			}
+			//比较数据大小
+			double distance = 0;
+			if(data_type == Constants.TX_SOS && isUpload && !"".equals(list.get(0).getLatitude()) && !"".equals(list.get(0).getLongitude()) && list.get(0).getLatitude() != null && Math.abs(Double.valueOf(list.get(0).getLatitude())) > 0.0001
+					&& list.get(0).getLongitude() != null && Math.abs(Double.valueOf(list.get(0).getLongitude())) > 0.0001) {
+				distance = GT_GeoArithmetic.ComputeDistanceOfTwoPoints(new GeoPoint(Double.valueOf(list.get(0).getLatitude()),Double.valueOf(list.get(0).getLongitude())),
+						new GeoPoint(lat,lon));
+				if(distance > DistanRANGE) {
 					isUpload = true;
-					if (Math.abs(lon) < 0.00001 && Math.abs(lat) < 0.00001) {
-						list.get(0).setState(Constants.PERSON_UNDETERMINED);
-						list.get(0).setState1(Constants.PERSON_SOS);
-						sosflash.putExtra("has_sos", false);
-					} else {
-						sosflash.putExtra("has_sos", true);
-						list.get(0).setState(Constants.PERSON_SOS);
-					}
-					showNotifcationInfo(mContext, register_num, R.drawable.icon_sos2, "SOS");
-					break;
-				}
-				//比较数据大小
-				double distance = 0;
-				if(data_type == Constants.TX_SOS && isUpload && !"".equals(list.get(0).getLatitude()) && !"".equals(list.get(0).getLongitude()) && list.get(0).getLatitude() != null && Math.abs(Double.valueOf(list.get(0).getLatitude())) > 0.0001
-						&& list.get(0).getLongitude() != null && Math.abs(Double.valueOf(list.get(0).getLongitude())) > 0.0001) {
-					distance = GT_GeoArithmetic.ComputeDistanceOfTwoPoints(new GeoPoint(Double.valueOf(list.get(0).getLatitude()),Double.valueOf(list.get(0).getLongitude())),
-							new GeoPoint(lat,lon));
-					if(distance > DistanRANGE) {
-						isUpload = true;
-					} else {
-						isUpload = false;
-					}
-				}
-				if(data_type == Constants.TX_SOS) {
-					//写入日志
-					try {
-						LogWrite writer = LogWrite.open();
-						String log = register_num + "\t" + "id : " + list.get(0).getOffset() +  "\t" + LogWrite.df.format(System.currentTimeMillis()) +"\t  data_type = " + data_type  + "\t lat = " + lat + "\t lon = " +
-                                lon + "\t distance = " + df.format(distance) + " m";
-						writer.writeLog(log);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				if(System.currentTimeMillis() - list.get(0).getTime() > timeOut) {
-					isUpload = true;
-					list.get(0).setTime(System.currentTimeMillis());
-				}
-				if(Math.abs(locTime - System.currentTimeMillis()) > 24 * 60 * 60 * 1000) {
-					locTime = System.currentTimeMillis();
-				}
-				list.get(0).setLatitude(lat + "");
-				list.get(0).setLongitude(lon + "");
-				list.get(0).setLocTime(locTime);
-
-				if(data_type == Constants.TX_SOS && isUpload && SpUtils.getBoolean(SPConstants.AUTO_REPORT, true)) {
-					Log.e("Tag", "doTask  insert databases");
-					uploadList.clear();
-					String latLonStr = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) +","
-							+ SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
-					UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, data_type, System.currentTimeMillis(), lat +"," +
-							lon, locTime + "", list.get(0).getOffset() + "", latLonStr, SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 1,
-							SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, -1);
-					uploadList.add(bean);
-					if(SpUtils.getInt(SPConstants.SP_BD_MODE, Constants.UOLOAD_STATE_0) == Constants.UOLOAD_STATE_1) {
-						bean.setTx_type(Constants.TX_QZH);
-						bean.setNum(SpUtils.getString(Constants.UPLOAD_QZH_NUM, Constants.BD_NUM_DEF));
-						uploadList.add(bean);
-					}
-					bdUtils.uploadBena(uploadList);
-					mHnadler.sendEmptyMessage(TOAST);
-				} 
-				
-				CommonDBOperator.updateItem(persondao, list.get(0));
-				Log.e("Tag", "sendBroadcast    1");
-				mContext.sendBroadcast(sosflash);
-				list.clear();
-			} else {
-				switch (typeKey[0]) {
-				case (byte) 0xA3:// common
-				case (byte) 0x11: // search
-					showNotifcationInfo(mContext, register_num,
-							R.drawable.icon_qita2, "COMMON",
-							mContext.getString(R.string.notify_note));
-					break;
-				case (byte) 0xA1: // SOS
-				case (byte) 0x12: // SOS
-					showNotifcationInfo(mContext, register_num,
-							R.drawable.icon_sos2, "SOS",
-							mContext.getString(R.string.notify_note));
-					break;
-				default:
-					break;
+				} else {
+					isUpload = false;
 				}
 			}
+			if(data_type == Constants.TX_SOS) {
+				//写入日志
+				try {
+					LogWrite writer = LogWrite.open();
+					String log = register_num + "\t" + "id : " + list.get(0).getOffset() +  "\t" + LogWrite.df.format(System.currentTimeMillis()) +"\t  data_type = " + data_type  + "\t lat = " + lat + "\t lon = " +
+							lon + "\t distance = " + df.format(distance) + " m";
+					writer.writeLog(log);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			if(System.currentTimeMillis() - list.get(0).getTime() > timeOut) {
+				isUpload = true;
+				list.get(0).setTime(System.currentTimeMillis());
+			}
+			if(Math.abs(locTime - System.currentTimeMillis()) > 24 * 60 * 60 * 1000) {
+				locTime = System.currentTimeMillis();
+			}
+			list.get(0).setLatitude(lat + "");
+			list.get(0).setLongitude(lon + "");
+			list.get(0).setLocTime(locTime);
+
+			if(data_type == Constants.TX_SOS && isUpload && SpUtils.getBoolean(SPConstants.AUTO_REPORT, true)) {
+				Log.e("Tag", "doTask  insert databases");
+				uploadList.clear();
+				String latLonStr = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) +","
+						+ SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
+				UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, data_type, System.currentTimeMillis(), lat +"," +
+						lon, locTime + "", list.get(0).getOffset() + "", latLonStr, SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 1,
+						SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, -1);
+				uploadList.add(bean);
+				if(SpUtils.getInt(SPConstants.SP_BD_MODE, Constants.UOLOAD_STATE_0) == Constants.UOLOAD_STATE_1) {
+					bean.setTx_type(Constants.TX_QZH);
+					bean.setNum(SpUtils.getString(Constants.UPLOAD_QZH_NUM, Constants.BD_NUM_DEF));
+					uploadList.add(bean);
+				}
+				bdUtils.uploadBena(uploadList);
+				mHnadler.sendEmptyMessage(TOAST);
+			}
+
+			CommonDBOperator.updateItem(persondao, list.get(0));
+			Log.e("Tag", "sendBroadcast    1");
+			mContext.sendBroadcast(sosflash);
+			list.clear();
+		} else {
+			switch (typeKey[0]) {
+			case (byte) 0xA3:// common
+			case (byte) 0x11: // search
+				showNotifcationInfo(mContext, register_num,
+						R.drawable.icon_qita2, "COMMON",
+						mContext.getString(R.string.notify_note));
+				break;
+			case (byte) 0xA1: // SOS
+			case (byte) 0x12: // SOS
+				showNotifcationInfo(mContext, register_num,
+						R.drawable.icon_sos2, "SOS",
+						mContext.getString(R.string.notify_note));
+				break;
+			default:
+				break;
+			}
 		}
+//		}
 	}
 
 	public void showNotifcationInfo(Context context, String text, int id, String type, String subText) {

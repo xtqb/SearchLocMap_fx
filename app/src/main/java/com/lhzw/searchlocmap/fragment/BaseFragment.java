@@ -1,5 +1,6 @@
 package com.lhzw.searchlocmap.fragment;
 
+import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -191,6 +194,20 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
         tv_search_content.setText(content);
         searchToast.show();
     }
+//    public void dimBackground(final float from, final float to) {
+//        final Window window = getActivity().getWindow();
+//        ValueAnimator valueAnimator = ValueAnimator.ofFloat(from, to);
+//        valueAnimator.setDuration(500);
+//        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator animation) {
+//                WindowManager.LayoutParams params = window.getAttributes();
+//                params.alpha = (Float) animation.getAnimatedValue();
+//                window.setAttributes(params);
+//            }
+//        });
+//        valueAnimator.start();
+//    }
 
 
 }
