@@ -85,20 +85,13 @@ public class ContactFragment extends BaseLazyFragment {
         List<HttpPersonInfo> personInfos = filledData(SourceDateList);//将所有人的名字首字母设置出来
 
         // 根据a-z进行排序源数据
-        Collections.sort(SourceDateList, pinyinComparator);
+        Collections.sort(personInfos, pinyinComparator);
         //RecyclerView社置manager
         manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(manager);
-        adapter = new SortAdapter(getActivity(), SourceDateList);
+        adapter = new SortAdapter(getActivity(), personInfos);
         mRecyclerView.setAdapter(adapter);
-        //item点击事件
-        /*adapter.setOnItemClickListener(new SortAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Toast.makeText(MainActivity.this, ((SortModel)adapter.getItem(position)).getName(),Toast.LENGTH_SHORT).show();
-            }
-        });*/
 
 
         //根据输入框输入值的改变来过滤搜索
@@ -124,7 +117,7 @@ public class ContactFragment extends BaseLazyFragment {
 
 
     /**
-     * 为RecyclerView填充数据
+     * 为RecyclerView的bean 设置首字符数据
      *
      * @param list
      * @return

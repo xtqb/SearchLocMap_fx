@@ -87,7 +87,7 @@ public class ShortMessageFragment extends BaseLazyFragment {
                 intent.putExtra("msg_Id", httpPersonInfo.getId());
                 intent.putExtra("realName", httpPersonInfo.getRealName());
                 intent.putExtra("org", httpPersonInfo.getOrgName());
-                intent.putExtra("bdNum",httpPersonInfo.getDeviceNumbers());
+                intent.putExtra("bdNum",httpPersonInfo.getDeviceNumbers());//接收人的北斗号
                 startActivity(intent);
             }
         });
@@ -196,6 +196,19 @@ public class ShortMessageFragment extends BaseLazyFragment {
                     int count = (int)CommonDBOperator.countByMultiKeys(mMesgInfoDao, msgMap);
                     info.setUnReadMsgNum(count);//此人的未读消息数
                     info.setCurrentMsgTime(entry.getValue());//设置最近消息时间
+                    mPersonInfoList.add(info);
+                }else {//不在表里的人显示未读消息 新建此人信息显示在短消息表
+                    int unReadMsgCount = 0;
+                    //新建这个人
+                    HttpPersonInfo info = new HttpPersonInfo(entry.getKey(),"未知",entry.getKey()+"","未知",0,"未知","未知",String.valueOf(entry.getKey()),1);
+                    //遍历此人的未读消息
+                    for (int i = 0; i < mMessageInfoIBeanList.size(); i++) {
+                        if(mMessageInfoIBeanList.get(i).getID() == entry.getKey() && mMessageInfoIBeanList.get(i).getState()==Constants.MESSAGE_UNREAD){
+                            unReadMsgCount++;
+                        }
+                    }
+                    info.setUnReadMsgNum(unReadMsgCount);
+                    info.setCurrentMsgTime(entry.getValue());
                     mPersonInfoList.add(info);
                 }
 

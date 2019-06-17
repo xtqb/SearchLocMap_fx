@@ -1,12 +1,12 @@
 package com.lhzw.searchlocmap.bean;
 
-import java.io.Serializable;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.io.Serializable;
+
 @DatabaseTable(tableName = "LocPersonalInfo")
-// 本地录入信息
+// 本地录入信息  已绑定的表数据库
 public class LocPersonalInfo implements Serializable {
 	/*
 	 * 离线：0 在线：1 sos：2
@@ -16,7 +16,7 @@ public class LocPersonalInfo implements Serializable {
 	@DatabaseField(generatedId = true)
 	private int _Id;
 	@DatabaseField(columnName = "num")
-	private String num;
+	private String num;//固话注册码
 	@DatabaseField(columnName = "name")
 	private String name;
 	@DatabaseField(columnName = "age")

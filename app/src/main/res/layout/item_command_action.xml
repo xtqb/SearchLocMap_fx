@@ -10,7 +10,7 @@
         android:background="@drawable/rl_background"
         android:gravity="center"
         android:text="集结"
-        android:textColor="@color/btn_blue_focused"
+        android:textColor="@color/green_little"
         android:textSize="16sp" />
 
 </RelativeLayout>

@@ -110,6 +110,7 @@ import com.lhzw.searchlocmap.overlay.MeasureOverlayManager;
 import com.lhzw.searchlocmap.overlay.OverlayFactory;
 import com.lhzw.searchlocmap.overlay.P2pviewAnalysisOverlay;
 import com.lhzw.searchlocmap.scrolllayout.content.ScrollLayout;
+import com.lhzw.searchlocmap.ui.CommandStateActivity;
 import com.lhzw.searchlocmap.ui.CommunicationListActivity;
 import com.lhzw.searchlocmap.ui.LocationTrackActivity;
 import com.lhzw.searchlocmap.ui.PerStateActivity;
@@ -900,8 +901,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 //        super.onClick(v);
         switch (v.getId()) {
             case R.id.communication_btn:
-                // startActivityForResult(new Intent(getActivity(), DipperCommunicationActivity.class), 0x7866);
-                //todo 新页面
                 startActivity(new Intent(getActivity(), CommunicationListActivity.class));
                 break;
             case R.id.bt_plot_list:
@@ -959,7 +958,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     mapController = mMapView.getController();
                     mapController.setCenter(new GeoPoint(lat, lon));
                 } catch (Exception e1) {
-                    // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
                 break;
@@ -1140,6 +1138,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             case R.id.tv_command_cancel:
                 dialogCommmand.clear();
                 break;
+            case R.id.tv_state://查看指令状态
+                //TODO 进入指令状态页
+                dialogCommmand.clear();//dialog消失
+                Intent intent = new Intent(getActivity(), CommandStateActivity.class);
+                startActivity(intent);
+                break;
+
             // 下达指令
 
             case R.id.normal_mass_bt:
@@ -2434,6 +2439,16 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 }
                 dialogCommmand.clear();
                 showToast(getString(R.string.send_command_success_note));
+                //TODO 发指令  就清空上次的指令  更新指令表的状态
+                Dao<PersonalInfo, Integer> infoDao = helper.getPersonalInfoDao();
+                List<PersonalInfo> infoList = CommonDBOperator.getList(infoDao);
+                if(infoList!=null && infoList.size()>0){
+                    for (int i = 0; i < infoList.size(); i++) {
+                        infoList.get(i).setFeedback(0);//重置为未确认
+                        CommonDBOperator.updateItem(infoDao,infoList.get(i));
+                    }
+                }
+
             }
         });
     }

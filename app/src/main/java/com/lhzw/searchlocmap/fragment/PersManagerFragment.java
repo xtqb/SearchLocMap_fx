@@ -33,20 +33,29 @@ import android.widget.Toast;
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.adapter.PerManageAdapter;
+import com.lhzw.searchlocmap.bean.BaseBean;
 import com.lhzw.searchlocmap.bean.LocPersonalInfo;
 import com.lhzw.searchlocmap.bean.PersonalInfo;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
+import com.lhzw.searchlocmap.net.CallbackListObserver;
+import com.lhzw.searchlocmap.net.SLMRetrofit;
+import com.lhzw.searchlocmap.net.ThreadSwitchTransformer;
 import com.lhzw.searchlocmap.ui.PerDetailsActivity;
 import com.lhzw.searchlocmap.ui.PerItemAddActivity;
+import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.CheckBoxState;
+import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.SpUtils;
+import com.lhzw.searchlocmap.utils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.reactivex.Observable;
 
 public class PersManagerFragment extends Fragment implements
         OnClickListener, OnItemClickListener,
@@ -70,6 +79,7 @@ public class PersManagerFragment extends Fragment implements
     private CheckBox select;
     private RelativeLayout relativeLayout1;
     private boolean isOnClick = false;
+    private List<CheckBoxState> mList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -138,41 +148,91 @@ public class PersManagerFragment extends Fragment implements
                 break;
 
             case R.id.delete:
-                List<CheckBoxState> list = peradapter.getCheckStateList();
-                int counter = 0;
-                for (CheckBoxState item : list) {
-                    if (item.isCheck()) {
-                        counter++;
-                        CommonDBOperator.deleteByKeys(persondao, "num",
-                                item.getNum());
-                        // 删除本地表
-                        CommonDBOperator.deleteByKeys(dao, "num", item.getNum());
+                mList = peradapter.getCheckStateList();
+                if(mList !=null && mList.size()>0){
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < mList.size(); i++) {
+                        if(i== mList.size()-1){
+                            sb.append(mList.get(i).getNum());
+                        }else {
+                            sb.append(mList.get(i).getNum());
+                            sb.append(",");
+                        }
                     }
+
+                    String deviceNums = sb.toString();
+                    //todo 解绑前  先去请求服务器  服务器反馈后解绑
+                    AskServerToUnbind(BaseUtils.getDipperNum(getActivity()), deviceNums);
                 }
-                if (counter > 0) {
-                    perList = (ArrayList<LocPersonalInfo>) CommonDBOperator
-                            .getList(persondao);
-                    peradapter.setList(perList);
-                    peradapter.initList();
-                    perlistview.setOnItemClickListener(this);
 
-                    SpUtils.putBoolean(SPConstants.CHECKBOX_ISSHOW, false);
-                    relativeLayout1.setVisibility(View.INVISIBLE);
-                    ani_state = !ani_state;
 
-                    peradapter.notifyDataSetChanged();
-
-                    // 通知地图更新界面
-                    Intent intent1 = new Intent("com.lhzw.soildersos.change");
-                    intent1.putExtra("has_new", false);
-                    getActivity().sendBroadcast(intent1);
-                } else {
-                    Toast.makeText(getActivity(),
-                            getString(R.string.person_manager_delete_note),
-                            Toast.LENGTH_SHORT).show();
-                }
                 break;
         }
+    }
+
+    /**
+     * 手持机解绑手表
+     *
+     * @param bdNum
+     * @param deviceNums
+     */
+    private void AskServerToUnbind(String bdNum, String deviceNums) {
+        Observable<BaseBean> observable = SLMRetrofit.getInstance().getApi().deleteBinding(bdNum, deviceNums);
+        observable.compose(new ThreadSwitchTransformer<BaseBean>())
+                .subscribe(new CallbackListObserver<BaseBean>() {
+                    @Override
+                    protected void onSucceed(BaseBean bean) {
+                        if ("0".equals(bean.getCode())) {
+                            ToastUtil.showToast("解绑成功");
+                            LogUtil.d("解绑成功");
+
+                            int counter = 0;
+                            for (CheckBoxState item : mList) {
+                                if (item.isCheck()) {
+                                    counter++;
+                                    CommonDBOperator.deleteByKeys(persondao, "num",
+                                            item.getNum());
+                                    // 删除本地表
+                                    CommonDBOperator.deleteByKeys(dao, "num", item.getNum());
+                                }
+                            }
+                            if (counter > 0) {
+                                perList = (ArrayList<LocPersonalInfo>) CommonDBOperator
+                                        .getList(persondao);
+                                peradapter.setList(perList);
+                                peradapter.initList();
+                                perlistview.setOnItemClickListener(PersManagerFragment.this);
+
+                                SpUtils.putBoolean(SPConstants.CHECKBOX_ISSHOW, false);
+                                relativeLayout1.setVisibility(View.INVISIBLE);
+                                ani_state = !ani_state;
+
+                                peradapter.notifyDataSetChanged();
+
+                                // 通知地图更新界面
+                                Intent intent1 = new Intent("com.lhzw.soildersos.change");
+                                intent1.putExtra("has_new", false);
+                                getActivity().sendBroadcast(intent1);
+                            } else {
+                                Toast.makeText(getActivity(),
+                                        getString(R.string.person_manager_delete_note),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+
+
+
+                        } else {
+                            LogUtil.d("解绑失败");
+                            ToastUtil.showToast(bean.getMessage() + "");
+                        }
+                    }
+
+                    @Override
+                    protected void onFailed() {
+                        ToastUtil.showToast("网络错误");
+                    }
+                });
+
     }
 
     /**

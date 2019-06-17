@@ -27,7 +27,7 @@ public class HttpPersonInfo implements Serializable{
     @DatabaseField(columnName = "xynumber")
     private String xynumber;
     @DatabaseField(columnName = "deviceNumbers")
-    private String deviceNumbers;
+    private String deviceNumbers;//北斗号
     @DatabaseField(columnName = "deviceType")
     private int deviceType;
 

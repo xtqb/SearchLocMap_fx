@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              xmlns:tools="http://schemas.android.com/tools"
               android:background="@color/gray_background"
               android:orientation="vertical">
 
@@ -34,11 +35,12 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="110dp"
         android:gravity="center"
         android:orientation="horizontal">
 
         <LinearLayout
+            android:layout_marginTop="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -58,6 +60,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:layout_marginTop="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="60dp"
@@ -91,7 +94,7 @@
             android:orientation="horizontal">
 
             <View
-                android:layout_width="10dp"
+                android:layout_width="6dp"
                 android:layout_height="match_parent"
                 android:background="#1dccc0"/>
 
@@ -106,6 +109,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp_16"
+                    android:textStyle="bold"
                     android:text="应急指挥"
                     android:textColor="@color/text_color"/>
 
@@ -114,15 +118,17 @@
                     android:id="@+id/tv_map_version"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="version : 1.0"/>
+                    android:textColor="@color/text_normal_gray"
+                    tools:text="version : 1.0"/>
 
                 <TextView
-                    android:visibility="gone"
+                    android:visibility="visible"
+                    android:textColor="@color/text_normal_gray"
                     android:id="@+id/tv_map_new_version"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="version:2.0"/>
+                    tools:text="version:2.0"/>
             </LinearLayout>
 
             <RelativeLayout
@@ -151,7 +157,7 @@
                     android:paddingTop="5dp"
                     android:text="下载更新"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/sp_16"/>
+                    android:textSize="14sp"/>
             </RelativeLayout>
 
         </LinearLayout>
@@ -172,7 +178,7 @@
             android:orientation="horizontal">
 
             <View
-                android:layout_width="10dp"
+                android:layout_width="6dp"
                 android:layout_height="match_parent"
                 android:background="#0094db"/>
 
@@ -187,24 +193,26 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="通信服务"
+                    android:textStyle="bold"
                     android:textSize="@dimen/sp_16"
                     android:textColor="@color/text_color"/>
 
                 <TextView
+                    android:textColor="@color/text_normal_gray"
                     android:layout_marginTop="10dp"
                     android:id="@+id/tv_bd_version"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="5dp"
-                    android:text="version : 1.0"/>
+                    tools:text="version : 1.0"/>
 
                 <TextView
+                    android:textColor="@color/text_normal_gray"
                     android:layout_marginTop="10dp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:id="@+id/tv_bd_new_version"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="version:2.0"/>
+                    tools:text="version:2.0"/>
             </LinearLayout>
 
             <RelativeLayout
@@ -233,7 +241,7 @@
                     android:paddingTop="5dp"
                     android:text="下载更新"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/sp_16"/>
+                    android:textSize="14sp"/>
             </RelativeLayout>
 
         </LinearLayout>

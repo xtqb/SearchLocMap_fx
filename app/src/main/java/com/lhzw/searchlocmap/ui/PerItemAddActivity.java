@@ -1,7 +1,5 @@
 package com.lhzw.searchlocmap.ui;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.content.BDManager;
 import android.content.BroadcastReceiver;
@@ -28,17 +26,27 @@ import android.widget.Toast;
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.adapter.SelectChannelAdapter;
+import com.lhzw.searchlocmap.bean.BaseBean;
+import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.LocPersonalInfo;
 import com.lhzw.searchlocmap.bean.PersonalInfo;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
+import com.lhzw.searchlocmap.net.CallbackListObserver;
+import com.lhzw.searchlocmap.net.SLMRetrofit;
+import com.lhzw.searchlocmap.net.ThreadSwitchTransformer;
 import com.lhzw.searchlocmap.utils.BaseUtils;
+import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.searchlocmap.utils.Utils;
 import com.lhzw.searchlocmap.view.ShowAlertDialog;
 import com.lhzw.searchlocmap.view.ShowSelectChanelDialog;
+
+import java.util.List;
+
+import io.reactivex.Observable;
 
 public class PerItemAddActivity extends Activity implements OnClickListener,
 		OnGlobalLayoutListener, ShowSelectChanelDialog.onChannelItemClickListener {
@@ -74,6 +82,9 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
 	private TextView tv_channel;
 	private ImageView im_channel_edit;
 	private boolean isFinish;
+	private Dao<HttpPersonInfo, Integer> mHttpPerDao;
+
+	private boolean canSave;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -131,6 +142,7 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
 		helper = DatabaseHelper.getHelper(PerItemAddActivity.this);
 		perdao = helper.getLocPersonDao();
 		dao = helper.getPersonalInfoDao();
+		mHttpPerDao = helper.getHttpPerDao();
 		loginBinding = (ScrollView) findViewById(R.id.pre_add_details_scrollview);
 		tv_local_identify = (TextView) findViewById(R.id.tv_local_identify);
 		tv_channel = (TextView) findViewById(R.id.tv_channel);
@@ -146,7 +158,6 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
 
 		@Override
 		public void onCheckedChanged(RadioGroup group, int checkedId) {
-			// TODO Auto-generated method stub
 			switch (checkedId) {
 			case R.id.btn1:
 				person_sex = getString(R.string.person_sex_man);
@@ -176,70 +187,15 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
 					.isStringEmpty(add_name_et.getText().toString().trim())) {
 				showToast(getString(R.string.person_info_requried_name));
 				return;
-			}// 两个数据库连接
-			List<LocPersonalInfo> list = CommonDBOperator.queryByKeys(perdao,
-					"num", add_num_et.getText().toString());
-			if (null != list && list.size() > 0) {
-				// 更新
-				list.get(0).setName(add_name_et.getText() + "");
-				list.get(0).setSex(person_sex);
-				list.get(0).setPhone(add_phone_et.getText() + "");
-				list.get(0).setContact1(add_phone1_et.getText() + "");
-				list.get(0).setContact2(add_phone2_et.getText() + "");
-				list.get(0).setBloodtype(add_blood_et.getText() + "");
-				list.get(0).setAllergy(add_allergy_et.getText() + "");
-				CommonDBOperator.updateItem(perdao, list.get(0));
-				list.clear();
-				list = null;
-
-				// 更新 personItem
-				List<PersonalInfo> list1 = CommonDBOperator.queryByKeys(dao,
-						"num", add_num_et.getText().toString());
-				list1.get(0).setName(add_name_et.getText() + "");
-				list1.get(0).setSex(person_sex);
-				list1.get(0).setPhone(add_phone_et.getText() + "");
-				list1.get(0).setContact1(add_phone1_et.getText() + "");
-				list1.get(0).setContact2(add_phone2_et.getText() + "");
-				list1.get(0).setBloodtype(add_blood_et.getText() + "");
-				list1.get(0).setAllergy(add_allergy_et.getText() + "");
-				CommonDBOperator.updateItem(dao, list1.get(0));
-				list1.clear();
-				list1 = null;
-
-			} else {
-				// 保存
-				perInfo = new LocPersonalInfo();
-				perInfo.setNum(add_num_et.getText() + "");
-				perInfo.setName(add_name_et.getText() + "");
-				perInfo.setSex(person_sex);
-				perInfo.setPhone(add_phone_et.getText() + "");
-				perInfo.setContact1(add_phone1_et.getText() + "");
-				perInfo.setContact2(add_phone2_et.getText() + "");
-				perInfo.setBloodtype(add_blood_et.getText() + "");
-				perInfo.setAllergy(add_allergy_et.getText() + "");
-				CommonDBOperator.saveToDB(perdao, perInfo);
-				perInfo = null;
-
-				// 插入到 personItem
-				PersonalInfo item = new PersonalInfo();
-				item.setNum(add_num_et.getText() + "");
-				item.setName(add_name_et.getText() + "");
-				item.setSex(person_sex);
-				item.setPhone(add_phone_et.getText() + "");
-				item.setContact1(add_phone1_et.getText() + "");
-				item.setContact2(add_phone2_et.getText() + "");
-				item.setBloodtype(add_blood_et.getText() + "");
-				item.setAllergy(add_allergy_et.getText() + "");
-				item.setState(Constants.PERSON_OFFLINE);
-				CommonDBOperator.saveToDB(dao, item);
-				uploadOffset();
-				setBDType(CHANNEL);
 			}
-			// 通知地图更新界面
-			Intent intent = new Intent("com.lhzw.soildersos.change");
-			intent.putExtra("has_new", false);
-			sendBroadcast(intent);
-			finish();
+
+			if(!canSave){//已保存过了  就不再保存了
+				showToast(getString(R.string.person_info_repeat_note));
+				return;
+			}
+
+	          AskServerToBind(BaseUtils.getDipperNum(this),person_code);
+
 			break;
 
 		case R.id.add_per_back:
@@ -282,6 +238,105 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
 		}
 	}
 
+
+	/**
+	 * 向服务器请求是否可以绑定
+	 * @param bdNum  本机北斗号
+	 * @param deviceNum  手表的固话注册码
+	 */
+
+	private void AskServerToBind(String bdNum ,String deviceNum) {
+		LogUtil.d("bdNum=="+bdNum+"<=====>deviceNum=="+deviceNum);
+		Observable<BaseBean> observable = SLMRetrofit.getInstance().getApi().canBinding(bdNum, deviceNum);
+		observable.compose(new ThreadSwitchTransformer<BaseBean>())
+				.subscribe(new CallbackListObserver<BaseBean>() {
+					@Override
+					protected void onSucceed(BaseBean bean) {
+					if (bean!=null){
+						if("0".equals(bean.getCode())){
+							LogUtil.d("请求成功可以绑定");
+							// 两个数据库连接
+							List<LocPersonalInfo> list = CommonDBOperator.queryByKeys(perdao,
+									"num", add_num_et.getText().toString());
+							if (null != list && list.size() > 0) {
+								// 更新
+								list.get(0).setName(add_name_et.getText() + "");
+								list.get(0).setSex(person_sex);
+								list.get(0).setPhone(add_phone_et.getText() + "");
+								list.get(0).setContact1(add_phone1_et.getText() + "");
+								list.get(0).setContact2(add_phone2_et.getText() + "");
+								list.get(0).setBloodtype(add_blood_et.getText() + "");
+								list.get(0).setAllergy(add_allergy_et.getText() + "");
+								CommonDBOperator.updateItem(perdao, list.get(0));
+								list.clear();
+								list = null;
+
+								// 更新 personItem
+								List<PersonalInfo> list1 = CommonDBOperator.queryByKeys(dao,
+										"num", add_num_et.getText().toString());
+								list1.get(0).setName(add_name_et.getText() + "");
+								list1.get(0).setSex(person_sex);
+								list1.get(0).setPhone(add_phone_et.getText() + "");
+								list1.get(0).setContact1(add_phone1_et.getText() + "");
+								list1.get(0).setContact2(add_phone2_et.getText() + "");
+								list1.get(0).setBloodtype(add_blood_et.getText() + "");
+								list1.get(0).setAllergy(add_allergy_et.getText() + "");
+								CommonDBOperator.updateItem(dao, list1.get(0));
+								list1.clear();
+								list1 = null;
+
+							} else {
+								// 保存
+								perInfo = new LocPersonalInfo();
+								perInfo.setNum(add_num_et.getText() + "");
+								perInfo.setName(add_name_et.getText() + "");
+								perInfo.setSex(person_sex);
+								perInfo.setPhone(add_phone_et.getText() + "");
+								perInfo.setContact1(add_phone1_et.getText() + "");
+								perInfo.setContact2(add_phone2_et.getText() + "");
+								perInfo.setBloodtype(add_blood_et.getText() + "");
+								perInfo.setAllergy(add_allergy_et.getText() + "");
+								CommonDBOperator.saveToDB(perdao, perInfo);
+								perInfo = null;
+
+								// 插入到 personItem
+								PersonalInfo item = new PersonalInfo();
+								item.setNum(add_num_et.getText() + "");
+								item.setName(add_name_et.getText() + "");
+								item.setSex(person_sex);
+								item.setPhone(add_phone_et.getText() + "");
+								item.setContact1(add_phone1_et.getText() + "");
+								item.setContact2(add_phone2_et.getText() + "");
+								item.setBloodtype(add_blood_et.getText() + "");
+								item.setAllergy(add_allergy_et.getText() + "");
+								item.setState(Constants.PERSON_OFFLINE);
+								CommonDBOperator.saveToDB(dao, item);
+								uploadOffset();
+								setBDType(CHANNEL);
+							}
+							// 通知地图更新界面
+							Intent intent = new Intent("com.lhzw.soildersos.change");
+							intent.putExtra("has_new", false);
+							sendBroadcast(intent);
+							finish();
+						}else {
+							showToast(bean.getMessage()+"");
+							LogUtil.d("请求成功不可绑定");
+						}
+					}else {
+						LogUtil.d("返回bean为空");
+					}
+					}
+
+					@Override
+					protected void onFailed() {
+						showToast("网络连接失败");
+						LogUtil.e("请求失败");
+					}
+				});
+
+	}
+
 	/**
 	 * 重新设置ID值
 	 */
@@ -316,20 +371,33 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
                     if (typeKey[0] == (byte) 0x11) {// 普通人员不接收
                         return;
                     }
-                    String register_num = BaseUtils.traslation(
-                            parser.getPersonNum()).substring(0, 10);
-                    List<LocPersonalInfo> list = CommonDBOperator.queryByKeys(
+                    String register_num = BaseUtils.traslation(parser.getPersonNum()).substring(0, 10);//注册码
+
+					//根据固话注册码  查此人的信息  显示在页面上
+					List<HttpPersonInfo> personInfos = CommonDBOperator.queryByKeys(mHttpPerDao, "deviceNumbers", register_num);
+					if(personInfos!=null && personInfos.size()>0){
+						//查到了此人的信息
+						HttpPersonInfo httpPersonInfo = personInfos.get(0);
+						//显示在页面上
+						add_name_et.setText(httpPersonInfo.getRealName());//名字
+						add_sex_et.check(httpPersonInfo.getGender()==1 ? R.id.btn1 : R.id.btn2);//性别
+					}
+
+					icon_watch.setVisibility(View.GONE);
+					add_num_et.setText(register_num);
+
+					List<LocPersonalInfo> list = CommonDBOperator.queryByKeys(
                             perdao, "num", register_num);
                     if (list != null && list.size() > 0) {
                         list.clear();
                         list = null;
+						canSave=false;//已录入不再进行入库
                         showToast(getString(R.string.person_info_repeat_note));
                         return;
                     }
-                    icon_watch.setVisibility(View.GONE);
-                    add_num_et.setText(register_num);
 
-                    byte[] sndBytes = BaseUtils.getPerRegisterByteArr(add_num_et.getText().toString());
+					canSave=true;
+               byte[] sndBytes = BaseUtils.getPerRegisterByteArr(add_num_et.getText().toString());
                     byte[] numByte1 = obtainBDNum();
                     for(int j = 0; j < 5; j ++) {
                         sndBytes[5 + j] = numByte1[j];
