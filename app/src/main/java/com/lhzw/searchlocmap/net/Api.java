@@ -1,6 +1,6 @@
 package com.lhzw.searchlocmap.net;
 
-import com.lhzw.searchlocmap.bean.AllDevicesBean;
+import com.lhzw.searchlocmap.bean.AllBDInfosBean;
 import com.lhzw.searchlocmap.bean.BaseBean;
 
 import io.reactivex.Observable;
@@ -43,9 +43,10 @@ public interface Api {
     Observable<BaseBean> deleteBinding(@Path("handsetNumber") String handsetNumber, @Path("childNumber") String childNumber);
 
     /**
-     * 获取所有的设备信息
+     * 获取所有的北斗信息
      * @return
      */
-    @GET("devices/find")
-    Observable<BaseBean<AllDevicesBean>> getAllDevices();
+    @GET("bds")
+    Observable<AllBDInfosBean> getAllBDInfos();
+
 }

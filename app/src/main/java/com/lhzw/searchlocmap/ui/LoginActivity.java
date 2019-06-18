@@ -21,15 +21,14 @@ import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
-import com.lhzw.searchlocmap.bean.AllDevicesBean;
-import com.lhzw.searchlocmap.bean.DeviceNum;
-import com.lhzw.searchlocmap.bean.BaseBean;
+import com.lhzw.searchlocmap.bean.AllBDInfosBean;
+import com.lhzw.searchlocmap.bean.LocalBDNum;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.HttpRequstInfo;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
-import com.lhzw.searchlocmap.net.CallbackObserver;
+import com.lhzw.searchlocmap.net.CallbackListObserver;
 import com.lhzw.searchlocmap.net.SLMRetrofit;
 import com.lhzw.searchlocmap.net.ThreadSwitchTransformer;
 import com.lhzw.searchlocmap.utils.BaseUtils;
@@ -138,7 +137,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     if (token != null) {
                         SpUtils.putString(Constants.HTTP_TOOKEN, token);
 
-                        getAllDevicesInfoFromServer();
+                        getAllBDInfoFromServer();
 
                         rev = NetUtils.doHttpGetClient(token, Constants.USER_PATH);
 
@@ -149,9 +148,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                 String data = obj.getString("data");
                                 List<HttpRequstInfo> list = new Gson().fromJson(data, new TypeToken<List<HttpRequstInfo>>() {
                                 }.getType());
-                                values[0] = list.size() + mDeviceList.size();//总进度
-                                LogUtil.d("size : " + list.size()+"mDeviceList:"+mDeviceList.size());
-                                int delay = 40 * 100 / (list.size()+mDeviceList.size());
+                                values[0] = list.size() + mLocalBDNums.size();//总进度
+                                LogUtil.d("size : " + list.size()+"mLocalBDNums:"+ mLocalBDNums.size());
+                                int delay = 40 * 100 / (list.size()+ mLocalBDNums.size());
                                 int counter = 0;
                                 for (HttpRequstInfo info : list) {
                                     counter++;
@@ -161,11 +160,11 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                     Thread.sleep(delay);
                                 }
 
-                                for (DeviceNum deviceNum :mDeviceList){
+                                for (LocalBDNum localBDNum : mLocalBDNums){
                                     counter++;
                                     values[1]=counter;
                                     publishProgress(values);
-                                    CommonDBOperator.saveToDB(mBdNumDao, deviceNum);
+                                    CommonDBOperator.saveToDB(mBdNumDao, localBDNum);
                                     //上传到服务
                                     Thread.sleep(delay);
                                 }
@@ -178,7 +177,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                 }
                                 isSuccess = true;
                                 list.clear();
-                                mDeviceList.clear();
+                                mLocalBDNums.clear();
 
                             }
                         }
@@ -218,37 +217,51 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
 
 
-    private List<DeviceNum> mDeviceList= new ArrayList<>();
-    private List<BDNum> mNumList =new ArrayList<>();
+    private List<LocalBDNum> mLocalBDNums = new ArrayList<>();
+    private List<BDNum> mNumList =new ArrayList<>();//准备上传服务的北斗bean集合
     /**
-     * 获取设备信息
+     * 获取北斗号信息  send =1 传服务 send=0 设置sp
      */
-    private void getAllDevicesInfoFromServer() {
+    private void getAllBDInfoFromServer() {
         //   登录成功开始下载设备信息
-        Observable<BaseBean<AllDevicesBean>> observable = SLMRetrofit.getInstance().getApi().getAllDevices();
-        observable.compose(new ThreadSwitchTransformer<BaseBean<AllDevicesBean>>()).subscribe(new CallbackObserver<AllDevicesBean>() {
+        Observable<AllBDInfosBean> observable = SLMRetrofit.getInstance().getApi().getAllBDInfos();
+        observable.compose(new ThreadSwitchTransformer<AllBDInfosBean>()).subscribe(new CallbackListObserver<AllBDInfosBean>() {
             @Override
-            protected void onSucceed(AllDevicesBean bean, String desc) {
-                List<AllDevicesBean.ContentBean> beanList = bean.getContent();
-                if (beanList != null && beanList.size() > 0) {
-                    for (int i = 0; i < beanList.size(); i++) {
-                        String bdNum = beanList.get(i).getDeviceNumber();//北斗号
-                        int deviceType = beanList.get(i).getDeviceType();//设备类型
+            protected void onSucceed(AllBDInfosBean bean) {
+                if(bean!=null){
+                    if(bean.getCode()==0){
+                        //请求成功
+                        if(bean.getData()!=null && bean.getData().size()>0){
+                            //有数据
+                            for (int i = 0; i <bean.getData().size() ; i++) {
+                                AllBDInfosBean.DataBean dataBean = bean.getData().get(i);
+                                if ("1".equals(dataBean.getSend())){
+                                    BDNum num = new BDNum(dataBean.getBdNumber(), Constants.TX_JZH);
+                                    mNumList.add(num);//上传到服务接口的BdNum
+                                }else if("0".equals(dataBean.getSend())) {
+                                    SpUtils.putString(Constants.UPLOAD_JZH_NUM, dataBean.getBdNumber());
+                                }
+                                //添加到本地数据库
+                                LocalBDNum localBDNum = new LocalBDNum(dataBean.getBdNumber(), dataBean.getSend(),dataBean.getReceive());
+                                mLocalBDNums.add(localBDNum);
 
-                        DeviceNum deviceInfo = new DeviceNum(bdNum, deviceType);
-                        if(deviceType != 2) {
-                            BDNum num = new BDNum(bdNum, Constants.TX_JZH);
-                            mNumList.add(num);//上传到服务接口的BdNum
+                            }
+
                         }
-                        mDeviceList.add(deviceInfo);
+                    }else {
+                        showToast(bean.getMessage()+"");
                     }
+                }else {
+                    showToast("服务器未能获取北斗平台的信息");
                 }
             }
+
             @Override
             protected void onFailed() {
 
             }
-        });
+
+    });
     }
 
     private HttpPersonInfo translationItem(HttpRequstInfo item) {
