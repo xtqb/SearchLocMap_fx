@@ -504,7 +504,8 @@ public class BaseUtils {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                oldView.setVisibility(View.GONE);
+                oldView.setVisibility(View.INVISIBLE);
+                oldView.clearAnimation();
                 animator2.setDuration(time).start();
                 newView.setVisibility(View.VISIBLE);
             }

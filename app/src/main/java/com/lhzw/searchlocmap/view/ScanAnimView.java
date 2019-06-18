@@ -7,9 +7,12 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.SweepGradient;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.lhzw.searchlocmap.R;
@@ -26,6 +29,9 @@ public class ScanAnimView extends View {
     private Paint mThirdPaint;
     private float mInnerCircleRadius;
     private Paint textPaint;
+    private boolean isRuuning;
+    private boolean isFire;
+    private final int ROTATE = 0x0013;
 
     public ScanAnimView(@NonNull Context context) {
         this(context, null);
@@ -59,7 +65,8 @@ public class ScanAnimView extends View {
         mThirdPaint.setStrokeWidth(3);
         mThirdPaint.setColor(getResources().getColor(R.color.colorPrimary));
         matrix = new Matrix();
-
+        isRuuning = false;
+        isFire = true;
     }
 
 
@@ -72,32 +79,45 @@ public class ScanAnimView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
         mTotalHeight = getMeasuredHeight();
         mTotalWidth = getMeasuredWidth();
-        mInnerCircleRadius = mTotalWidth/2 - 20;
+        if(isFire) {
+            mInnerCircleRadius = mTotalWidth/2 - 20;
+            SweepGradient sweepGradient = new SweepGradient(mTotalWidth / 2, mTotalHeight / 2,
+                    new int[]{Color.TRANSPARENT, Color.TRANSPARENT, Color.parseColor("#aa1DF6FE")},
+                    new float[]{0f, 0.66f, 1f});
+
+            SweepGradient sweepGradient2 = new SweepGradient(mTotalWidth / 2, mTotalHeight / 2,
+                    new int[]{Color.TRANSPARENT,Color.TRANSPARENT,Color.parseColor("#ffff3800"),},//颜色渐变从前到后
+                    new float[]{0f,0.78f, 1f});//渐变度
+
+            mSectorPaint.setShader(sweepGradient);
+            mThirdPaint.setShader(sweepGradient2);
+            isFire = false;
+        }
+
         canvas.drawCircle(mTotalWidth/2, mTotalHeight/2, mInnerCircleRadius, mCirclePaint);
-        SweepGradient sweepGradient = new SweepGradient(mTotalWidth / 2, mTotalHeight / 2,
-                new int[]{Color.TRANSPARENT, Color.TRANSPARENT, Color.parseColor("#aa1DF6FE")},
-                new float[]{0f, 0.66f, 1f});
-
-        SweepGradient sweepGradient2 = new SweepGradient(mTotalWidth / 2, mTotalHeight / 2,
-                new int[]{Color.TRANSPARENT,Color.TRANSPARENT,Color.parseColor("#ffff3800"),},//颜色渐变从前到后
-                new float[]{0f,0.78f, 1f});//渐变度
-
-        mSectorPaint.setShader(sweepGradient);
-        mThirdPaint.setShader(sweepGradient2);
-
         int sectorRadius = Math.min(mTotalHeight, mTotalWidth) / 2 - 4;
         int thirdRadius = Math.min(mTotalHeight, mTotalWidth) / 2-12;
-
         matrix.setRotate(mRotateDegree, mTotalWidth/2, mTotalHeight/2);
         canvas.concat(matrix);
         canvas.drawCircle(mTotalWidth/2, mTotalHeight/2, sectorRadius, mSectorPaint);
         canvas.drawCircle(mTotalWidth/2, mTotalHeight/2, thirdRadius, mThirdPaint);
-        postDelayed(runnable, 50);
     }
+
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            postInvalidate();
+            mRotateDegree += 15;
+            if(mRotateDegree == 360) {
+                mRotateDegree = 0;
+            }
+            if(isRuuning) {
+                mHandler.sendEmptyMessageDelayed(ROTATE, 40);
+            }
+        }
+    };
 
     private Runnable runnable = new Runnable() {
         @Override
@@ -106,7 +126,7 @@ public class ScanAnimView extends View {
             if(mRotateDegree == 360) {
                 mRotateDegree = 0;
             }
-            invalidate();
+            postInvalidate();
         }
     };
 
@@ -118,5 +138,15 @@ public class ScanAnimView extends View {
     public static int dip2px(Context context, float dipValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dipValue * scale + 0.5f);
+    }
+
+    public void startAnimation(){
+        mRotateDegree = 0;
+        isRuuning = true;
+        mHandler.sendEmptyMessage(ROTATE);
+    }
+
+    public void stopAnimation(){
+        isRuuning = false;
     }
 }

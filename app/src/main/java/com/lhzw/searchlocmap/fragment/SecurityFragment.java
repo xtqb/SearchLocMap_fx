@@ -124,6 +124,7 @@ import com.lhzw.searchlocmap.utils.LogWrite;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.searchlocmap.view.HorizontalListView;
 import com.lhzw.searchlocmap.view.LocationDialog;
+import com.lhzw.searchlocmap.view.ScanAnimView;
 import com.lhzw.searchlocmap.view.ShowAlertDialogCommand;
 import com.lhzw.searchlocmap.view.ShowDialogSearch;
 import com.lhzw.searchlocmap.view.ShowHandlePlotDialog;
@@ -275,6 +276,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private Button im_upload_state_cancel;
     private RelativeLayout rl_upload_state_progress;
     private RelativeLayout rl_upload_outer;
+    private ScanAnimView scanani_view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -703,6 +705,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         rl_upload_outer = (RelativeLayout) view.findViewById(R.id.rl_upload_outer);
         rl_upload_inner.setOnClickListener(this);
         im_upload_state_cancel.setOnClickListener(this);
+        scanani_view = (ScanAnimView) view.findViewById(R.id.scanani_view);
     }
 
     @Override
@@ -1486,9 +1489,11 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 break;
             case R.id.rl_upload_inner:
                 BaseUtils.flipAnimatorXViewShow(rl_upload_outer, rl_upload_state_progress, 200);
+                scanani_view.startAnimation();
                 break;
             case R.id.im_upload_state_cancel:
                 BaseUtils.flipAnimatorXViewShow(rl_upload_state_progress, rl_upload_outer, 200);
+                scanani_view.stopAnimation();
                 break;
         }
     }
