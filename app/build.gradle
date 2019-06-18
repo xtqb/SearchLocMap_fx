@@ -1,20 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
-//    signingConfigs {
-//        key {
-//            keyAlias 'lhzw'
-//            keyPassword '123456'
-//            storeFile file('D:/Android_HECUNCUN/app/keystore')
-//            storePassword '123456'
-//        }
+    signingConfigs {
+        key {
+            keyAlias 'lhzw'
+            keyPassword '123456'
+            storeFile file('D:/Android_HECUNCUN/app/keystore')
+            storePassword '123456'
+        }
 //        key {
 //            keyAlias 'lhzw'
 //            keyPassword '123456'
 //            storeFile file('D:/keystore')
 //            storePassword '123456'
 //        }
-  //  }
+    }
     compileSdkVersion 23
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
@@ -28,10 +28,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-           // signingConfig signingConfigs.key
+            signingConfig signingConfigs.key
         }
         debug {
-            //signingConfig signingConfigs.key
+            signingConfig signingConfigs.key
         }
     }
 

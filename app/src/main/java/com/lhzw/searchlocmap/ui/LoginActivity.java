@@ -151,7 +151,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                 }.getType());
                                 values[0] = list.size() + mDeviceList.size();//总进度
                                 LogUtil.d("size : " + list.size()+"mDeviceList:"+mDeviceList.size());
-                                int delay = 40 * 100 / list.size();
+                                int delay = 40 * 100 / (list.size()+mDeviceList.size());
                                 int counter = 0;
                                 for (HttpRequstInfo info : list) {
                                     counter++;
