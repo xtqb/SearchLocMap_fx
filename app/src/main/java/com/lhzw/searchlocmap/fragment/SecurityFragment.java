@@ -271,6 +271,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private Dao<WatchLastLocTime, Integer> locTimeDao;
     private ScrollLayout mScrollLayout;
     private boolean isOpen = false;
+    private RelativeLayout rl_upload_inner;
+    private Button im_upload_state_cancel;
+    private RelativeLayout rl_upload_state_progress;
+    private RelativeLayout rl_upload_outer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -692,6 +696,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         HorizontalListView undetermined_listview = (HorizontalListView) view.findViewById(R.id.sos_horizon_listview);
         undetermined_adpter = new UndeterminedAdapter(getActivity(), undetermined_List, SecurityFragment.this);
         undetermined_listview.setAdapter(undetermined_adpter);
+
+        rl_upload_inner = (RelativeLayout) view.findViewById(R.id.rl_upload_inner);
+        im_upload_state_cancel = (Button) view.findViewById(R.id.im_upload_state_cancel);
+        rl_upload_state_progress = (RelativeLayout) view.findViewById(R.id.rl_upload_state_progress);
+        rl_upload_outer = (RelativeLayout) view.findViewById(R.id.rl_upload_outer);
+        rl_upload_inner.setOnClickListener(this);
+        im_upload_state_cancel.setOnClickListener(this);
     }
 
     @Override
@@ -1472,6 +1483,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 tatolSearch();
                 uploadDetail.dismiss();
                 uploadDetail = null;
+                break;
+            case R.id.rl_upload_inner:
+                BaseUtils.flipAnimatorXViewShow(rl_upload_outer, rl_upload_state_progress, 200);
+                break;
+            case R.id.im_upload_state_cancel:
+                BaseUtils.flipAnimatorXViewShow(rl_upload_state_progress, rl_upload_outer, 200);
                 break;
         }
     }
