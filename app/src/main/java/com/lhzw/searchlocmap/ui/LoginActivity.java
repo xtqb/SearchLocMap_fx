@@ -2,19 +2,17 @@ package com.lhzw.searchlocmap.ui;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -22,25 +20,37 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
+import com.lhzw.searchlocmap.application.SearchLocMapApplication;
+import com.lhzw.searchlocmap.bean.AllDevicesBean;
+import com.lhzw.searchlocmap.bean.DeviceNum;
+import com.lhzw.searchlocmap.bean.BaseBean;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.HttpRequstInfo;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
+import com.lhzw.searchlocmap.net.CallbackObserver;
+import com.lhzw.searchlocmap.net.SLMRetrofit;
+import com.lhzw.searchlocmap.net.ThreadSwitchTransformer;
 import com.lhzw.searchlocmap.utils.BaseUtils;
+import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.NetUtils;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.searchlocmap.view.ShowProgressDialog;
+import com.lhzw.uploadmms.BDNum;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observable;
 
 /**
  * Created by xtqb on 2019/3/29.
  */
-public class LoginActivity extends Activity implements View.OnClickListener{
+public class LoginActivity extends Activity implements View.OnClickListener {
 
     private EditText et_user_name;
     private EditText et_user_password;
@@ -53,6 +63,7 @@ public class LoginActivity extends Activity implements View.OnClickListener{
     private final int CANCEL_DIALOG = 0x0021;
     private ScrollView loginBinding;
     private ImageView im_name_del;
+    private Dao mBdNumDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +87,7 @@ public class LoginActivity extends Activity implements View.OnClickListener{
         helper = DatabaseHelper.getHelper(this);
         im_name_del.setOnClickListener(this);
         httpPerDao = helper.getHttpPerDao();
+        mBdNumDao = helper.getBdNumDao();
     }
 
     private void initView() {
@@ -93,7 +105,7 @@ public class LoginActivity extends Activity implements View.OnClickListener{
                 if (BaseUtils.isStringEmpty(et_user_name.getText().toString()) || BaseUtils.isStringEmpty(et_user_password.getText().toString())) {
                     showToast(getString(R.string.login_note));
                 } else {
-                    if(!BaseUtils.isNetConnected(this)) {
+                    if (!BaseUtils.isNetConnected(this)) {
                         showToast(getString(R.string.net_net_connect_fail));
                         return;
                     }
@@ -125,7 +137,11 @@ public class LoginActivity extends Activity implements View.OnClickListener{
                     String token = NetUtils.doLoginClient(et_user_name.getText().toString().trim(), et_user_password.getText().toString().trim());
                     if (token != null) {
                         SpUtils.putString(Constants.HTTP_TOOKEN, token);
+
+                        getAllDevicesInfoFromServer();
+
                         rev = NetUtils.doHttpGetClient(token, Constants.USER_PATH);
+
                         if (rev != null) {
                             JSONObject obj = new JSONObject(rev);
                             int code = obj.getInt("code");
@@ -133,8 +149,8 @@ public class LoginActivity extends Activity implements View.OnClickListener{
                                 String data = obj.getString("data");
                                 List<HttpRequstInfo> list = new Gson().fromJson(data, new TypeToken<List<HttpRequstInfo>>() {
                                 }.getType());
-                                values[0] = list.size();
-                                Log.e("Tag", "size : " + list.size());
+                                values[0] = list.size()+mDeviceList.size();//总进度
+                                LogUtil.d("size : " + list.size()+"mDeviceList:"+mDeviceList.size());
                                 int delay = 40 * 100 / list.size();
                                 int counter = 0;
                                 for (HttpRequstInfo info : list) {
@@ -144,8 +160,26 @@ public class LoginActivity extends Activity implements View.OnClickListener{
                                     CommonDBOperator.saveToDB(httpPerDao, translationItem(info));
                                     Thread.sleep(delay);
                                 }
+
+                                for (DeviceNum deviceNum :mDeviceList){
+                                    counter++;
+                                    values[1]=counter;
+                                    publishProgress(values);
+                                    CommonDBOperator.saveToDB(mBdNumDao, deviceNum);
+                                    //上传到服务
+                                    Thread.sleep(delay);
+                                }
+
+                                try {//上传到服务接口
+                                    SearchLocMapApplication.getInstance().getUploadService().updateBDNum(mNumList);
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+
                                 isSuccess = true;
                                 list.clear();
+                                mDeviceList.clear();
+
                             }
                         }
                     }
@@ -182,12 +216,46 @@ public class LoginActivity extends Activity implements View.OnClickListener{
         }
     }
 
+
+
+    private List<DeviceNum> mDeviceList= new ArrayList<>();
+    private List<BDNum> mNumList =new ArrayList<>();
+    /**
+     * 获取设备信息
+     */
+    private void getAllDevicesInfoFromServer() {
+        //   登录成功开始下载设备信息
+        Observable<BaseBean<AllDevicesBean>> observable = SLMRetrofit.getInstance().getApi().getAllDevices();
+        observable.compose(new ThreadSwitchTransformer<BaseBean<AllDevicesBean>>()).subscribe(new CallbackObserver<AllDevicesBean>() {
+            @Override
+            protected void onSucceed(AllDevicesBean bean, String desc) {
+                List<AllDevicesBean.ContentBean> beanList = bean.getContent();
+                if (beanList != null && beanList.size() > 0) {
+                    for (int i = 0; i < beanList.size(); i++) {
+                        String bdNum = beanList.get(i).getDeviceNumber();//北斗号
+                        int deviceType = beanList.get(i).getDeviceType();//设备类型
+
+                        DeviceNum deviceInfo = new DeviceNum(bdNum, deviceType);
+
+                        BDNum num = new BDNum(bdNum, Constants.TX_JZH);
+                        mNumList.add(num);//上传到服务接口的BdNum
+                        mDeviceList.add(deviceInfo);
+                    }
+                }
+            }
+            @Override
+            protected void onFailed() {
+
+            }
+        });
+    }
+
     private HttpPersonInfo translationItem(HttpRequstInfo item) {
         HttpPersonInfo bean = null;
-        if(item != null){
+        if (item != null) {
             bean = new HttpPersonInfo();
             bean.setDeviceNumbers(item.getDeviceNumbers());
-            if(item.getDevice() != null) {
+            if (item.getDevice() != null) {
                 bean.setDeviceType(item.getDevice().getDeviceType());
             } else {
                 bean.setDeviceType(0);

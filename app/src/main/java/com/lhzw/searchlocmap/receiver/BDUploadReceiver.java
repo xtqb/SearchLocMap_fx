@@ -12,6 +12,7 @@ import android.util.Log;
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.bdsignal.BDSignal;
+import com.lhzw.searchlocmap.bean.DeviceNum;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.MessageInfoIBean;
 import com.lhzw.searchlocmap.constants.Constants;
@@ -47,6 +48,7 @@ public class BDUploadReceiver extends BroadcastReceiver {
     private static boolean isRunning = false;
     private Context mContext;
     private static float[] values = new float[10];
+    private Dao<DeviceNum, Integer> mBdNumDao;
 
     @Override
     public void onReceive(Context mContext, Intent intent) {
@@ -54,6 +56,7 @@ public class BDUploadReceiver extends BroadcastReceiver {
         helper = DatabaseHelper.getHelper(mContext);
         mesDao = helper.getMesgInfoDao();
         httpDao = helper.getHttpPerDao();
+        mBdNumDao = helper.getBdNumDao();
         this.mContext = mContext;
         taskQueue.add(intent);
         if (!isRunning) {
@@ -76,28 +79,58 @@ public class BDUploadReceiver extends BroadcastReceiver {
                 taskQueue.remove(0);
                 if (intent.getAction().equals(Constants.ACTION_MESSAGE)) {
                     if (intent.getIntExtra("bdType", -1) == 2) {
-                        String num = intent.getStringExtra("bdNum");
-                        int msg_Id = intent.getIntExtra("msg_Id", -1);
-                        List<HttpPersonInfo> dipList = CommonDBOperator.queryByKeys(httpDao, "id", msg_Id + "");
-                        if (dipList != null && dipList.size() > 0) {
-                            Log.e("Tag", "searchLocMap receive message  type 2  " + num);
-                            try {
-                                String str = intent.getStringExtra("result");
-                                MessageInfoIBean item = new MessageInfoIBean(num, System.currentTimeMillis(), str, ShortMessUploadActivity.MESSAGE_RECEIVE, Constants.MESSAGE_UNREAD, msg_Id);
-                                CommonDBOperator.saveToDB(mesDao, item);
-                                Intent mmsIntent = new Intent(Constants.BD_Mms_ACTION);
-                                mmsIntent.putExtra("ID", msg_Id);
-                                mContext.sendBroadcast(mmsIntent);
-                                showNotifcationInfo(mContext, dipList.get(0).getRealName(), R.drawable.icon_chat);
-                                //收到消息  更新完信息数据库,通知最近联系人列表刷新
-                                EventBusBean eventBusBean = new EventBusBean();
-                                eventBusBean.setCode(Constants.EVENT_CODE_REFRESH_MSG_LIST);
-                                EventBus.getDefault().post(eventBusBean);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            dipList.clear();
+                        //TODO 此处要消息分清是来自平台还是手持  平台按照msg_id查的是平台自己的信息即发送者的信息  目前是没有问题的
+                        // TODO 手持机的话要查询北斗号确定发送者的信息  并在本机中将消息保存到发送人的名下(messageId 为发送人   如根据北斗号查不到此人的信息 则属于陌生消息 存表的话msg_id 为北斗号)
+                        String num = intent.getStringExtra("bdNum");//发送者的北斗号
+                        int msg_Id = intent.getIntExtra("msg_Id", -1);//平台的人的ID
+                        int platform = intent.getIntExtra("platform", -1);//平台类别
+                        String str = intent.getStringExtra("result");//内容
+                        List<DeviceNum> deviceNums = CommonDBOperator.queryByKeys(mBdNumDao, "num", num);
+
+                        int type=0;//设备类型  0平台  1手持机  2手表
+                        if(deviceNums !=null && deviceNums.size()>0){
+                            type  = deviceNums.get(0).getTx_type();
                         }
+
+                        //消息来源于平台
+                        if( type == 0 ){
+                            List<HttpPersonInfo> dipList = CommonDBOperator.queryByKeys(httpDao, "id", msg_Id + "");//这个查到的是平台发的消息
+                            if (dipList != null && dipList.size() > 0) {
+                                Log.e("Tag", "searchLocMap receive message  type 2  " + num);
+                                    MessageInfoIBean item = new MessageInfoIBean(num, System.currentTimeMillis(), str, ShortMessUploadActivity.MESSAGE_RECEIVE, Constants.MESSAGE_UNREAD, msg_Id);
+                                    CommonDBOperator.saveToDB(mesDao, item);
+                                    Intent mmsIntent = new Intent(Constants.BD_Mms_ACTION);
+                                    mmsIntent.putExtra("ID", msg_Id);
+                                    mContext.sendBroadcast(mmsIntent);
+                                    showNotifcationInfo(mContext, dipList.get(0).getRealName(), R.drawable.icon_chat);
+                                    dipList.clear();
+                            }
+                        }else {//消息来源于手持机
+                            List<HttpPersonInfo> personInfos = CommonDBOperator.queryByKeys(httpDao, "deviceNumbers", num);
+                            if(personInfos!=null&&personInfos.size()>0){//发送人在本地的数据库里
+                                HttpPersonInfo personInfo = personInfos.get(0);
+                                MessageInfoIBean msgBean = new MessageInfoIBean(num, System.currentTimeMillis(), str, ShortMessUploadActivity.MESSAGE_RECEIVE, Constants.MESSAGE_UNREAD, personInfo.getId());
+                                CommonDBOperator.saveToDB(mesDao,msgBean);//保存为发送人的消息
+                                Intent mmsIntent = new Intent(Constants.BD_Mms_ACTION);
+                                mmsIntent.putExtra("ID", personInfo.getId());
+                                mContext.sendBroadcast(mmsIntent);
+                                showNotifcationInfo(mContext, personInfo.getRealName(), R.drawable.icon_chat);
+                                personInfos.clear();
+                            }else {//发送人不在数据库
+                                //todo 发送人不在人员表 则新增人员到表里
+                                MessageInfoIBean msgBean = new MessageInfoIBean(num, System.currentTimeMillis(), str, ShortMessUploadActivity.MESSAGE_RECEIVE, Constants.MESSAGE_UNREAD, Integer.parseInt(num));
+                                CommonDBOperator.saveToDB(mesDao,msgBean);//保存为发送人的消息
+                                Intent mmsIntent = new Intent(Constants.BD_Mms_ACTION);
+                                mmsIntent.putExtra("ID", num);
+                                mContext.sendBroadcast(mmsIntent);
+                                showNotifcationInfo(mContext,num, R.drawable.icon_chat);
+                            }
+
+                        }
+                        //收到消息  更新完信息数据库,通知最近联系人列表刷新
+                        EventBusBean eventBusBean = new EventBusBean();
+                        eventBusBean.setCode(Constants.EVENT_CODE_REFRESH_MSG_LIST);
+                        EventBus.getDefault().post(eventBusBean);
                     }
                 } else if (intent.getAction().equals(strRevSendBroadcastActionName)) {
                     if (intent.getExtras().getString(Instruction).equals(mDBPOW) || intent.getExtras().getString(Instruction).equals(BDSCK)) {

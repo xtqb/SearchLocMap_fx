@@ -121,7 +121,7 @@
     <string name="settings_back">系统退出</string>
     <string name="notify_note">此人员未录入本系统，未在地图上进行定位显示。</string>
     <string name="notify_note_cancel">我知道了</string>
-    <string name="dialog_note_command_title">请选择要发送的指令：</string>
+    <string name="dialog_note_command_title">请选择要发送的指令</string>
     <string name="dialog_note_command_concentrate">集结</string>
     <string name="dialog_note_command_action">行动</string>
     <string name="notify_note_command_cancel">取消</string>

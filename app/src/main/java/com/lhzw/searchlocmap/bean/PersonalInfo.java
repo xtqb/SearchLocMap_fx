@@ -6,19 +6,28 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.io.Serializable;
 
 @DatabaseTable(tableName = "PersonalInfo")
-// 数据库表的名字
+// 数据库表的名字 手表人员信息
 public class PersonalInfo implements Serializable {
     /*
      * 离线：0 在线：1 sos：2
 	 */
 
     private static final long serialVersionUID = 1L;
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
+    }
+
     @DatabaseField(generatedId = true)
     private int Id;
     @DatabaseField(columnName = "markerId")
     private int markerId;
     @DatabaseField(columnName = "num")
-    private String num;
+    private String num;//注册码
     @DatabaseField(columnName = "name")
     private String name;
     @DatabaseField(columnName = "age")

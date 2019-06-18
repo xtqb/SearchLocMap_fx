@@ -21,6 +21,8 @@ import com.lhzw.uploadmms.BDUploadEvent;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 
+import java.lang.ref.WeakReference;
+
 public class SearchLocMapApplication extends Application implements View.OnClickListener{
     private static SearchLocMapApplication instance;
     private BDUploadEvent uploadEvent;
@@ -28,11 +30,13 @@ public class SearchLocMapApplication extends Application implements View.OnClick
     private OnDipperCancelListener cancelListener;
     private Context mContext;
     private Intent mIntent;
-
+    private static WeakReference<Context> mContextWeakReference;
     @Override
     public void onCreate() {
         super.onCreate();
         instance = SearchLocMapApplication.this;
+
+        mContextWeakReference = new WeakReference<>(getApplicationContext());
         Logger.addLogAdapter(new AndroidLogAdapter());//添加日志库
     }
 
@@ -43,6 +47,9 @@ public class SearchLocMapApplication extends Application implements View.OnClick
         Log.e("Service", "state = "+getApplicationContext().bindService(mIntent, serviceConnect, Context.BIND_AUTO_CREATE));
     }
 
+    public static Context getContext(){
+        return mContextWeakReference.get();
+    }
     public static SearchLocMapApplication getInstance(){
         return instance;
     }

@@ -55,6 +55,9 @@
     <color name="tra_gray">#aa000000</color>
     <color name="gray_lite">#c5c5c5</color>
     <color name="taobao_black">#333333</color>
+
+    <color name="color_F78235">#F78235</color>
+    <color name="color_F78434">#F78434</color>
     <!-- 红 -->
     <color name="red">#FF0000</color>
     <!-- 浅红 -->
@@ -135,5 +138,5 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="color_blue">#00edff</color>
-
+    <color name="text_normal_gray">#606060</color>
 </resources>

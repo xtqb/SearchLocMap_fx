@@ -145,6 +145,7 @@
             android:windowSoftInputMode="stateHidden|adjustResize"></activity>
         <!--联系人页-->
         <activity android:name=".ui.CommunicationListActivity"/>
+        <activity android:name=".ui.CommandStateActivity"/>
 
         <receiver android:name="com.lhzw.searchlocmap.receiver.WatchSignalReceiver">
             <intent-filter>

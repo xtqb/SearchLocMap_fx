@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
-
 import com.gtmap.common.GT_GeoArithmetic;
 import com.gtmap.util.GeoPoint;
 import com.j256.ormlite.dao.Dao;
@@ -22,12 +21,15 @@ import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
+import com.lhzw.searchlocmap.event.EventBusBean;
 import com.lhzw.searchlocmap.ui.MainActivity;
 import com.lhzw.searchlocmap.utils.BDUtils;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.LogWrite;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.uploadmms.UploadInfoBean;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -71,7 +73,6 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 	}
 
 	private void initDB(ProtocolParser parser) {
-		// TODO Auto-generated method stub
 		byte[] typeKey = parser.getCmdKey();
 //		if (SpUtils.getBoolean(SPConstants.COMMON_SWITCH, false)                  // 搜索状态停止，禁止接收搜索信息
 //				|| typeKey[0] == ((byte) 0x12) || typeKey[0] == ((byte) 0xA1) || typeKey[0] == ((byte) 0x19)) {
@@ -111,6 +112,16 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 				}
 				showNotifcationInfo(mContext, register_num, R.drawable.icon_sos2, "SOS");
 				break;
+                case (byte) 0x19://TODO 指令反馈,刷新列表
+                    //先更新数据库的数据
+					list.get(0).setFeedback(Constants.COMMAND_CONFIRMED);
+                    CommonDBOperator.updateItem(persondao,list.get(0));//首先更新数据库数据
+
+                    //发消息更新列表
+                    EventBusBean eventBusBean = new EventBusBean();
+                    eventBusBean.setCode(Constants.EVENT_CODE_REFRESH_COMMAND_STATE);
+                    EventBus.getDefault().post(eventBusBean);
+                    return;
 			}
 			//比较数据大小
 			double distance = 0;

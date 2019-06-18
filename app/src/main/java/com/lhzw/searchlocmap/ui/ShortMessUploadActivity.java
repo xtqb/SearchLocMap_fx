@@ -153,7 +153,7 @@ public class ShortMessUploadActivity extends Activity implements
 		// TODO Auto-generated method stub
 		String latLon = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + ","
 				+ SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
-		MessageInfoIBean item = new MessageInfoIBean(dipper_num, System.currentTimeMillis(), body, MESSAGE_SEND, Constants.MESSAGE_READ, ID);
+		MessageInfoIBean item = new MessageInfoIBean(dipper_num, System.currentTimeMillis(), body, MESSAGE_SEND, Constants.MESSAGE_READ, ID);//ID为表中接收人ID
 		CommonDBOperator.saveToDB(mesDao, item);
 		body  = head + body;
 		UploadInfoBean item1 = new UploadInfoBean(Constants.TX_JZH, TX_MMS,
@@ -171,7 +171,7 @@ public class ShortMessUploadActivity extends Activity implements
 		if(bdNum != null) {
 			UploadInfoBean item3 = new UploadInfoBean(Constants.TX_BJ, TX_MMS,
 					System.currentTimeMillis(), body, System.currentTimeMillis()+"", 1 + "", latLon, SpUtils.getLong(
-					SPConstants.LOC_TIME, System.currentTimeMillis()), 1, bdNum, 2, -1);
+					SPConstants.LOC_TIME, System.currentTimeMillis()), 1, bdNum, 2, -1);//接收者的北斗号
 			bdUtils.uploadBena(item3);
 			item3 = null;
 		}

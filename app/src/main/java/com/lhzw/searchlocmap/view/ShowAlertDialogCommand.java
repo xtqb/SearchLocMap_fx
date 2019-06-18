@@ -14,6 +14,7 @@ import com.lhzw.searchlocmap.R;
 public class ShowAlertDialogCommand extends AlertDialog {
 	private TextView tv_command_cancel;
 	private ListView listview;
+	private TextView mTvState;
 
 	private ShowAlertDialogCommand(Context context, int theme) {
 		super(context, theme);
@@ -40,11 +41,13 @@ public class ShowAlertDialogCommand extends AlertDialog {
 	private void init() {
 		setCancelable(false);
 		tv_command_cancel = (TextView) findViewById(R.id.tv_command_cancel);
+		mTvState = (TextView) findViewById(R.id.tv_state);
 		listview = (ListView) findViewById(R.id.listview);
 	}
 
 	public void setListener(View.OnClickListener listener) {
 		tv_command_cancel.setOnClickListener(listener);
+		mTvState.setOnClickListener(listener);
 	}
 
 	public void setAdapter (BaseAdapter adapter) {

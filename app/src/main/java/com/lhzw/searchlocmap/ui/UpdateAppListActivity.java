@@ -204,7 +204,7 @@ public class UpdateAppListActivity extends Activity implements View.OnClickListe
                     tv_map_update.setVisibility(View.GONE);
                     mRlSearchMapNew.setVisibility(View.GONE);
                 } else {//有新版本
-                   tv_map_new_version.setText("version:" + versionNmaes[0]+"\t最新版本号");
+                   tv_map_new_version.setText("version:\t" + versionNmaes[0]+"  最新版本号");
                    tv_map_new_version.setVisibility(View.VISIBLE);
                     tv_map_update.setVisibility(View.VISIBLE);
                     mRlSearchMapNew.setVisibility(View.VISIBLE);
@@ -215,7 +215,7 @@ public class UpdateAppListActivity extends Activity implements View.OnClickListe
                    tv_bd_new_version.setVisibility(View.GONE);
                     mRlBdServiceNew.setVisibility(View.GONE);
                 } else {
-                    tv_bd_new_version.setText("version\t" + versionNmaes[1]+"\t最新版本号");
+                    tv_bd_new_version.setText("version:\t" + versionNmaes[1]+"  最新版本号");
                     tv_bd_new_version.setVisibility(View.VISIBLE);
                     tv_bd_update.setVisibility(View.VISIBLE);
                     mRlBdServiceNew.setVisibility(View.VISIBLE);
