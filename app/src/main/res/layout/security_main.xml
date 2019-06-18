@@ -322,7 +322,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="44dp"
                     android:background="@drawable/bg_search_conner_top_rectangle"
-                    android:focusable="false">
+                    android:focusable="false"
+                    android:onClick="onClick">
 
                     <TextView
                         android:id="@+id/tv_bd_signal"
@@ -373,10 +374,162 @@
                 <ListView
                     android:id="@+id/scroll_listview"
                     android:layout_width="match_parent"
-                    android:layout_height="350dp"
-                    android:layout_below="@+id/ll_bdsignal"></ListView>
+                    android:layout_height="270dp"
+                    android:layout_below="@+id/ll_bdsignal"
+                    android:background="@color/awhite"
+                    android:divider="@color/agray_background"
+                    android:dividerHeight="0.25dp"
+                    android:scrollbars="none"></ListView>
+
+                <View
+                    android:id="@+id/splite2"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_below="@+id/scroll_listview"
+                    android:background="@color/btn_green_unabled" />
+
+                <RelativeLayout
+                    android:id="@+id/rl_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:layout_below="@+id/splite2"
+                    android:background="@color/awhite">
+
+                    <TextView
+                        android:id="@+id/tv_search_state"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="25dp"
+                        android:text="搜索已完成"
+                        android:textColor="@color/black"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tv_serach_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/tv_search_state"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_toRightOf="@+id/tv_search_state"
+                        android:text="2019-12-28"
+                        android:textColor="@color/gray2"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tv_serach_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/tv_serach_date"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_toRightOf="@+id/tv_serach_date"
+                        android:text="12:28:28"
+                        android:textColor="@color/gray_lite"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <View
+                    android:id="@+id/splite3"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_below="@+id/rl_state"
+                    android:background="@color/btn_green_unabled" />
+
+                <RelativeLayout
+                    android:id="@+id/rl_upload_outer"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:layout_below="@+id/splite3"
+                    android:background="@color/awhite">
+
+                    <RelativeLayout
+                        android:id="@+id/rl_upload_inner"
+                        android:layout_width="130dp"
+                        android:layout_height="40dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="30dp"
+                        android:background="@drawable/bg_selector_conner_tv">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:text="@string/persons_search"
+                            android:textColor="@color/white"
+                            android:textSize="17sp" />
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="20dp"
+                            android:background="@drawable/icon_upload_portait" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:id="@+id/rl_upload_time_select"
+                        android:layout_width="58dp"
+                        android:layout_height="40dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toRightOf="@+id/rl_upload_inner"
+                        android:background="@drawable/bg_selector_upload_time" />
+
+                    <ImageView
+                        android:id="@+id/rl_upload_history"
+                        android:layout_width="58dp"
+                        android:layout_height="40dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toRightOf="@+id/rl_upload_time_select"
+                        android:background="@drawable/bg_selector_upload_history" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rl_upload_state_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:layout_below="@+id/splite3"
+                    android:background="@color/awhite"
+                    android:visibility="gone">
+
+                    <com.lhzw.searchlocmap.view.ScanAnimView
+                        android:id="@+id/scanani_view"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="40dp" />
+
+                    <TextView
+                        android:id="@+id/tv_upload_state"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="54dp"
+                        android:text="进行中"
+                        android:textColor="@color/white"
+                        android:textSize="11sp" />
+
+                    <Button
+                        android:id="@+id/im_upload_state_cancel"
+                        android:layout_width="47dp"
+                        android:layout_height="47dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="25dp"
+                        android:layout_toRightOf="@+id/scanani_view"
+                        android:background="@drawable/bg_selector_upload_cancel"
+                        android:text="取消\n监控"
+                        android:textColor="@color/white"
+                        android:textSize="11sp" />
 
 
+                </RelativeLayout>
             </RelativeLayout>
         </com.lhzw.searchlocmap.scrolllayout.content.content.ContentScrollView>
     </com.lhzw.searchlocmap.scrolllayout.content.ScrollLayout>

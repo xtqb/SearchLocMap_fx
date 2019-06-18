@@ -288,9 +288,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private void initScrollView() {
         /**设置 setting*/
         mScrollLayout.setMinOffset(0);
-        mScrollLayout.setMaxOffset(1300);
+        mScrollLayout.setMaxOffset(1400);
         mScrollLayout.setExitOffset(0);
         mScrollLayout.setIsSupportExit(true);
+        mScrollLayout.setEnable(false);
         mScrollLayout.setAllowHorizontalScroll(false);
         mScrollLayout.setOnScrollChangedListener(this);
         mScrollLayout.setToExit();

@@ -1,5 +1,7 @@
 package com.lhzw.searchlocmap.utils;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.BDManager;
 import android.content.Context;
@@ -11,6 +13,8 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
 import com.gtmap.util.GeoPoint;
@@ -485,8 +489,37 @@ public class BaseUtils {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
         return name;
+    }
+
+    public static void flipAnimatorXViewShow(final View oldView, final View newView, final long time) {
+        final ObjectAnimator animator1 = ObjectAnimator.ofFloat(oldView, "rotationX", 0, 90);
+        final ObjectAnimator animator2 = ObjectAnimator.ofFloat(newView, "rotationX", -90, 0);
+        animator2.setInterpolator(new OvershootInterpolator(2.0f));
+        animator1.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                oldView.setVisibility(View.GONE);
+                animator2.setDuration(time).start();
+                newView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        animator1.setDuration(time).start();
     }
 }
 

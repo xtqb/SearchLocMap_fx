@@ -38,14 +38,17 @@ public class ContentScrollView extends ScrollView {
 
     public ContentScrollView(Context context) {
         super(context);
+        setVerticalScrollBarEnabled(false);
     }
 
     public ContentScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setVerticalScrollBarEnabled(false);
     }
 
     public ContentScrollView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        setVerticalScrollBarEnabled(false);
     }
 
     public void setOnScrollChangeListener(OnScrollChangedListener listener) {
