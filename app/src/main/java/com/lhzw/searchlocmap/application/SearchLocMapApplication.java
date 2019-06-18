@@ -38,6 +38,7 @@ public class SearchLocMapApplication extends Application implements View.OnClick
 
         mContextWeakReference = new WeakReference<>(getApplicationContext());
         Logger.addLogAdapter(new AndroidLogAdapter());//添加日志库
+        bindService();
     }
 
     public void bindService(){
@@ -124,13 +125,6 @@ public class SearchLocMapApplication extends Application implements View.OnClick
     };
 
     public BDUploadEvent getUploadService(){
-//        if(uploadEvent == null) {
-//            Intent intent = new Intent();
-//            intent.setAction("com.lhzw.uploadmms.service.UPLOADMMS");
-//            intent.setPackage("com.lhzw.uploadmms");
-//            Log.e("Service", "state = "+getApplicationContext().bindService(intent, serviceConnect, Context.BIND_AUTO_CREATE));
-//            return getUploadService();
-//        }
         return uploadEvent;
     }
 

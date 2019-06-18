@@ -149,7 +149,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                 String data = obj.getString("data");
                                 List<HttpRequstInfo> list = new Gson().fromJson(data, new TypeToken<List<HttpRequstInfo>>() {
                                 }.getType());
-                                values[0] = list.size()+mDeviceList.size();//总进度
+                                values[0] = list.size() + mDeviceList.size();//总进度
                                 LogUtil.d("size : " + list.size()+"mDeviceList:"+mDeviceList.size());
                                 int delay = 40 * 100 / list.size();
                                 int counter = 0;
@@ -169,13 +169,13 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                     //上传到服务
                                     Thread.sleep(delay);
                                 }
-
                                 try {//上传到服务接口
-                                    SearchLocMapApplication.getInstance().getUploadService().updateBDNum(mNumList);
+                                    if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
+                                        SearchLocMapApplication.getInstance().getUploadService().updateBDNum(mNumList);
+                                    }
                                 } catch (RemoteException e) {
                                     e.printStackTrace();
                                 }
-
                                 isSuccess = true;
                                 list.clear();
                                 mDeviceList.clear();
@@ -236,9 +236,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                         int deviceType = beanList.get(i).getDeviceType();//设备类型
 
                         DeviceNum deviceInfo = new DeviceNum(bdNum, deviceType);
-
-                        BDNum num = new BDNum(bdNum, Constants.TX_JZH);
-                        mNumList.add(num);//上传到服务接口的BdNum
+                        if(deviceType != 2) {
+                            BDNum num = new BDNum(bdNum, Constants.TX_JZH);
+                            mNumList.add(num);//上传到服务接口的BdNum
+                        }
                         mDeviceList.add(deviceInfo);
                     }
                 }

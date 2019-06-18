@@ -81,6 +81,7 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
 			ConnectionSource connectionsource, int oldVersion, int newVersion) {
 		try {
 			if(oldVersion < 2) {
+				TableUtils.createTable(connectionSource, DeviceNum.class);
 				getPersonalInfoDao().executeRawNoArgs("ALTER TABLE PersonalInfo ADD COLUMN feedback INTEGER");
 			}
 			/*
