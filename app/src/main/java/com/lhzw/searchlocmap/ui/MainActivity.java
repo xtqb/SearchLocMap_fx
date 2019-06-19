@@ -157,7 +157,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        Log.e("Tag", "sdafjklsaj");
         switch (v.getId()) {
             case R.id.ll_security:
                 if (currentPage == 0) {

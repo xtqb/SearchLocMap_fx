@@ -233,6 +233,12 @@ public class BaseUtils {
         return timeStr;
     }
 
+    public static String formatTime(long time){
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  HH:mm:ss");
+        String timeStr = sdf.format(time);
+        return timeStr;
+    }
+
     public static String[] obtainDate(Context mContext) {
         String[] date = new String[2];
         try {

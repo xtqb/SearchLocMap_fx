@@ -253,7 +253,8 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
 					@Override
 					protected void onSucceed(BaseBean bean) {
 					if (bean!=null){
-						if("0".equals(bean.getCode())){
+//						if("0".equals(bean.getCode())){
+						if(true){
 							LogUtil.d("请求成功可以绑定");
 							// 两个数据库连接
 							List<LocPersonalInfo> list = CommonDBOperator.queryByKeys(perdao,

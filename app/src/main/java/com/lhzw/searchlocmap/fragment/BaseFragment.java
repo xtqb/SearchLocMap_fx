@@ -51,6 +51,8 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
 
     protected abstract void updateFeedback(int sendID);
 
+    protected abstract void refleshBdSignal(Intent intent);
+
     private ShowMesureDisDialog mesureDialog;
 
     @Override
@@ -144,6 +146,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
         filter.addAction(Constants.ACTION_SYNC_FIRELINE);
         filter.addAction(Constants.BD_Mms_ACTION);
         filter.addAction(Constants.ACTION_FEEDBACK);
+        filter.addAction(Constants.BD_SIGNAL_LIST);
         receiver = new SoilderInfoChangeReceiver();
         getActivity().registerReceiver(receiver, filter);
     }
@@ -172,6 +175,8 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
                 initMessageNum();
             } else if(intent.getAction().equals(Constants.ACTION_FEEDBACK)){
                 updateFeedback(intent.getIntExtra("sendID", -1));
+            } else if(intent.getAction().equals(Constants.BD_SIGNAL_LIST)) {
+                refleshBdSignal(intent);
             }
         }
     }

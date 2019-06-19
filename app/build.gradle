@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
+//    signingConfigs {
 
 //        key {
 //            keyAlias 'lhzw'
@@ -9,7 +9,7 @@ android {
 //            storeFile file('D:/keystore')
 //            storePassword '123456'
 //        }
-    }
+//    }
     compileSdkVersion 23
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
@@ -20,14 +20,14 @@ android {
         versionName "2.1.0e"
     }
     buildTypes {
-//        release {
-//            minifyEnabled false
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//            signingConfig signingConfigs.key
-//        }
-//        debug {
-//            signingConfig signingConfigs.key
-//        }
+////        release {
+////            minifyEnabled false
+////            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+////            signingConfig signingConfigs.key
+////        }
+////        debug {
+////            signingConfig signingConfigs.key
+////        }
     }
 
     sourceSets {

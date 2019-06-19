@@ -18,7 +18,7 @@
  *
  */
 
-package com.lhzw.searchlocmap.scrolllayout.content;
+package com.lhzw.searchlocmap.scrolllayout;
 
 import android.app.Activity;
 import android.content.Context;
@@ -38,7 +38,7 @@ import android.widget.FrameLayout;
 import android.widget.Scroller;
 
 import com.lhzw.searchlocmap.R;
-import com.lhzw.searchlocmap.scrolllayout.content.content.ContentScrollView;
+import com.lhzw.searchlocmap.scrolllayout.content.ContentScrollView;
 
 /**
  * Layout that can scroll down to a max offset and can tell the scroll progress by

@@ -1,0 +1,232 @@
+package com.lhzw.searchlocmap.adapter;
+
+import android.content.Context;
+import android.support.v4.app.FragmentActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.j256.ormlite.dao.Dao;
+import com.lhzw.searchlocmap.R;
+import com.lhzw.searchlocmap.bean.PersonalInfo;
+import com.lhzw.searchlocmap.bean.WatchLastLocTime;
+import com.lhzw.searchlocmap.constants.Constants;
+import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
+import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
+import com.lhzw.searchlocmap.utils.BaseUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class SrollAdapter extends BaseAdapter{
+    private Context mContext;
+    private List<PersonalInfo> sosList;
+    private List<PersonalInfo> commonList;
+    private List<PersonalInfo> undetermined_List;
+    private List<Bean> list = new ArrayList<>();
+    private final Dao<WatchLastLocTime, Integer> locTimeDao;
+    private TextView tv_per_num;
+    private TextView tv_update_num;
+    private TextView tv_sos_num;
+    private int per_num;
+    private int sos_num;
+    private int update_num;
+    protected ViewHolder holder;
+
+    public SrollAdapter(Context mContext, List<PersonalInfo> sosList, List<PersonalInfo> commonList, List<PersonalInfo> undetermined_List, TextView tv_per_num, TextView tv_update_num, TextView tv_sos_num){
+        this.mContext = mContext;
+        this.sosList = sosList;
+        this.commonList = commonList;
+        this.undetermined_List = undetermined_List;
+        this.tv_per_num = tv_per_num;
+        this.tv_sos_num = tv_sos_num;
+        this.tv_update_num = tv_update_num;
+        locTimeDao = DatabaseHelper.getHelper(mContext).getLastLocTimeDao();
+        initData();
+    }
+
+
+    private void initData(){
+        if(list.size() > 0) {
+            list.clear();
+        }
+        per_num = sosList.size() + commonList.size() + undetermined_List.size();
+        sos_num = sosList.size();
+        update_num = 0;
+        List<WatchLastLocTime> locTimelist = CommonDBOperator.getList(locTimeDao);
+        Map<String, Long> locTimeMap = null;
+        if(locTimelist != null && locTimelist.size() > 0) {
+            locTimeMap = new HashMap<>();
+            for(WatchLastLocTime bean : locTimelist) {
+                locTimeMap.put(bean.getNum(), bean.getLocTime());
+            }
+        }
+        for(PersonalInfo item : sosList) {
+            Bean bean = null;
+            if(locTimeMap != null && locTimeMap.get(item.getNum()) != null) {
+                bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > locTimeMap.get(item.getNum()));
+                if(item.getLocTime() > locTimeMap.get(item.getNum())) {
+                    update_num += 1;
+                }
+            } else {
+                bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > 0);
+                if(item.getLocTime() > 0) {
+                    update_num += 1;
+                }
+            }
+            list.add(bean);
+        }
+
+        for(PersonalInfo item : commonList) {
+            Bean bean = null;
+            if(locTimeMap != null && locTimeMap.get(item.getNum()) != null) {
+                bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, item.getLocTime() > locTimeMap.get(item.getNum()));
+                if(item.getLocTime() > locTimeMap.get(item.getNum())) {
+                    update_num += 1;
+                }
+            } else {
+                bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, item.getLocTime() > 0);
+                if(item.getLocTime() > 0) {
+                    update_num += 1;
+                }
+            }
+            list.add(bean);
+        }
+
+        for(PersonalInfo item : undetermined_List) {
+            Bean bean = null;
+            bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), item.getState1().equals(Constants.PERSON_SOS) , false);
+            if(item.getState1().equals(Constants.PERSON_SOS)) {
+                sos_num += 1;
+            }
+            list.add(bean);
+        }
+        if(locTimelist != null && locTimelist.size() > 0) {
+            locTimelist.clear();
+            locTimeMap.clear();
+        }
+        tv_per_num.setText(per_num + "");
+        tv_sos_num.setText(sos_num + "");
+        tv_update_num.setText(update_num + "");
+    }
+
+    public void refleshView(){
+        initData();
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getCount() {
+        return list.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return null;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return 0;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if(convertView == null) {
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.item_srollview, null);
+            holder = new ViewHolder(convertView);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        holder.tv_num.setText(position + 1 + "");
+        if(position < 9) {
+            holder.tv_num.setPadding(17,1,17,1);
+        } else {
+            holder.tv_num.setPadding(6,1,6,1);
+
+        }
+        holder.tv_name.setText(list.get(position).getName());
+        holder.tv_bdnum.setText(list.get(position).getNum());
+        holder.tv_time.setText(list.get(position).getTime());
+        holder.im_sos.setVisibility(list.get(position).isSos ? View.VISIBLE: View.INVISIBLE);
+        holder.im_update.setBackgroundResource(list.get(position).isUpdate ? R.drawable.icon_update_yes : R.drawable.icon_update_no) ;
+        return convertView;
+    }
+
+    protected static class ViewHolder{
+        private ViewHolder(View view){
+            ButterKnife.bind(this, view);
+        }
+        @BindView(R.id.tv_num) TextView tv_num;
+        @BindView(R.id.tv_name) TextView tv_name;
+        @BindView(R.id.tv_bdnum) TextView tv_bdnum;
+        @BindView(R.id.tv_time)  TextView tv_time;
+        @BindView(R.id.im_sos) ImageView im_sos;
+        @BindView(R.id.im_update) ImageView im_update;
+    }
+
+    private class Bean{
+        private String name;
+        private String num;
+        private String time;
+        private boolean isSos;
+        private boolean isUpdate;
+
+        public Bean(String name, String num, String time, boolean isSos, boolean isUpdate) {
+            this.name = name;
+            this.num = num;
+            this.time = time;
+            this.isSos = isSos;
+            this.isUpdate = isUpdate;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getNum() {
+            return num;
+        }
+
+        public String getTime() {
+            return time;
+        }
+
+        public boolean isSos() {
+            return isSos;
+        }
+
+        public boolean isUpdate() {
+            return isUpdate;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setNum(String num) {
+            this.num = num;
+        }
+
+        public void setTime(String time) {
+            this.time = time;
+        }
+
+        public void setSos(boolean sos) {
+            isSos = sos;
+        }
+
+        public void setUpdate(boolean update) {
+            isUpdate = update;
+        }
+    }
+}

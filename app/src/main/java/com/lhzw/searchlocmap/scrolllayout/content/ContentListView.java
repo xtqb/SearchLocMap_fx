@@ -18,7 +18,7 @@
  *
  */
 
-package com.lhzw.searchlocmap.scrolllayout.content.content;
+package com.lhzw.searchlocmap.scrolllayout.content;
 
 import android.content.Context;
 import android.os.Looper;
@@ -30,7 +30,7 @@ import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
-import com.lhzw.searchlocmap.scrolllayout.content.ScrollLayout;
+import com.lhzw.searchlocmap.scrolllayout.ScrollLayout;
 
 import java.util.ArrayList;
 import java.util.Iterator;

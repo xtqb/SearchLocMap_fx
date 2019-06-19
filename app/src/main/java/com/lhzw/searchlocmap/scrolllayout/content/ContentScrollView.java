@@ -18,14 +18,14 @@
  *
  */
 
-package com.lhzw.searchlocmap.scrolllayout.content.content;
+package com.lhzw.searchlocmap.scrolllayout.content;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewParent;
 import android.widget.ScrollView;
-import com.lhzw.searchlocmap.scrolllayout.content.ScrollLayout;
+import com.lhzw.searchlocmap.scrolllayout.ScrollLayout;
 
 
 public class ContentScrollView extends ScrollView {

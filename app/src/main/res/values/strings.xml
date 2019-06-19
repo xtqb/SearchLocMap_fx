@@ -354,4 +354,22 @@
     <string name="dialog_upload">上传</string>
     <string name="dialog_loctime_update">已更新</string>
     <string name="dialog_loctime_no">未更新</string>
+
+    <string name="upload_state_sending">发送中</string>
+    <string name="upload_state_waiting">确认中</string>
+    <string name="upload_state_sent">发送完</string>
+    <string name="upload_state_commplted">已确认</string>
+    <string name="upload_state_cancel_monitor">取消监控</string>
+
+    <string name="bd_signal_level_excellent">优</string>
+    <string name="bd_signal_level_good">良</string>
+    <string name="bd_signal_level_middle">中</string>
+    <string name="bd_signal_level_bad">差</string>
+    <string name="bd_signal_state">信号状态</string>
+    <string name="bd_signal_level">信号强度</string>
+    <string name="per_total">当前人数</string>
+    <string name="per_update_already">已更新</string>
+    <string name="per_sos_num">呼叫sos</string>
+    <string name="update_state_note">当前无状态</string>
+    <string name="function_search_ennable_note">请先退出搜索功能</string>
 </resources>

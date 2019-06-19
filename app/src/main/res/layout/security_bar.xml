@@ -41,4 +41,11 @@
         android:background="@drawable/btn_person_state"
         android:padding="2dp" />
 
+    <View
+        android:id="@+id/scroll_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"/>
+
 </RelativeLayout>

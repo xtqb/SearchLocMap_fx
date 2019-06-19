@@ -18,6 +18,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -85,9 +86,11 @@ import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.adapter.CommandAdapter;
 import com.lhzw.searchlocmap.adapter.PlotHorizonAdapter;
 import com.lhzw.searchlocmap.adapter.PortaitAdapter;
+import com.lhzw.searchlocmap.adapter.SrollAdapter;
 import com.lhzw.searchlocmap.adapter.TimerSearchAdapter;
 import com.lhzw.searchlocmap.adapter.UndeterminedAdapter;
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
+import com.lhzw.searchlocmap.bdsignal.BDSignal;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.LocTrackBean;
 import com.lhzw.searchlocmap.bean.MessageInfoIBean;
@@ -109,7 +112,7 @@ import com.lhzw.searchlocmap.overlay.MeasureDistanceOverlay;
 import com.lhzw.searchlocmap.overlay.MeasureOverlayManager;
 import com.lhzw.searchlocmap.overlay.OverlayFactory;
 import com.lhzw.searchlocmap.overlay.P2pviewAnalysisOverlay;
-import com.lhzw.searchlocmap.scrolllayout.content.ScrollLayout;
+import com.lhzw.searchlocmap.scrolllayout.ScrollLayout;
 import com.lhzw.searchlocmap.ui.CommandStateActivity;
 import com.lhzw.searchlocmap.ui.CommunicationListActivity;
 import com.lhzw.searchlocmap.ui.LocationTrackActivity;
@@ -122,6 +125,7 @@ import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.LogWrite;
 import com.lhzw.searchlocmap.utils.SpUtils;
+import com.lhzw.searchlocmap.view.HistogramBar;
 import com.lhzw.searchlocmap.view.HorizontalListView;
 import com.lhzw.searchlocmap.view.LocationDialog;
 import com.lhzw.searchlocmap.view.ScanAnimView;
@@ -147,6 +151,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
+import butterknife.BindView;
 
 public class SecurityFragment extends BaseFragment implements IGT_Observer,
         LocationListener, OnHoriItemClickListener, ShowTimerDialog.onTimeItemClickListener,
@@ -277,6 +283,18 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private RelativeLayout rl_upload_state_progress;
     private RelativeLayout rl_upload_outer;
     private ScanAnimView scanani_view;
+    private HistogramBar his_bar;
+    private TextView tv_signal_level;
+    private ListView scroll_listview;
+    private TextView tv_search_state;
+    private TextView tv_serach_date;
+    private TextView tv_serach_time;
+    private ImageView rl_upload_time_select;
+    private ImageView rl_upload_history;
+    private SrollAdapter mScrollAdapter;
+    private TextView tv_update_leisure;
+    private View scroll_cancel;
+    private TextView tv_upload_state;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -295,7 +313,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private void initScrollView() {
         /**设置 setting*/
         mScrollLayout.setMinOffset(0);
-        mScrollLayout.setMaxOffset(1400);
+        mScrollLayout.setMaxOffset(1505);
         mScrollLayout.setExitOffset(0);
         mScrollLayout.setIsSupportExit(true);
         mScrollLayout.setEnable(false);
@@ -706,6 +724,26 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         rl_upload_inner.setOnClickListener(this);
         im_upload_state_cancel.setOnClickListener(this);
         scanani_view = (ScanAnimView) view.findViewById(R.id.scanani_view);
+
+        his_bar = (HistogramBar) view.findViewById(R.id.his_bar);
+        tv_signal_level = (TextView) view.findViewById(R.id.tv_signal_level);
+        scroll_listview = (ListView) view.findViewById(R.id.scroll_listview);
+        tv_search_state = (TextView) view.findViewById(R.id.tv_search_state);
+        tv_serach_date = (TextView) view.findViewById(R.id.tv_serach_date);
+        tv_serach_time = (TextView) view.findViewById(R.id.tv_serach_time);
+        rl_upload_time_select = (ImageView) view.findViewById(R.id.rl_upload_time_select);
+        rl_upload_time_select.setOnClickListener(this);
+        rl_upload_history = (ImageView) view.findViewById(R.id.rl_upload_history);
+        rl_upload_history.setOnClickListener(this);
+        TextView tv_per_num = (TextView) view.findViewById(R.id.tv_per_num);
+        TextView tv_update_num = (TextView) view.findViewById(R.id.tv_update_num);
+        TextView tv_sos_num = (TextView) view.findViewById(R.id.tv_sos_num);
+        tv_update_leisure = (TextView) view.findViewById(R.id.tv_update_leisure);
+        tv_upload_state = (TextView) view.findViewById(R.id.tv_upload_state);
+        scroll_cancel = view.findViewById(R.id.scroll_cancel);
+        scroll_cancel.setOnClickListener(this);
+        mScrollAdapter = new SrollAdapter(getActivity(), sosList, commonList, undetermined_List, tv_per_num, tv_update_num, tv_sos_num);
+        scroll_listview.setAdapter(mScrollAdapter);
     }
 
     @Override
@@ -714,6 +752,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         //获取数据库信息
         perStateList();
         showSoilderInMap();
+        mScrollAdapter.refleshView();
+        LogUtil.e("sos : " + sosList.size() + "  common : " + commonList.size() + "  unde : " + undetermined_List.size());
     }
 
     private synchronized void deleteFirePFireL() {
@@ -924,51 +964,22 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 Log.e("Tag", "bt_plot_list");
                 break;
             case R.id.total_search_btn:
-                if (isUploading) {
-                    if (isTimerRuning) {
-                        timerCloseDialog = new ShowTimerCloseDialog(getActivity());
-                        timerCloseDialog.show();
-                        timerCloseDialog.setListener(this);
-                        return;
-                    }
-                    if (treeDialog != null) {
-                        treeDialog.showDialog();
-                    } else {
-                        isUploading = true;
-                        treeDialog = new ShowStateTreeDialog(getActivity());
-                        treeDialog.showDialog();
-                        WindowManager.LayoutParams params = treeDialog.getWindow().getAttributes();
-                        params.width = getActivity().getWindowManager().getDefaultDisplay().getWidth() - 80;
-                        params.height = 644;
-                        treeDialog.setOnSearchCancelListener(this);
-                        treeDialog.getWindow().setAttributes(params);
-                        treeDialog.refleshView(content);
-                    }
-                    showToast(getString(R.string.uploading_note));
+                if (isTimerRuning) {
+                    timerCloseDialog = new ShowTimerCloseDialog(getActivity());
+                    timerCloseDialog.show();
+                    timerCloseDialog.setListener(this);
                     return;
                 }
                 if(isOpen) {
                     mScrollLayout.scrollToExit();
                 } else {
                     mScrollLayout.setToOpen();
+                    scroll_cancel.setVisibility(View.VISIBLE);
                 }
 //                showSearchDialog();
                 break;
             case R.id.switch_location_btn:
                 try {
-                    /*
-                    switch (Settings.Secure.getInt(getActivity().getContentResolver(), Settings.Secure.LOCATION_MODE)) {
-                        case LOC_MODE_OFF:
-                            startActivity(new Intent(
-                                    android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                            break;
-                        case LOC_MODE_ON:
-
-                            break;
-                        default:
-                            break;
-                    }
-                    */
                     //将镜头平移到当前手持机定位的中心
                     mapController = mMapView.getController();
                     mapController.setCenter(new GeoPoint(lat, lon));
@@ -1189,220 +1200,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 showToast(getString(R.string.send_command_success_note));
                 break;
             case R.id.dialog_timer_search:
-                if (total == 0) {
-                    showToast(getString(R.string.note_input_person_note));
-                    return;
-                }
-                List<WatchLastLocTime> locTimelist = CommonDBOperator.getList(locTimeDao);
-                StringBuilder builder = new StringBuilder();
-                String loctime_yes = getString(R.string.dialog_loctime_update);
-                String loctime_no = getString(R.string.dialog_loctime_no);
-                int update = 0;
-                int noUpdate = 0;
-                if(locTimelist == null || locTimelist.size() == 0) {
-                    int counter = 1;
-                    for (PersonalInfo item : sosList) {
-                        if (counter == sosList.size()) {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append(",");
-                            if(item.getLocTime() > 0) {
-                                builder.append(loctime_yes);
-                                update ++;
-                            } else {
-                                builder.append(loctime_no);
-                                noUpdate ++;
-                            }
-                        } else {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append(",");
-                            if(item.getLocTime() > 0) {
-                                builder.append(loctime_yes);
-                                update ++;
-                            } else {
-                                builder.append(loctime_no);
-                                noUpdate ++;
-                            }
-                            builder.append("-");
-                        }
-                        counter++;
-                    }
-                    counter = 1;
-                    if (sosList != null && sosList.size() > 0 && commonList != null && commonList.size() > 0) {
-                        builder.append("-");
-                    }
-                    for (PersonalInfo item : commonList) {
-                        if (counter == commonList.size()) {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append(",");
-                            if(item.getLocTime() > 0) {
-                                builder.append(loctime_yes);
-                                update ++;
-                            } else {
-                                builder.append(loctime_no);
-                                noUpdate ++;
-                            }
-                        } else {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append(",");
-                            if(item.getLocTime() > 0) {
-                                builder.append(loctime_yes);
-                                update ++;
-                            } else {
-                                builder.append(loctime_no);
-                                noUpdate ++;
-                            }
-                            builder.append("-");
-                        }
-                        counter++;
-                    }
-                    counter = 1;
-                    if (((sosList != null && sosList.size() > 0) || (commonList != null && commonList.size() > 0)) && undetermined_List != null && undetermined_List.size() > 0) {
-                        builder.append("-");
-                    }
-                    for (PersonalInfo item : undetermined_List) {
-                        if (counter == undetermined_List.size()) {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append(",");
-                            builder.append(loctime_no);
-                        } else {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append(",");
-                            builder.append(loctime_no);
-                            builder.append("-");
-                        }
-                        noUpdate ++;
-                        counter++;
-                    }
-                } else {
-                    Map<String, Long> locTimeMap = new HashMap<>();
-                    for(WatchLastLocTime bean : locTimelist) {
-                        locTimeMap.put(bean.getNum(), bean.getLocTime());
-                    }
-                    int counter = 1;
-                    for (PersonalInfo item : sosList) {
-                        Long locTime = locTimeMap.get(item.getNum());
-                        if (counter == sosList.size()) {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append(",");
-                            if(locTime != null){
-                                if(locTime < item.getLocTime()) {
-                                    builder.append(loctime_yes);
-                                    update ++;
-                                } else {
-                                    builder.append(loctime_no);
-                                    noUpdate ++;
-                                }
-                            } else {
-                                builder.append(loctime_yes);
-                                update ++;
-                            }
-                        } else {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append(",");
-                            if(locTime != null){
-                                if(locTime < item.getLocTime()) {
-                                    builder.append(loctime_yes);
-                                    update ++;
-                                } else {
-                                    builder.append(loctime_no);
-                                    noUpdate ++;
-                                }
-                            } else {
-                                builder.append(loctime_yes);
-                                update ++;
-                            }
-                            builder.append("-");
-                        }
-                        counter++;
-                    }
-                    counter = 1;
-                    if (sosList != null && sosList.size() > 0 && commonList != null && commonList.size() > 0) {
-                        builder.append("-");
-                    }
-                    for (PersonalInfo item : commonList) {
-                        Long locTime = locTimeMap.get(item.getNum());
-                        Log.e("Tag", "last : " + locTimeMap.get(item.getNum()) + "  current : " + item.getLocTime());
-                        if (counter == commonList.size()) {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append(",");
-                            if(locTime != null){
-                                if(locTime < item.getLocTime()) {
-                                    builder.append(loctime_yes);
-                                } else {
-                                    builder.append(loctime_no);
-                                    noUpdate ++;
-                                }
-                            } else {
-                                builder.append(loctime_yes);
-                                update ++;
-                            }
-                        } else {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append(",");
-                            if(locTime != null){
-                                if(locTime < item.getLocTime()) {
-                                    builder.append(loctime_yes);
-                                } else {
-                                    builder.append(loctime_no);
-                                    noUpdate ++;
-                                }
-                            } else {
-                                builder.append(loctime_yes);
-                                update ++;
-                            }
-                            builder.append("-");
-                        }
-                        counter++;
-                    }
-                    counter = 1;
-                    if (((sosList != null && sosList.size() > 0) || (commonList != null && commonList.size() > 0)) && undetermined_List != null && undetermined_List.size() > 0) {
-                        builder.append("-");
-                    }
-                    for (PersonalInfo item : undetermined_List) {
-                        if (counter == undetermined_List.size()) {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append(",");
-                            builder.append(loctime_no);
-                        } else {
-                            builder.append(item.getName());
-                            builder.append(",");
-                            builder.append(item.getNum());
-                            builder.append(",");
-                            builder.append(loctime_no);
-                            builder.append("-");
-                        }
-                        noUpdate ++;
-                        counter++;
-                    }
-                    locTimeMap.clear();
-                    locTimelist.clear();
-                }
-                uploadLocTimeBean = new TreeStateBean(System.currentTimeMillis(), content[0], content[1], content[2], content[3], content[4],
-                        content[5], "2", content[7], "2", "1", BaseUtils.getSendID(), update + noUpdate, update, noUpdate, builder.toString());
-                showUploadDetailDialog(update + noUpdate,update,noUpdate,builder.toString());
-                searchDialog.dismiss();
+
                 break;
             case R.id.dialog_total_search:
                 if (total == 0) {
@@ -1436,7 +1234,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     timerCloseDialog.dismiss();
                     showSearchToast(getString(R.string.timer_search_end_note));
                     isTimerRuning = false;
-                    isUploading = false;
+                    rl_upload_inner.setEnabled(true);
                     stopAnimation();
                     note_content_tv.setText("");
                     mHandler.removeMessages(SEARCH);
@@ -1490,10 +1288,32 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             case R.id.rl_upload_inner:
                 BaseUtils.flipAnimatorXViewShow(rl_upload_outer, rl_upload_state_progress, 200);
                 scanani_view.startAnimation();
+                tv_update_leisure.setVisibility(View.GONE);
+                isUpload = true;
+                tatolSearch();
                 break;
             case R.id.im_upload_state_cancel:
+                isUpload = false;
                 BaseUtils.flipAnimatorXViewShow(rl_upload_state_progress, rl_upload_outer, 200);
                 scanani_view.stopAnimation();
+                tv_search_state.setText("");
+                tv_serach_date.setText("");
+                tv_serach_time.setText("");
+                tv_update_leisure.setVisibility(View.VISIBLE);
+                break;
+            case R.id.scroll_cancel:
+                if(isOpen) {
+                    mScrollLayout.setToExit();
+                    mScrollLayout.getBackground().setAlpha(0);
+                }
+                break;
+            case R.id.rl_upload_time_select:
+                timerSearch();
+                mScrollLayout.setToExit();
+                mScrollLayout.getBackground().setAlpha(0);
+                break;
+            case R.id.rl_upload_history:
+
                 break;
         }
     }
@@ -1536,23 +1356,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     }
 
     private void tatolSearch() {
-        String[] date = BaseUtils.obtainDate(getActivity());
-        content[0] = date[0];
-        content[1] = date[1];
-        content[2] = date[0];
-        content[3] = date[1];
-        content[6] = "2";
-        content[7] = "0";
-        content[8] = "1";
-        content[9] = "0";
-        uploadLocTimeBean.setsMonth(content[0]);
-        uploadLocTimeBean.setsTime(content[1]);
-        uploadLocTimeBean.settMonth(content[2]);
-        uploadLocTimeBean.settTime(content[3]);
-        uploadLocTimeBean.setNum(content[7]);
-        mHandler.sendEmptyMessage(TREE_REFLESH);
-        mHandler.sendEmptyMessage(REFLESH_TV);
         mHandler.sendEmptyMessageDelayed(SEARCH_NOTE, 3000);
+        tv_search_state.setText(getString(R.string.send_being));
+        tv_upload_state.setText(getString(R.string.upload_state_sending));
+        String[] rev = BaseUtils.formatTime(System.currentTimeMillis()).split("  ");
+        tv_serach_date.setText(rev[0]);
+        tv_serach_time.setText(rev[1]);
     }
 
     private void showSearchEndNoteDialog(int searchNum, int total, int sucess, int fail) {
@@ -1744,7 +1553,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     break;
                 case TIMER_REPORT:
                     //上报搜索信息
-                    Log.e("Tag", "upload common");
+                    if(!isUpload) {
+                        return;
+                    }
                     List<PersonalInfo> rxList = CommonDBOperator.queryByOrderKey(persondao, "num");
                     if (rxList != null && rxList.size() > 0) {
                         Log.e("Tag", "size : " + rxList.size());
@@ -1788,7 +1599,20 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                    } else {
+                        List<UploadInfoBean> uploadList = new ArrayList<>();
+                        String local_latlon = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + "," + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
+                        UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), null, null, null, local_latlon,
+                                SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1);
+                        uploadList.add(bean);
+                        bdUtils.uploadBena(uploadList);
                     }
+
+                    tv_search_state.setText(getString(R.string.upload_data));
+                    tv_upload_state.setText(getString(R.string.upload_state_waiting));
+                    String[] rev = BaseUtils.formatTime(System.currentTimeMillis()).split("  ");
+                    tv_serach_date.setText(rev[0]);
+                    tv_serach_time.setText(rev[1]);
                     break;
                 case SYNC_DELAY_SIGNAL:
                     //延时
@@ -1803,7 +1627,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     break;
                 case SEARCH:
                     cleanDatabase();
-                    new Thread(new Action()).start();
+                    mHandler.sendEmptyMessageDelayed(TIMER_REPORT, 60000);  //定时延时后，在延时10秒上报搜索信息
                     mHandler.sendEmptyMessageDelayed(SEARCH, delay);
                     break;
                 case SEARCH_DELAY_CLOSE:
@@ -1832,7 +1656,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 case TOATAL_UPLOADED:
                     try {
                         isUploading = false;
-//                        showSearchToast(getString(R.string.uploaded_bd_data));
                         tv_signal_search_note.setVisibility(View.GONE);
                         tv_signal_search_note.setText("");
                     } catch (Exception e) {
@@ -1843,19 +1666,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     ll_zoom_tools.setVisibility(View.GONE);
                     break;
                 case SEARCH_NOTE:
-                    String[] date = BaseUtils.obtainDate(getActivity());
-                    content[4] = date[0];
-                    content[5] = date[1];
-                    content[6] = "2";
-                    content[8] = "2";
-                    content[9] = "1";
-                    uploadLocTimeBean.setcMonth(content[4]);
-                    uploadLocTimeBean.setcTime(content[5]);
-                    isUpload = true;
-                    if(treeDialog != null) {
-                        treeDialog.refleshView(content);
+                    if(isUpload){
+                        tv_search_state.setText(getString(R.string.send_success));
+                        tv_upload_state.setText(getString(R.string.upload_state_sent));
+                        String[] rev1 = BaseUtils.formatTime(System.currentTimeMillis()).split("  ");
+                        tv_serach_date.setText(rev1[0]);
+                        tv_serach_time.setText(rev1[1]);
+                        mHandler.sendEmptyMessageDelayed(TIMER_REPORT, 2000);
                     }
-                    mHandler.sendEmptyMessageDelayed(TIMER_REPORT, 2000);
                     break;
                 case TREE_REFLESH:
                     treeDialog.refleshView(content);
@@ -2247,13 +2065,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         // 定时搜索
         Log.e("Tag", "pos : " + searchTimeArr[(int) pos]);
         if (!isTimerRuning) {
-            isUploading = true;
             isTimerRuning = true;
             startAnimation();
 //            SpUtils.putBoolean(SPConstants.COMMON_SWITCH, true);
             delay = Integer.valueOf(searchTimeArr[(int) pos]) * 60 * 1000;
             showSearchToast(getString(R.string.timer_search_start_note));
             mHandler.sendEmptyMessage(SEARCH);
+            rl_upload_inner.setEnabled(true);
         }
     }
 
@@ -2345,7 +2163,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     @Override
     public boolean onTouch(TouchEvent touchEvent) {
         if(isOpen) {
-            mScrollLayout.scrollToExit();
+            mScrollLayout.setToExit();
             mScrollLayout.getBackground().setAlpha(0);
         }
         return false;
@@ -2414,8 +2232,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private void cleanDatabase() {
         List<PersonalInfo> list = CommonDBOperator.getList(persondao);
         for (PersonalInfo item : list) {
-            item.setLatitude("");
-            item.setLongitude("");
             item.setState1("");
             item.setState(Constants.PERSON_OFFLINE);
             item.setTime(System.currentTimeMillis());
@@ -2833,9 +2649,38 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             list.clear();
         }
         if (sendID == BaseUtils.getSendID()) {
-            content[9] = "2";
-            if (treeDialog != null) {
-                treeDialog.refleshView(content);
+            if(isOpen && isUpload) {
+                tv_search_state.setText(getString(R.string.upload_success_1));
+                tv_upload_state.setText(getString(R.string.upload_state_commplted));
+                String[] rev1 = BaseUtils.formatTime(System.currentTimeMillis()).split("  ");
+                tv_serach_date.setText(rev1[0]);
+                tv_serach_time.setText(rev1[1]);
+            }
+        }
+    }
+
+    @Override
+    protected void refleshBdSignal(Intent intent) {
+        if(isOpen) {
+            float[] values = intent.getFloatArrayExtra("values");
+            his_bar.refleshView(values);
+            switch (BDSignal.value) {
+                case 1:
+                    tv_signal_level.setText(getString(R.string.bd_signal_level_bad));
+                    tv_signal_level.setBackgroundColor(getActivity().getResources().getColor(R.color.red));
+                    break;
+                case 2:
+                    tv_signal_level.setText(getString(R.string.bd_signal_level_middle));
+                    tv_signal_level.setBackgroundColor(getActivity().getResources().getColor(R.color.yellow));
+                    break;
+                case 3:
+                    tv_signal_level.setText(getString(R.string.bd_signal_level_good));
+                    tv_signal_level.setBackgroundColor(getActivity().getResources().getColor(R.color.green3));
+                    break;
+                case 4:
+                    tv_signal_level.setText(getString(R.string.bd_signal_level_excellent));
+                    tv_signal_level.setBackgroundColor(getActivity().getResources().getColor(R.color.green));
+                    break;
             }
         }
     }
@@ -2905,6 +2750,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             if(mGraphicOverlay != null && mMapView != null) {
                 mGraphicOverlay.SelectTool(-1, mMapView);
             }
+            scroll_cancel.setVisibility(View.GONE);
         }  else {
             mScrollLayout.setBackgroundColor(getResources().getColor(R.color.tra_gray));
             isOpen = true;
