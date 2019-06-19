@@ -1294,6 +1294,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 break;
             case R.id.im_upload_state_cancel:
                 isUpload = false;
+                mHandler.removeMessages(SEARCH_NOTE);
+                mHandler.removeMessages(TIMER_REPORT);
                 BaseUtils.flipAnimatorXViewShow(rl_upload_state_progress, rl_upload_outer, 200);
                 scanani_view.stopAnimation();
                 tv_search_state.setText("");
