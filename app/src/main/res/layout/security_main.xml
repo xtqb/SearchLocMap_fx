@@ -379,6 +379,7 @@
                     android:background="@color/awhite"
                     android:divider="@color/agray_background"
                     android:dividerHeight="0.25dp"
+                    android:listSelector="@drawable/bg_selector_item_listview"
                     android:scrollbars="none"></ListView>
 
                 <View
