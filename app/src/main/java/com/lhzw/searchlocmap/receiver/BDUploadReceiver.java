@@ -12,7 +12,7 @@ import android.util.Log;
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.bdsignal.BDSignal;
-import com.lhzw.searchlocmap.bean.DeviceNum;
+import com.lhzw.searchlocmap.bean.LocalBDNum;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.MessageInfoIBean;
 import com.lhzw.searchlocmap.constants.Constants;
@@ -48,7 +48,7 @@ public class BDUploadReceiver extends BroadcastReceiver {
     private static boolean isRunning = false;
     private Context mContext;
     private static float[] values = new float[10];
-    private Dao<DeviceNum, Integer> mBdNumDao;
+    private Dao<LocalBDNum, Integer> mBdNumDao;
 
     @Override
     public void onReceive(Context mContext, Intent intent) {
@@ -83,47 +83,46 @@ public class BDUploadReceiver extends BroadcastReceiver {
                         // TODO 手持机的话要查询北斗号确定发送者的信息  并在本机中将消息保存到发送人的名下(messageId 为发送人   如根据北斗号查不到此人的信息 则属于陌生消息 存表的话msg_id 为北斗号)
                         String num = intent.getStringExtra("bdNum");//发送者的北斗号
                         int msg_Id = intent.getIntExtra("msg_Id", -1);//平台的人的ID
-                        int platform = intent.getIntExtra("platform", -1);//平台类别
                         String str = intent.getStringExtra("result");//内容
-                        List<DeviceNum> deviceNums = CommonDBOperator.queryByKeys(mBdNumDao, "num", num);
-
-                        int type=0;//设备类型  0平台  1手持机  2手表
-                        if(deviceNums !=null && deviceNums.size()>0){
-                            type  = deviceNums.get(0).getTx_type();
+                        List<LocalBDNum> localBDNums = CommonDBOperator.queryByKeys(mBdNumDao, "num", num);
+                        boolean isPlatform = false;
+                        if (localBDNums != null && localBDNums.size() > 0) {
+                            //此消息来源于平台
+                            isPlatform = true;
                         }
 
                         //消息来源于平台
-                        if( type == 0 ){
+                        if (isPlatform) {
                             List<HttpPersonInfo> dipList = CommonDBOperator.queryByKeys(httpDao, "id", msg_Id + "");//这个查到的是平台发的消息
                             if (dipList != null && dipList.size() > 0) {
                                 Log.e("Tag", "searchLocMap receive message  type 2  " + num);
-                                    MessageInfoIBean item = new MessageInfoIBean(num, System.currentTimeMillis(), str, ShortMessUploadActivity.MESSAGE_RECEIVE, Constants.MESSAGE_UNREAD, msg_Id);
-                                    CommonDBOperator.saveToDB(mesDao, item);
-                                    Intent mmsIntent = new Intent(Constants.BD_Mms_ACTION);
-                                    mmsIntent.putExtra("ID", msg_Id);
-                                    mContext.sendBroadcast(mmsIntent);
-                                    showNotifcationInfo(mContext, dipList.get(0).getRealName(), R.drawable.icon_chat);
-                                    dipList.clear();
+                                MessageInfoIBean item = new MessageInfoIBean(num, System.currentTimeMillis(), str, ShortMessUploadActivity.MESSAGE_RECEIVE, Constants.MESSAGE_UNREAD, msg_Id);
+                                CommonDBOperator.saveToDB(mesDao, item);
+                                Intent mmsIntent = new Intent(Constants.BD_Mms_ACTION);
+                                mmsIntent.putExtra("ID", msg_Id);
+                                mContext.sendBroadcast(mmsIntent);
+                                showNotifcationInfo(mContext, dipList.get(0).getRealName(), R.drawable.icon_chat);
+                                dipList.clear();
                             }
-                        }else {//消息来源于手持机
+                        } else {//消息来源于手持机
                             List<HttpPersonInfo> personInfos = CommonDBOperator.queryByKeys(httpDao, "deviceNumbers", num);
-                            if(personInfos!=null&&personInfos.size()>0){//发送人在本地的数据库里
+                            if (personInfos != null && personInfos.size() > 0) {//发送人在本地的数据库里
                                 HttpPersonInfo personInfo = personInfos.get(0);
                                 MessageInfoIBean msgBean = new MessageInfoIBean(num, System.currentTimeMillis(), str, ShortMessUploadActivity.MESSAGE_RECEIVE, Constants.MESSAGE_UNREAD, personInfo.getId());
-                                CommonDBOperator.saveToDB(mesDao,msgBean);//保存为发送人的消息
+                                CommonDBOperator.saveToDB(mesDao, msgBean);//保存为发送人的消息
                                 Intent mmsIntent = new Intent(Constants.BD_Mms_ACTION);
                                 mmsIntent.putExtra("ID", personInfo.getId());
                                 mContext.sendBroadcast(mmsIntent);
                                 showNotifcationInfo(mContext, personInfo.getRealName(), R.drawable.icon_chat);
                                 personInfos.clear();
-                            }else {//发送人不在数据库
+                            } else {//发送人不在数据库
                                 //todo 发送人不在人员表 则新增人员到表里
                                 MessageInfoIBean msgBean = new MessageInfoIBean(num, System.currentTimeMillis(), str, ShortMessUploadActivity.MESSAGE_RECEIVE, Constants.MESSAGE_UNREAD, Integer.parseInt(num));
-                                CommonDBOperator.saveToDB(mesDao,msgBean);//保存为发送人的消息
+                                CommonDBOperator.saveToDB(mesDao, msgBean);//保存为发送人的消息
                                 Intent mmsIntent = new Intent(Constants.BD_Mms_ACTION);
                                 mmsIntent.putExtra("ID", num);
                                 mContext.sendBroadcast(mmsIntent);
-                                showNotifcationInfo(mContext,num, R.drawable.icon_chat);
+                                showNotifcationInfo(mContext, num, R.drawable.icon_chat);
                             }
 
                         }
@@ -174,25 +173,25 @@ public class BDUploadReceiver extends BroadcastReceiver {
                 }
             }
             int total = maxArr[0] + maxArr[1] + maxArr[2];
-            if(total >= 9) {
+            if (total >= 9) {
                 strength = 4;
             } else if (total == 8 || total == 7) {
                 strength = 3;
-            } else if(total == 6) {
-                if((maxArr[0] == 4 && maxArr[1] == 1 && maxArr[2] == 1) ||
+            } else if (total == 6) {
+                if ((maxArr[0] == 4 && maxArr[1] == 1 && maxArr[2] == 1) ||
                         (maxArr[0] == 1 && maxArr[1] == 4 && maxArr[2] == 1) || (
                         maxArr[0] == 1 && maxArr[1] == 1 && maxArr[2] == 4)) {
                     strength = 2;
                 } else {
                     strength = 3;
                 }
-            } else if(total == 5) {
-                if((maxArr[0] == 3 && maxArr[1] == 2 && maxArr[2] == 0) ||
+            } else if (total == 5) {
+                if ((maxArr[0] == 3 && maxArr[1] == 2 && maxArr[2] == 0) ||
                         (maxArr[0] == 3 && maxArr[1] == 0 && maxArr[2] == 2) ||
                         (maxArr[0] == 2 && maxArr[1] == 3 && maxArr[2] == 0) ||
                         (maxArr[0] == 2 && maxArr[1] == 0 && maxArr[2] == 3) ||
                         (maxArr[0] == 0 && maxArr[1] == 2 && maxArr[2] == 3) ||
-                        (maxArr[0] == 0 && maxArr[1] == 3 && maxArr[2] == 2)){
+                        (maxArr[0] == 0 && maxArr[1] == 3 && maxArr[2] == 2)) {
                     strength = 2;
                 } else {
                     strength = 1;
@@ -216,7 +215,7 @@ public class BDUploadReceiver extends BroadcastReceiver {
         n.flags = Notification.FLAG_AUTO_CANCEL;
         // n.number=count;
 //		n.defaults = Notification.DEFAULT_SOUND;
-        Uri sound= Uri.parse("android.resource://" + mContext.getPackageName() + "/" + R.raw.beep);
+        Uri sound = Uri.parse("android.resource://" + mContext.getPackageName() + "/" + R.raw.beep);
         n.sound = sound;
         // 从系统服务中获得通知管理器
         NotificationManager nm = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);

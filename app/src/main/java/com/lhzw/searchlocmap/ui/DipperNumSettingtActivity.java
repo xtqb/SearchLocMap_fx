@@ -38,7 +38,7 @@ import java.util.Map;
 /**
  * Created by xtqb on 2019/1/7.
  */
-public class DipperNumSettingtActivity extends Activity implements AdapterView.OnItemClickListener, ExpandableListView.OnChildClickListener, View.OnClickListener {
+public class  DipperNumSettingtActivity extends Activity implements AdapterView.OnItemClickListener, ExpandableListView.OnChildClickListener, View.OnClickListener {
 
     private ExpandableListView dipper_listview;
     private String[] gNames;
