@@ -750,12 +750,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     @Override
     protected synchronized void initSoilderInfoList() {
-        Log.d("initSoilder", "initSoilderInfoList");
         //获取数据库信息
         perStateList();
         showSoilderInMap();
         mScrollAdapter.refleshView();
-        LogUtil.e("sos : " + sosList.size() + "  common : " + commonList.size() + "  unde : " + undetermined_List.size());
     }
 
     private synchronized void deleteFirePFireL() {
@@ -853,13 +851,17 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         if (sosList != null) {
             sosList.clear();
         }
-        commonList = CommonDBOperator.queryByKeys(persondao, "state", Constants.PERSON_COMMON);
-        if (commonList != null && commonList.size() > 0) {
+        List<PersonalInfo> tmpCommonList = CommonDBOperator.queryByKeys(persondao, "state", Constants.PERSON_COMMON);
+        if (tmpCommonList != null && tmpCommonList.size() > 0) {
+            commonList.addAll(tmpCommonList);
             sucess += commonList.size();
+            tmpCommonList.clear();
         }
-        sosList = CommonDBOperator.queryByKeysOrderByTime(persondao, "state", Constants.PERSON_SOS, "time");
-        if (sosList != null && sosList.size() > 0) {
+        List<PersonalInfo> tmpSosList = CommonDBOperator.queryByKeysOrderByTime(persondao, "state", Constants.PERSON_SOS, "time");
+        if (tmpSosList != null && tmpSosList.size() > 0) {
+            sosList.addAll(tmpSosList);
             sucess += sosList.size();
+            tmpSosList.clear();
         }
         // 初始化待定区域
         List<PersonalInfo> undermined_sos_list = CommonDBOperator.queryByMultiKeys(persondao, map_sos);
