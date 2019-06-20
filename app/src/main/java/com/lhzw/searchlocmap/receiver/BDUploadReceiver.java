@@ -21,6 +21,7 @@ import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 import com.lhzw.searchlocmap.event.EventBusBean;
 import com.lhzw.searchlocmap.ui.ShortMessUploadActivity;
 import com.lhzw.searchlocmap.utils.BaseUtils;
+import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.uploadmms.UploadInfoBean;
 
 import org.greenrobot.eventbus.EventBus;
@@ -84,15 +85,11 @@ public class BDUploadReceiver extends BroadcastReceiver {
                         String num = intent.getStringExtra("bdNum");//发送者的北斗号
                         int msg_Id = intent.getIntExtra("msg_Id", -1);//平台的人的ID
                         String str = intent.getStringExtra("result");//内容
-                        List<LocalBDNum> localBDNums = CommonDBOperator.queryByKeys(mBdNumDao, "num", num);
-                        boolean isPlatform = false;
-                        if (localBDNums != null && localBDNums.size() > 0) {
-                            //此消息来源于平台
-                            isPlatform = true;
-                        }
+                        int platform = intent.getIntExtra("platform",Constants.TX_BJ);//内容
 
+                        LogUtil.e("收到短消息,发送者的北斗号num=="+num+"<===>msg_Id=="+msg_Id+"<==>isPlatform=="+platform);
                         //消息来源于平台
-                        if (isPlatform) {
+                        if (platform==Constants.TX_JZH) {
                             List<HttpPersonInfo> dipList = CommonDBOperator.queryByKeys(httpDao, "id", msg_Id + "");//这个查到的是平台发的消息
                             if (dipList != null && dipList.size() > 0) {
                                 Log.e("Tag", "searchLocMap receive message  type 2  " + num);
@@ -117,7 +114,7 @@ public class BDUploadReceiver extends BroadcastReceiver {
                                 personInfos.clear();
                             } else {//发送人不在数据库
                                 //todo 发送人不在人员表 则新增人员到表里
-                                MessageInfoIBean msgBean = new MessageInfoIBean(num, System.currentTimeMillis(), str, ShortMessUploadActivity.MESSAGE_RECEIVE, Constants.MESSAGE_UNREAD, Integer.parseInt(num));
+                                MessageInfoIBean msgBean = new MessageInfoIBean(num, System.currentTimeMillis(), str, ShortMessUploadActivity.MESSAGE_RECEIVE, Constants.MESSAGE_UNREAD, -Integer.parseInt(num));
                                 CommonDBOperator.saveToDB(mesDao, msgBean);//保存为发送人的消息
                                 Intent mmsIntent = new Intent(Constants.BD_Mms_ACTION);
                                 mmsIntent.putExtra("ID", num);
@@ -223,3 +220,7 @@ public class BDUploadReceiver extends BroadcastReceiver {
         nm.notify("Communication", id, n);
     }
 }
+
+
+
+
