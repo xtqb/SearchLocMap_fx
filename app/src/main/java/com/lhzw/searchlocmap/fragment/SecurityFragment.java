@@ -882,7 +882,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             offline_list.clear();
         }
         total = sucess + fail;
-        undetermined_adpter.refleshList();
+//        undetermined_adpter.refleshList();
     }
 
     //绘制sos common

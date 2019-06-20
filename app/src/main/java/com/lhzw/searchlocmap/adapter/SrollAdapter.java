@@ -122,8 +122,12 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
         pos = 0;
         for(PersonalInfo item : undetermined_List) {
             Bean bean = null;
-            bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), item.getState1().equals(Constants.PERSON_SOS) , false);
-            if(item.getState1().equals(Constants.PERSON_SOS)) {
+            boolean state = false;
+            if(item.getState1() != null) {
+                state =  item.getState1().equals(Constants.PERSON_SOS);
+            }
+            bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), state, false);
+            if(state) {
                 sos_num += 1;
             }
             bean.setState(Constants.PERSON_UNDETERMINED);
