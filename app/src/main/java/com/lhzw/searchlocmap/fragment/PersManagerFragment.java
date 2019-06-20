@@ -49,6 +49,7 @@ import com.lhzw.searchlocmap.utils.CheckBoxState;
 import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.searchlocmap.utils.ToastUtil;
+import com.lhzw.searchlocmap.view.LoadingView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -177,11 +178,15 @@ public class PersManagerFragment extends Fragment implements
      * @param deviceNums
      */
     private void AskServerToUnbind(String bdNum, String deviceNums) {
+        final LoadingView loadingView = new LoadingView(getActivity());
+        loadingView.setLoadingTitle("解绑中...");
+        loadingView.show();
         Observable<BaseBean> observable = SLMRetrofit.getInstance().getApi().deleteBinding(bdNum, deviceNums);
         observable.compose(new ThreadSwitchTransformer<BaseBean>())
                 .subscribe(new CallbackListObserver<BaseBean>() {
                     @Override
                     protected void onSucceed(BaseBean bean) {
+                        loadingView.dismiss();
                         if ("0".equals(bean.getCode())) {
                             ToastUtil.showToast("解绑成功");
                             LogUtil.d("解绑成功");
@@ -229,6 +234,7 @@ public class PersManagerFragment extends Fragment implements
 
                     @Override
                     protected void onFailed() {
+                        loadingView.dismiss();
                         ToastUtil.showToast("网络错误");
                     }
                 });

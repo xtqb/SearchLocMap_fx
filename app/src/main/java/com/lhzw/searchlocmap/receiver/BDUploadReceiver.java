@@ -85,7 +85,7 @@ public class BDUploadReceiver extends BroadcastReceiver {
                         String num = intent.getStringExtra("bdNum");//发送者的北斗号
                         int msg_Id = intent.getIntExtra("msg_Id", -1);//平台的人的ID
                         String str = intent.getStringExtra("result");//内容
-                        int platform = intent.getIntExtra("platform",Constants.TX_BJ);//内容
+                        int platform = intent.getIntExtra("platform",Constants.TX_BJ);//信息来源
 
                         LogUtil.e("收到短消息,发送者的北斗号num=="+num+"<===>msg_Id=="+msg_Id+"<==>isPlatform=="+platform);
                         //消息来源于平台

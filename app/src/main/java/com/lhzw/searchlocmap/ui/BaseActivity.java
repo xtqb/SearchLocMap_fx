@@ -8,12 +8,16 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
+import com.lhzw.searchlocmap.view.LoadingView;
+
 import butterknife.ButterKnife;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
     InputMethodManager manager;
     protected Context mContext;
+
+    protected LoadingView mLoadingView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +36,26 @@ public abstract class BaseActivity extends AppCompatActivity {
         //绑定黄油刀
         ButterKnife.bind(this);
         initData();
+        mLoadingView = new LoadingView(mContext);
     }
 
 
     protected abstract int initView();//初始化xml布局
     protected abstract void initData();//初始化数据
+    protected void showLoading(){
+        showLoading("加载中...");
+    }
 
+    protected void showLoading(String loadingTitle){
+        if (mLoadingView != null){
+            mLoadingView.setLoadingTitle(loadingTitle);
+            mLoadingView.show();
+        }
+    }
+
+    protected void dismissLoading(){
+        if (mLoadingView != null){
+            mLoadingView.dismiss();
+        }
+    }
 }
