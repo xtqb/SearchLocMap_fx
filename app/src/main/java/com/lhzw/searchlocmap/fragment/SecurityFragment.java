@@ -157,7 +157,7 @@ import butterknife.BindView;
 public class SecurityFragment extends BaseFragment implements IGT_Observer,
         LocationListener, OnHoriItemClickListener, ShowTimerDialog.onTimeItemClickListener,
         PopupWindow.OnDismissListener, PortaitAdapter.OnItemSelectedListener, AdapterView.OnItemLongClickListener,
-        ShowStateTreeDialog.OnSearchCancelListener, MapListener, ScrollLayout.OnScrollChangedListener {
+        ShowStateTreeDialog.OnSearchCancelListener, MapListener, ScrollLayout.OnScrollChangedListener, SrollAdapter.OnClickScrollItemListener {
     private View view;
     private DrawerLayout drawer;
     private boolean list_h_state;
@@ -713,9 +713,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         bt_plot_save.setOnClickListener(this);
         Button bt_plot_over = (Button) view.findViewById(R.id.bt_plot_over);
         bt_plot_over.setOnClickListener(this);
-        HorizontalListView undetermined_listview = (HorizontalListView) view.findViewById(R.id.sos_horizon_listview);
-        undetermined_adpter = new UndeterminedAdapter(getActivity(), undetermined_List, SecurityFragment.this);
-        undetermined_listview.setAdapter(undetermined_adpter);
+//        HorizontalListView undetermined_listview = (HorizontalListView) view.findViewById(R.id.sos_horizon_listview);
+//        undetermined_adpter = new UndeterminedAdapter(getActivity(), undetermined_List, SecurityFragment.this);
+//        undetermined_listview.setAdapter(undetermined_adpter);
 
         rl_upload_inner = (RelativeLayout) view.findViewById(R.id.rl_upload_inner);
         im_upload_state_cancel = (Button) view.findViewById(R.id.im_upload_state_cancel);
@@ -744,6 +744,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         scroll_cancel.setOnClickListener(this);
         mScrollAdapter = new SrollAdapter(getActivity(), sosList, commonList, undetermined_List, tv_per_num, tv_update_num, tv_sos_num);
         scroll_listview.setAdapter(mScrollAdapter);
+        scroll_listview.setOnItemClickListener(mScrollAdapter);
+        mScrollAdapter.setOnClickScrollItemListener(this);
     }
 
     @Override
@@ -2178,6 +2180,40 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 mPoint);
         GeoPoint coordinate = (GeoPoint) proj.CGCS2000fromPixels(mPoint.x, mPoint.y);
         return coordinate;
+    }
+
+    @Override
+    public void onSrollItemClick(String state, int pos) {
+        if(state.equals(Constants.PERSON_SOS)) {
+            mapController = mMapView.getController();
+            mapController.setCenter(new GeoPoint(Double.valueOf(sosList.get(pos).getLatitude()), Double.valueOf(sosList.get(pos).getLongitude())));
+        }else if(state.equals(Constants.PERSON_COMMON)) {
+            mapController = mMapView.getController();
+            mapController.setCenter(new GeoPoint(Double.valueOf(commonList.get(pos).getLatitude()), Double.valueOf(commonList.get(pos).getLongitude())));
+        } else if(state.equals(Constants.PERSON_UNDETERMINED)) {
+            //点击事件处理
+            Log.e("Tag", "pos : " + pos);
+            if ((Constants.PERSON_COMMON).equals(undetermined_List.get(pos)
+                    .getState1())) {
+                showUnderlineNormalPopupWindow(pos);
+            } else if ((Constants.PERSON_SOS).equals(undetermined_List.get(pos)
+                    .getState1())) {
+                codeArr = BaseUtils.getPerRegisterByteArr(undetermined_List
+                        .get(pos).getNum());
+                byte[] numByte = obtainBDNum();
+                for (int i = 0; i < 4; i++) {
+                    codeArr[5 + i] = numByte[i];
+                }
+                showUnderlineSosPopupWindow(pos);
+            } else if ((Constants.PERSON_OFFLINE).equals(undetermined_List.get(pos)
+                    .getState())) {
+                showUnderlineOfflinePopupWindow(pos);
+            }
+        }
+        if(isOpen) {
+            mScrollLayout.setToExit();
+            mScrollLayout.getBackground().setAlpha(0);
+        }
     }
 
     private class Action implements Runnable {

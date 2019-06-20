@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,7 +27,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SrollAdapter extends BaseAdapter{
+public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
     private Context mContext;
     private List<PersonalInfo> sosList;
     private List<PersonalInfo> commonList;
@@ -40,6 +41,7 @@ public class SrollAdapter extends BaseAdapter{
     private int sos_num;
     private int update_num;
     protected ViewHolder holder;
+    private OnClickScrollItemListener listener;
 
     public SrollAdapter(Context mContext, List<PersonalInfo> sosList, List<PersonalInfo> commonList, List<PersonalInfo> undetermined_List, TextView tv_per_num, TextView tv_update_num, TextView tv_sos_num){
         this.mContext = mContext;
@@ -69,12 +71,18 @@ public class SrollAdapter extends BaseAdapter{
                 locTimeMap.put(bean.getNum(), bean.getLocTime());
             }
         }
+        int pos = 0;
         for(PersonalInfo item : sosList) {
             Bean bean = null;
-            if(locTimeMap != null && locTimeMap.get(item.getNum()) != null) {
-                bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > locTimeMap.get(item.getNum()));
-                if(item.getLocTime() > locTimeMap.get(item.getNum())) {
-                    update_num += 1;
+            if(locTimeMap != null) {
+                Long locTime = locTimeMap.get(item.getNum());
+                if(locTime != null) {
+                    bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > locTimeMap.get(item.getNum()));
+                    if(item.getLocTime() > locTimeMap.get(item.getNum())) {
+                        update_num += 1;
+                    }
+                } else {
+                    bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > 0);
                 }
             } else {
                 bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > 0);
@@ -82,15 +90,23 @@ public class SrollAdapter extends BaseAdapter{
                     update_num += 1;
                 }
             }
+            bean.setState(Constants.PERSON_SOS);
+            bean.setPos(pos);
             list.add(bean);
+            pos ++;
         }
-
+        pos = 0;
         for(PersonalInfo item : commonList) {
             Bean bean = null;
-            if(locTimeMap != null && locTimeMap.get(item.getNum()) != null) {
-                bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, item.getLocTime() > locTimeMap.get(item.getNum()));
-                if(item.getLocTime() > locTimeMap.get(item.getNum())) {
-                    update_num += 1;
+            if(locTimeMap != null) {
+                Long locTime = locTimeMap.get(item.getNum());
+                if(locTime != null) {
+                    bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > locTimeMap.get(item.getNum()));
+                    if(item.getLocTime() > locTimeMap.get(item.getNum())) {
+                        update_num += 1;
+                    }
+                } else {
+                    bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > 0);
                 }
             } else {
                 bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, item.getLocTime() > 0);
@@ -98,16 +114,22 @@ public class SrollAdapter extends BaseAdapter{
                     update_num += 1;
                 }
             }
+            bean.setState(Constants.PERSON_COMMON);
+            bean.setPos(pos);
             list.add(bean);
+            pos ++;
         }
-
+        pos = 0;
         for(PersonalInfo item : undetermined_List) {
             Bean bean = null;
             bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), item.getState1().equals(Constants.PERSON_SOS) , false);
             if(item.getState1().equals(Constants.PERSON_SOS)) {
                 sos_num += 1;
             }
+            bean.setState(Constants.PERSON_UNDETERMINED);
+            bean.setPos(pos);
             list.add(bean);
+            pos ++;
         }
         if(locTimelist != null && locTimelist.size() > 0) {
             locTimelist.clear();
@@ -162,6 +184,13 @@ public class SrollAdapter extends BaseAdapter{
         return convertView;
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if(listener != null) {
+            listener.onSrollItemClick(list.get(position).getState(), list.get(position).getPos());
+        }
+    }
+
     protected static class ViewHolder{
         private ViewHolder(View view){
             ButterKnife.bind(this, view);
@@ -180,6 +209,8 @@ public class SrollAdapter extends BaseAdapter{
         private String time;
         private boolean isSos;
         private boolean isUpdate;
+        private String state;
+        private int pos;
 
         public Bean(String name, String num, String time, boolean isSos, boolean isUpdate) {
             this.name = name;
@@ -187,6 +218,22 @@ public class SrollAdapter extends BaseAdapter{
             this.time = time;
             this.isSos = isSos;
             this.isUpdate = isUpdate;
+        }
+
+        public String getState() {
+            return state;
+        }
+
+        public int getPos() {
+            return pos;
+        }
+
+        public void setState(String state) {
+            this.state = state;
+        }
+
+        public void setPos(int pos) {
+            this.pos = pos;
         }
 
         public String getName() {
@@ -229,4 +276,13 @@ public class SrollAdapter extends BaseAdapter{
             isUpdate = update;
         }
     }
+
+    public interface OnClickScrollItemListener{
+        public void onSrollItemClick(String state, int pos);
+    }
+
+    public void setOnClickScrollItemListener(OnClickScrollItemListener listener){
+        this.listener = listener;
+    }
+
 }
