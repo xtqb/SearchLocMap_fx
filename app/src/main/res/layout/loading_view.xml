@@ -7,7 +7,7 @@
               android:padding="@dimen/activity_horizontal_margin"
               android:orientation="vertical">
 
-    <com.ldzc.xiaogongren.widget.loading_view.SpinKitView
+    <com.lhzw.searchlocmap.view.loading_view.SpinKitView
         style="@style/SpinKitView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>

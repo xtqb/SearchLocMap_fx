@@ -72,6 +72,14 @@
         <attr name="isSupportExit" format="boolean" />
     </declare-styleable>
 
+
+    <style name="SpinKitView">
+        <item name="android:indeterminateOnly">true</item>
+        <item name="android:minWidth">48dip</item>
+        <item name="android:maxWidth">48dip</item>
+        <item name="android:minHeight">48dip</item>
+        <item name="android:maxHeight">48dip</item>
+    </style>
     <!--自定义ProgressDialog样式-->
     <style name="CustomProgressDialog" parent="android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item>
