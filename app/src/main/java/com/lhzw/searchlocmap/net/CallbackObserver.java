@@ -41,7 +41,7 @@ public abstract class CallbackObserver<T> implements Observer<BaseBean<T>> {
 
         } catch (Exception e) {
             Log.e("exception",e.getLocalizedMessage());
-            ToastUtil.showToast(e.getLocalizedMessage());
+          //  ToastUtil.showToast(e.getLocalizedMessage());
             onFailed();
         }
 
@@ -49,7 +49,7 @@ public abstract class CallbackObserver<T> implements Observer<BaseBean<T>> {
 
     @Override
     public void onError(Throwable t) {
-        ToastUtil.showToast(t.getLocalizedMessage());
+       // ToastUtil.showToast(t.getLocalizedMessage());
         onFailed();
     }
 

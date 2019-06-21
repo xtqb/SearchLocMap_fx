@@ -3,8 +3,6 @@ package com.lhzw.searchlocmap.net;
 
 import android.support.annotation.NonNull;
 
-import com.lhzw.searchlocmap.utils.ToastUtil;
-
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
@@ -30,7 +28,7 @@ public abstract class CallbackListObserver<T> implements Observer<T> {
 
     @Override
     public void onError(Throwable t) {
-        ToastUtil.showToast(t.getLocalizedMessage());
+       // ToastUtil.showToast(t.getLocalizedMessage());
         onFailed();
     }
 
