@@ -92,7 +92,7 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 				sosflash.putExtra("has_sos", false);
 				if (Math.abs(lon) < 0.00001 && Math.abs(lat) < 0.00001) {
 					list.get(0).setState(Constants.PERSON_UNDETERMINED);
-					list.get(0).setState1(Constants.PERSON_COMMON);
+//					list.get(0).setState1(Constants.PERSON_COMMON);
 				} else {
 					list.get(0).setState(Constants.PERSON_COMMON);
 				}

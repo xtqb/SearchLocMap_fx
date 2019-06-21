@@ -13,7 +13,7 @@ public class Circle extends CircleLayoutContainer {
         Dot[] dots = new Dot[12];
         for (int i = 0; i < dots.length; i++) {
             dots[i] = new Dot();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (Build.VERSION.SDK_INT >= 24) {
                 dots[i].setAnimationDelay(1200 / 12 * i);
             } else {
                 dots[i].setAnimationDelay(1200 / 12 * i + -1200);

@@ -31,7 +31,7 @@ public class SLMRetrofit {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.IP_ADD)
                 .client(genericClient())
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(GsonConverterFactory.create(gson))  //数据的处理时，只有请求成功后，才能需要解析data的数据,其他时候我们直接抛异常处理
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
 
@@ -40,15 +40,37 @@ public class SLMRetrofit {
     }
 
     private OkHttpClient genericClient() {
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();  //该拦截器用于记录应用中的网络请求的信息
+        /**
+         * 可以通过 setLevel 改变日志级别
+         共包含四个级别：NONE、BASIC、HEADER、BODY
+
+         NONE 不记录
+
+         BASIC 请求/响应行
+         --> POST /greeting HTTP/1.1 (3-byte body)
+         <-- HTTP/1.1 200 OK (22ms, 6-byte body)
+
+         HEADER 请求/响应行 + 头
+
+         --> Host: example.com
+         Content-Type: plain/text
+         Content-Length: 3
+
+         <-- HTTP/1.1 200 OK (22ms)
+         Content-Type: plain/text
+         Content-Length: 6
+
+         BODY 请求/响应行 + 头 + 体
+         */
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient httpClient = new OkHttpClient.Builder()
                 .connectTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS)
                 .writeTimeout(DEFAULT_READ_TIME_OUT, TimeUnit.SECONDS)
                 .readTimeout(DEFAULT_READ_TIME_OUT, TimeUnit.SECONDS)
-                .retryOnConnectionFailure(true)
+                .retryOnConnectionFailure(true) //失败后，是否重新连接，
         //启用Log日志
-                .addInterceptor(loggingInterceptor)
+                .addInterceptor(loggingInterceptor)  //添加拦截器  拦截器拿到了request之后，可以对request进行重写，可以添加，移除，替换请求头，也能对response的header进行重写，改变response的body
                 .addInterceptor(new Interceptor() {
                     @Override
                     public Response intercept(Chain chain) throws IOException {

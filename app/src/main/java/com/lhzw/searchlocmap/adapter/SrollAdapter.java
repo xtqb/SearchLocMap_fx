@@ -79,7 +79,7 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
                 Long locTime = locTimeMap.get(item.getNum());
                 if(locTime != null) {
                     bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > locTimeMap.get(item.getNum()));
-                    if(item.getLocTime() > locTimeMap.get(item.getNum())) {
+                    if(item.getLocTime() > locTimeMap.get(item .getNum())) {
                         update_num += 1;
                     }
                 } else {
