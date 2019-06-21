@@ -31,8 +31,8 @@ public class SLMRetrofit {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.IP_ADD)
                 .client(genericClient())
-                .addConverterFactory(GsonConverterFactory.create(gson))  //数据的处理时，只有请求成功后，才能需要解析data的数据,其他时候我们直接抛异常处理
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))  //数据的处理时，只有请求成功后，才能需要解析data的数据,其他时候我们直接抛异常处理 json解析
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())//支持RxJava
                 .build();
 
         mApi = retrofit.create(Api.class);

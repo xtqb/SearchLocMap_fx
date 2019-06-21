@@ -11,6 +11,8 @@ import io.reactivex.disposables.Disposable;
 /**
  * api请求的结果回调
  * data 里面是一个数组的解析回调
+ *
+ * 在Java中通过Observable类和Observer接口实现了观察者模式。一个Observer对象监视着一个Observable对象的变化，当Observable对象发生变化时，Observer得到通知，就可以进行相应的工作
  */
 
 public abstract class CallbackListObserver<T> implements Observer<T> {

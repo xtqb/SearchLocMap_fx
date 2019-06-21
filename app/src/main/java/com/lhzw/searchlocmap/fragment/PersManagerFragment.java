@@ -182,7 +182,7 @@ public class PersManagerFragment extends Fragment implements
         loadingView.setLoadingTitle("解绑中...");
         loadingView.show();
         Observable<BaseBean> observable = SLMRetrofit.getInstance().getApi().deleteBinding(bdNum, deviceNums);
-        observable.compose(new ThreadSwitchTransformer<BaseBean>())
+        observable.compose(new ThreadSwitchTransformer<BaseBean>()) //从数据流中得到原始Observable<T>的操作符
                 .subscribe(new CallbackListObserver<BaseBean>() {
                     @Override
                     protected void onSucceed(BaseBean bean) {
