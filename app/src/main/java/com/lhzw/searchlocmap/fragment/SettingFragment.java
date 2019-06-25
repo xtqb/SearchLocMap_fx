@@ -295,6 +295,11 @@ public class SettingFragment extends Fragment implements OnClickListener,
                                     mNumList.add(num);//上传到服务接口的BdNum
                                 }else if("0".equals(dataBean.getSend())) {
                                     SpUtils.putString(Constants.UPLOAD_JZH_NUM, dataBean.getBdNumber());
+                                    try {
+                                        SearchLocMapApplication.getInstance().getUploadService().setNum(Constants.TX_JZH,dataBean.getBdNumber());
+                                    } catch (RemoteException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                                 //添加到本地数据库
                                 LocalBDNum localBDNum = new LocalBDNum(dataBean.getBdNumber(), dataBean.getSend(),dataBean.getReceive());
@@ -374,6 +379,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
                         }
                         try {//上传到服务接口
                             if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
+
                                 SearchLocMapApplication.getInstance().getUploadService().updateBDNum(mNumList);
                             }
                         } catch (RemoteException e) {

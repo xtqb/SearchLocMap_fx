@@ -240,6 +240,11 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                     mNumList.add(num);//上传到服务接口的BdNum
                                 }else if("0".equals(dataBean.getSend())) {
                                     SpUtils.putString(Constants.UPLOAD_JZH_NUM, dataBean.getBdNumber());
+                                    try {
+                                        SearchLocMapApplication.getInstance().getUploadService().setNum(Constants.TX_JZH,dataBean.getBdNumber());
+                                    } catch (RemoteException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                                 //添加到本地数据库
                                 LocalBDNum localBDNum = new LocalBDNum(dataBean.getBdNumber(), dataBean.getSend(),dataBean.getReceive());
