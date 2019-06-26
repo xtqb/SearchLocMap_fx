@@ -230,7 +230,12 @@ public class ShortMessageFragment extends BaseLazyFragment {
             }
 
     }else {
-            tvNoMessage.setVisibility(View.VISIBLE);
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvNoMessage.setVisibility(View.VISIBLE);
+                }
+            });
         }
 
 }
@@ -244,7 +249,7 @@ public class ShortMessageFragment extends BaseLazyFragment {
 
 
 
-    @Subscribe(threadMode= ThreadMode.MAIN)
+    @Subscribe(threadMode= ThreadMode.POSTING)
     public void getEventBus(EventBusBean eventBusBean){
         if(eventBusBean!=null){
             switch (eventBusBean.getCode()){
