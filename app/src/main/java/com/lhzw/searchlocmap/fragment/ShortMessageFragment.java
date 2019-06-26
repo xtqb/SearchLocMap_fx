@@ -67,7 +67,13 @@ public class ShortMessageFragment extends BaseLazyFragment {
         mHttpPerDao = mHelper.getHttpPerDao();
         mMesgInfoDao = mHelper.getMesgInfoDao();
         initCurrentContactRv();//初始化RV配置
-        updateRecentContactList();//更新联系人列表数据
+
+        new Thread(new Runnable() {//初始化在子线程
+            @Override
+            public void run() {
+                updateRecentContactList();//更新联系人列表数据
+            }
+        }).start();
 
     }
 
@@ -249,7 +255,7 @@ public class ShortMessageFragment extends BaseLazyFragment {
 
 
 
-    @Subscribe(threadMode= ThreadMode.POSTING)
+    @Subscribe(threadMode= ThreadMode.BACKGROUND)
     public void getEventBus(EventBusBean eventBusBean){
         if(eventBusBean!=null){
             switch (eventBusBean.getCode()){
