@@ -78,7 +78,7 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
             if(locTimeMap != null) {
                 Long locTime = locTimeMap.get(item.getNum());
                 if(locTime != null) {
-                    bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > locTimeMap.get(item.getNum()));
+                    bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > locTime);
                     if(item.getLocTime() > locTimeMap.get(item .getNum())) {
                         update_num += 1;
                     }
@@ -92,6 +92,11 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
                 }
             }
             bean.setState(Constants.PERSON_SOS);
+            if(item.getState().equals(Constants.PERSON_OFFLINE)){
+                bean.setOnline(false);
+            } else {
+                bean.setOnline(true);
+            }
             bean.setPos(pos);
             list.add(bean);
             pos ++;
@@ -102,12 +107,12 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
             if(locTimeMap != null) {
                 Long locTime = locTimeMap.get(item.getNum());
                 if(locTime != null) {
-                    bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > locTimeMap.get(item.getNum()));
+                    bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, item.getLocTime() > locTime);
                     if(item.getLocTime() > locTimeMap.get(item.getNum())) {
                         update_num += 1;
                     }
                 } else {
-                    bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > 0);
+                    bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, item.getLocTime() > 0);
                 }
             } else {
                 bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, item.getLocTime() > 0);
@@ -116,6 +121,11 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
                 }
             }
             bean.setState(Constants.PERSON_COMMON);
+            if(item.getState().equals(Constants.PERSON_OFFLINE)){
+                bean.setOnline(false);
+            } else {
+                bean.setOnline(true);
+            }
             bean.setPos(pos);
             list.add(bean);
             pos ++;
@@ -127,11 +137,16 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
             if(item.getState1() != null) {
                 state =  item.getState1().equals(Constants.PERSON_SOS);
             }
-            bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), state, false);
+            bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, state);
             if(state) {
                 sos_num += 1;
             }
             bean.setState(Constants.PERSON_UNDETERMINED);
+            if(item.getState().equals(Constants.PERSON_OFFLINE)){
+                bean.setOnline(false);
+            } else {
+                bean.setOnline(true);
+            }
             bean.setPos(pos);
             list.add(bean);
             pos ++;
@@ -175,6 +190,11 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
             holder = (ViewHolder) convertView.getTag();
         }
         holder.tv_num.setText(position + 1 + "");
+        if(Constants.PERSON_UNDETERMINED.equals(list.get(position).getState())){
+            holder.tv_num.setBackgroundResource(R.drawable.bg_round_scrollview_rect_offline);
+        } else {
+            holder.tv_num.setBackgroundResource(R.drawable.bg_round_scrollview_rect);
+        }
         if(position < 9) {
             holder.tv_num.setPadding(17,1,17,1);
         } else {
@@ -184,8 +204,8 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
         holder.tv_name.setText(list.get(position).getName());
         holder.tv_bdnum.setText(list.get(position).getNum());
         holder.tv_time.setText(list.get(position).getTime());
-        holder.im_sos.setVisibility(list.get(position).isSos ? View.VISIBLE: View.INVISIBLE);
-        holder.im_update.setBackgroundResource(list.get(position).isUpdate ? R.drawable.icon_update_yes : R.drawable.icon_update_no) ;
+        holder.im_sos.setVisibility(list.get(position).isSos() ? View.VISIBLE: View.INVISIBLE);
+        holder.im_update.setBackgroundResource(list.get(position).isUpdate() ? R.drawable.icon_update_yes : R.drawable.icon_update_no) ;
         return convertView;
     }
 
@@ -216,6 +236,7 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
         private boolean isUpdate;
         private String state;
         private int pos;
+        private boolean isOnline;
 
         public Bean(String name, String num, String time, boolean isSos, boolean isUpdate) {
             this.name = name;
@@ -223,6 +244,14 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
             this.time = time;
             this.isSos = isSos;
             this.isUpdate = isUpdate;
+        }
+
+        public boolean isOnline() {
+            return isOnline;
+        }
+
+        public void setOnline(boolean online) {
+            isOnline = online;
         }
 
         public String getState() {

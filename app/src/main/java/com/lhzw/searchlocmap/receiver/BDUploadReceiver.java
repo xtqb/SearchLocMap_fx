@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
+import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bdsignal.BDSignal;
 import com.lhzw.searchlocmap.bean.LocalBDNum;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
@@ -27,14 +28,14 @@ import com.lhzw.uploadmms.UploadInfoBean;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class BDUploadReceiver extends BroadcastReceiver {
-    private DatabaseHelper<?> helper;
-    private Dao<MessageInfoIBean, Integer> mesDao;
-    private Dao<HttpPersonInfo, Integer> httpDao;
-    private final String TAG = "BDUploadReceiver";
-    private List<UploadInfoBean> list = new ArrayList<UploadInfoBean>();
+    private static DatabaseHelper<?> helper;
+    private static Dao<MessageInfoIBean, Integer> mesDao;
+    private static Dao<HttpPersonInfo, Integer> httpDao;
+    private static final String TAG = "BDUploadReceiver";
     private static final String Instruction = "instruction";
     private static final String BDSCK = "BDSCK";
     private static final String mDBPOW = "BDPOW";
@@ -45,11 +46,9 @@ public class BDUploadReceiver extends BroadcastReceiver {
             Constants.SIG_RET_INFO_5, Constants.SIG_RET_INFO_6,
             Constants.SIG_RET_INFO_7, Constants.SIG_RET_INFO_8,
             Constants.SIG_RET_INFO_9};
-    private static List<Intent> taskQueue = new ArrayList<Intent>();
+    private static List<Intent> taskQueue = new LinkedList<>();
     private static boolean isRunning = false;
-    private Context mContext;
     private static float[] values = new float[10];
-    private Dao<LocalBDNum, Integer> mBdNumDao;
 
     @Override
     public void onReceive(Context mContext, Intent intent) {
@@ -57,22 +56,20 @@ public class BDUploadReceiver extends BroadcastReceiver {
         helper = DatabaseHelper.getHelper(mContext);
         mesDao = helper.getMesgInfoDao();
         httpDao = helper.getHttpPerDao();
-        mBdNumDao = helper.getBdNumDao();
-        this.mContext = mContext;
         taskQueue.add(intent);
         if (!isRunning) {
             doTask();
         }
     }
 
-    private synchronized void doTask() {
+    private static synchronized void doTask() {
         if (!isRunning && !taskQueue.isEmpty()) {
             isRunning = true;
             new Thread(new Action()).start();
         }
     }
 
-    private class Action implements Runnable {
+    private static class Action implements Runnable {
         @Override
         public void run() {
             do {
@@ -97,8 +94,8 @@ public class BDUploadReceiver extends BroadcastReceiver {
                                 CommonDBOperator.saveToDB(mesDao, item);
                                 Intent mmsIntent = new Intent(Constants.BD_Mms_ACTION);
                                 mmsIntent.putExtra("ID", msg_Id);
-                                mContext.sendBroadcast(mmsIntent);
-                                showNotifcationInfo(mContext, dipList.get(0).getRealName(), R.drawable.icon_chat);
+                                SearchLocMapApplication.getContext().sendBroadcast(mmsIntent);
+                                showNotifcationInfo(SearchLocMapApplication.getContext(), dipList.get(0).getRealName(), R.drawable.icon_chat);
                                 dipList.clear();
                             }
                         } else {//消息来源于手持机
@@ -109,8 +106,8 @@ public class BDUploadReceiver extends BroadcastReceiver {
                                 CommonDBOperator.saveToDB(mesDao, msgBean);//保存为发送人的消息
                                 Intent mmsIntent = new Intent(Constants.BD_Mms_ACTION);
                                 mmsIntent.putExtra("ID", personInfo.getId());
-                                mContext.sendBroadcast(mmsIntent);
-                                showNotifcationInfo(mContext, personInfo.getRealName(), R.drawable.icon_chat);
+                                SearchLocMapApplication.getContext().sendBroadcast(mmsIntent);
+                                showNotifcationInfo(SearchLocMapApplication.getContext(), personInfo.getRealName(), R.drawable.icon_chat);
                                 personInfos.clear();
                             } else {//发送人不在数据库
                                 //todo 发送人不在人员表 则新增人员到表里
@@ -118,8 +115,8 @@ public class BDUploadReceiver extends BroadcastReceiver {
                                 CommonDBOperator.saveToDB(mesDao, msgBean);//保存为发送人的消息
                                 Intent mmsIntent = new Intent(Constants.BD_Mms_ACTION);
                                 mmsIntent.putExtra("ID", num);
-                                mContext.sendBroadcast(mmsIntent);
-                                showNotifcationInfo(mContext, num, R.drawable.icon_chat);
+                                SearchLocMapApplication.getContext().sendBroadcast(mmsIntent);
+                                showNotifcationInfo(SearchLocMapApplication.getContext(), num, R.drawable.icon_chat);
                             }
 
                         }
@@ -135,10 +132,10 @@ public class BDUploadReceiver extends BroadcastReceiver {
                             int tmp = obtainMaxValue(intent.getExtras());
                             Intent bgsinal_list = new Intent(Constants.BD_SIGNAL_LIST);
                             bgsinal_list.putExtra("values", values);
-                            mContext.sendBroadcast(bgsinal_list);
+                            SearchLocMapApplication.getContext().sendBroadcast(bgsinal_list);
                             BDSignal.value = tmp;
                             Intent sinalIntent = new Intent(Constants.BD_SIG_ACTION);
-                            mContext.sendBroadcast(sinalIntent);
+                            SearchLocMapApplication.getContext().sendBroadcast(sinalIntent);
                             Log.e("Tag", "value = " + tmp);
                         }
                     }
@@ -149,7 +146,7 @@ public class BDUploadReceiver extends BroadcastReceiver {
         }
     }
 
-    private int obtainMaxValue(Bundle bundle) {
+    private static int obtainMaxValue(Bundle bundle) {
         int[] maxArr = new int[3];
         int strength = 1;
         try {
@@ -203,7 +200,7 @@ public class BDUploadReceiver extends BroadcastReceiver {
         return strength;
     }
 
-    public void showNotifcationInfo(Context mContext, String num, int id) {
+    public static void showNotifcationInfo(Context mContext, String num, int id) {
         // 设置通知到类型SOS和通知的详细信息（接收到XXX发送的SOS请求）
         Notification n = new Notification.Builder(mContext)
                 .setContentTitle(mContext.getString(R.string._noe_short_message)).setContentText(mContext.getString(R.string._noe_receiver_signal).replace("@", num))

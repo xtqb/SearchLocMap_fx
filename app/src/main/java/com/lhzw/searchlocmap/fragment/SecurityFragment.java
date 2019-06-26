@@ -127,6 +127,7 @@ import com.lhzw.searchlocmap.utils.LogWrite;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.searchlocmap.view.HistogramBar;
 import com.lhzw.searchlocmap.view.HorizontalListView;
+import com.lhzw.searchlocmap.view.LoadingView;
 import com.lhzw.searchlocmap.view.LocationDialog;
 import com.lhzw.searchlocmap.view.ScanAnimView;
 import com.lhzw.searchlocmap.view.ShowAlertDialogCommand;
@@ -295,6 +296,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private TextView tv_update_leisure;
     private View scroll_cancel;
     private TextView tv_upload_state;
+    private LoadingView loadingView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -968,12 +970,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 Log.e("Tag", "bt_plot_list");
                 break;
             case R.id.total_search_btn:
-                if (isTimerRuning) {
-                    timerCloseDialog = new ShowTimerCloseDialog(getActivity());
-                    timerCloseDialog.show();
-                    timerCloseDialog.setListener(this);
-                    return;
-                }
+//                if (isTimerRuning) {
+//                    timerCloseDialog = new ShowTimerCloseDialog(getActivity());
+//                    timerCloseDialog.show();
+//                    timerCloseDialog.setListener(this);
+//                    return;
+//                }
                 if(isOpen) {
                     mScrollLayout.scrollToExit();
                 } else {
@@ -1319,7 +1321,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 mScrollLayout.getBackground().setAlpha(0);
                 break;
             case R.id.rl_upload_history:
-
+                // 单次搜索
+                cleanDatabase();
+                loadingView = new LoadingView(getActivity());
+//                loadingView.setLoadingTitle(getString(R.string.searching_note).replace("@", "①"));
+                loadingView.setCancelable(false);
+                loadingView.show();
+                isTimerRuning = true;
+                new Thread(new Action()).start();
                 break;
         }
     }
@@ -1632,7 +1641,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     }
                     break;
                 case SEARCH:
-                    cleanDatabase();
+//                    cleanDatabase();
                     mHandler.sendEmptyMessageDelayed(TIMER_REPORT, 60000);  //定时延时后，在延时10秒上报搜索信息
                     mHandler.sendEmptyMessageDelayed(SEARCH, delay);
                     break;
@@ -1679,18 +1688,42 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         tv_serach_date.setText(rev1[0]);
                         tv_serach_time.setText(rev1[1]);
                         mHandler.sendEmptyMessageDelayed(TIMER_REPORT, 2000);
+                        //保存手表数据
+                        saveWactchTime();
                     }
                     break;
                 case TREE_REFLESH:
                     treeDialog.refleshView(content);
                     break;
                 case REFLESH_TV:
-                    treeDialog.initDetail(uploadLocTimeBean.getTotal(), uploadLocTimeBean.getSuccessNum(), uploadLocTimeBean.getFailNum(), uploadLocTimeBean.getContent());
-                    treeDialog.setEnable(true);
+//                    treeDialog.initDetail(uploadLocTimeBean.getTotal(), uploadLocTimeBean.getSuccessNum(), uploadLocTimeBean.getFailNum(), uploadLocTimeBean.getContent());
+//                    treeDialog.setEnable(true);
+                    loadingView.setLoadingTitle(getString(R.string.searching_note).replace("@", msg.obj + ""));
                     break;
             }
         }
     };
+
+    private void saveWactchTime() {
+        CommonDBOperator.deleteAllItems(locTimeDao);
+        List<WatchLastLocTime> watchLastLoc = new ArrayList<>();
+        for(PersonalInfo bean : sosList) {
+            WatchLastLocTime item = new WatchLastLocTime(bean.getNum(), bean.getLocTime());
+            watchLastLoc.add(item);
+        }
+        for(PersonalInfo bean : commonList) {
+            WatchLastLocTime item = new WatchLastLocTime(bean.getNum(), bean.getLocTime());
+            watchLastLoc.add(item);
+        }
+        for(PersonalInfo bean : undetermined_List) {
+            WatchLastLocTime item = new WatchLastLocTime(bean.getNum(), bean.getLocTime());
+            watchLastLoc.add(item);
+        }
+        CommonDBOperator.saveToDBBatch(locTimeDao, watchLastLoc);
+        watchLastLoc.clear();
+        mScrollAdapter.refleshView();
+    }
+
 
     @Override
     public void Update(int iMessage, Object oValue, Object pValue) {
@@ -2227,6 +2260,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 byte[] numByte = obtainBDNum();
                 for (int counter = 0; counter < 3; counter++) {
                     list = CommonDBOperator.queryByKeys(persondao, "state", Constants.PERSON_OFFLINE + "");
+                    Message msg = mHandler.obtainMessage(REFLESH_TV);
+                    msg.obj = counter + 1;
+                    mHandler.sendMessage(msg);
                     if (counter == 0) {
                         isUpload = list.size() > 0 ? true : false;
                     }
@@ -2248,9 +2284,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         }
                     }
                 }
-//                if (isUpload && SpUtils.getBoolean(SPConstants.COMMON_SWITCH, false)) {
-                    mHandler.sendEmptyMessageDelayed(TIMER_REPORT, 60000);  //定时延时后，在延时10秒上报搜索信息
-//                }
+                loadingView.dismiss();
+                isTimerRuning = false;
             }
         }
     }

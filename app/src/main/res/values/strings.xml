@@ -58,7 +58,7 @@
     <string name="auto_search">自动搜索</string>
     <string name="total_persons_search">搜索功能</string>
     <string name="search_function_select">搜索功能</string>
-    <string name="timer_search_note">定时搜索已开启，是否退出</string>
+    <string name="timer_search_note">定时上报已开启，是否退出</string>
     <string name="persons_search_function">搜救功能</string>
     <string name="fuzzy_persons_search">模糊搜救</string>
     <string name="fuzzy_plot_search">标绘</string>
@@ -71,7 +71,7 @@
     <string name="note_search_beginning">正在发送指令...</string>
     <string name="note_search_stop">定向搜索结束</string>
     <string name="note_input_person_note">未录入人员</string>
-    <string name="note_switch_search">正在搜索中</string>
+    <string name="note_switch_search">正在上报中</string>
     <string name="note_switch_search_close">搜救已关闭</string>
     <string name="popuphone">电话:</string>
     <string name="track">轨迹查询</string>
@@ -283,8 +283,8 @@
     <string name="request_fire_line_begaining">正在请求火线...</string>
     <string name="request_fire_line_end">请求火线结束.</string>
     <string name="dialog_timer_stop">退出</string>
-    <string name="timer_search_end_note">自动搜索已结束</string>
-    <string name="timer_search_start_note">自动搜索已开始</string>
+    <string name="timer_search_end_note">定时上报已结束</string>
+    <string name="timer_search_start_note">定时上报已开始</string>
     <string name="total_search_start">单次搜索已开始</string>
     <string name="total_search_end">单次搜索已结束</string>
     <string name="total_search_msg">单次搜索信息</string>
@@ -372,4 +372,5 @@
     <string name="per_sos_num">呼叫sos</string>
     <string name="update_state_note">当前无状态</string>
     <string name="function_search_ennable_note">请先退出搜索功能</string>
+    <string name="searching_note">正在@次搜索...</string>
 </resources>
