@@ -192,7 +192,9 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
                 }
 
                 if (!canSave) {//已保存过了  就不再保存了
-                    showToast(getString(R.string.person_info_repeat_note));
+                    setBDType(CHANNEL);
+                    finish();
+                    //showToast(getString(R.string.person_info_repeat_note));
                     return;
                 }
 
