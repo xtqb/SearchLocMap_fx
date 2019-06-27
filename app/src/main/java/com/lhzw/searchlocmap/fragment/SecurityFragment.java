@@ -297,6 +297,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private View scroll_cancel;
     private TextView tv_upload_state;
     private LoadingView loadingView;
+    private final int COMPLETE = 0x0087;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -1302,6 +1303,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 isUpload = false;
                 mHandler.removeMessages(SEARCH_NOTE);
                 mHandler.removeMessages(TIMER_REPORT);
+                mHandler.removeMessages(COMPLETE);
                 BaseUtils.flipAnimatorXViewShow(rl_upload_state_progress, rl_upload_outer, 200);
                 scanani_view.stopAnimation();
                 tv_search_state.setText("");
@@ -1628,6 +1630,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     String[] rev = BaseUtils.formatTime(System.currentTimeMillis()).split("  ");
                     tv_serach_date.setText(rev[0]);
                     tv_serach_time.setText(rev[1]);
+                    mHandler.sendEmptyMessageDelayed(COMPLETE, 2000);
                     break;
                 case SYNC_DELAY_SIGNAL:
                     //延时
@@ -1699,6 +1702,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 //                    treeDialog.initDetail(uploadLocTimeBean.getTotal(), uploadLocTimeBean.getSuccessNum(), uploadLocTimeBean.getFailNum(), uploadLocTimeBean.getContent());
 //                    treeDialog.setEnable(true);
                     loadingView.setLoadingTitle(getString(R.string.searching_note).replace("@", msg.obj + ""));
+                    break;
+                case COMPLETE:
+                    BaseUtils.flipAnimatorXViewShow(rl_upload_state_progress, rl_upload_outer, 200);
+                    scanani_view.stopAnimation();
+                    tv_search_state.setText("");
+                    tv_serach_date.setText("");
+                    tv_serach_time.setText("");
+                    tv_update_leisure.setVisibility(View.VISIBLE);
                     break;
             }
         }
