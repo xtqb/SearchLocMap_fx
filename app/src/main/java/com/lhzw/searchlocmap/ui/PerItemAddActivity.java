@@ -397,23 +397,25 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
                     icon_watch.setVisibility(View.GONE);
                     add_num_et.setText(register_num);
 
-                    List<LocPersonalInfo> list = CommonDBOperator.queryByKeys(
-                            perdao, "num", register_num);
-                    if (list != null && list.size() > 0) {
-                        list.clear();
-                        list = null;
-                        canSave = false;//已录入不再进行入库
-                        showToast(getString(R.string.person_info_repeat_note));
-                        return;
-                    }
-
-                    canSave = true;
                     byte[] sndBytes = BaseUtils.getPerRegisterByteArr(add_num_et.getText().toString());
                     byte[] numByte1 = obtainBDNum();
                     for (int j = 0; j < 5; j++) {
                         sndBytes[5 + j] = numByte1[j];
                     }
                     sendCMDSearch(sndBytes);
+
+                    List<LocPersonalInfo> list = CommonDBOperator.queryByKeys(
+                            perdao, "num", register_num);
+                    if (list != null && list.size() > 0) {
+                        list.clear();
+                        list = null;
+                        canSave = false;//已录入不再进行入库
+                        //showToast(getString(R.string.person_info_repeat_note));
+                        return;
+                    }
+
+                    canSave = true;
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();
