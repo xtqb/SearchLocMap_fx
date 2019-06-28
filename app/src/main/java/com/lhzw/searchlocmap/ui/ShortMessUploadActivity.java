@@ -202,24 +202,13 @@ public class ShortMessUploadActivity extends Activity implements
 		updataList();
 	}
 
-	private void updataList() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				updateState();
-				if (mesgList != null && mesgList.size() > 0) {
-					mesgList.clear();
-				}
-				mesgList = CommonDBOperator.queryByKeys(mesDao,"ID", ID + "");
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						adapter.notifyDataSetChanged();
-					}
-				});
-
-			}
-		}).start();
+	private synchronized void updataList() {
+		updateState();
+		if (mesgList != null && mesgList.size() > 0) {
+			mesgList.clear();
+		}
+		mesgList = CommonDBOperator.queryByKeys(mesDao,"ID", ID + "");
+		adapter.notifyDataSetChanged();
 
 	}
 
