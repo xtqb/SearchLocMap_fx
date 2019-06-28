@@ -234,7 +234,12 @@ public class ShortMessageFragment extends BaseLazyFragment {
                 LogUtil.d("最近联系人个数=="+mPersonInfoList.size());
                 //排序
                 sortByTimeCurrentToLast(mPersonInfoList);
-                mAdapter.setNewData(mPersonInfoList);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.setNewData(mPersonInfoList);
+                    }
+                });
             }
 
     }else {
