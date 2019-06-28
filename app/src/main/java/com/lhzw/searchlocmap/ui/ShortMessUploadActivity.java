@@ -104,11 +104,14 @@ public class ShortMessUploadActivity extends Activity implements
 			public void run() {
 				updateState();
                 mesgList = CommonDBOperator.queryByKeys(mesDao,"ID", ID +"" );
-
+                runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						mess_listview.setAdapter(adapter);
+					}
+				});
 			}
 		}).start();
-
-
 	}
 
 	private void initTitle() {
@@ -134,7 +137,6 @@ public class ShortMessUploadActivity extends Activity implements
 		im_mess_upload_back.setOnClickListener(this);
 		tv_send_mes.setOnClickListener(this);
 		ed_content.addTextChangedListener(watcher);
-		mess_listview.setAdapter(adapter);
 	}
 
 	@Override
