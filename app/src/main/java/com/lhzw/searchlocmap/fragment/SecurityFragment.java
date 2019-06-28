@@ -18,7 +18,6 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -32,7 +31,6 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -88,7 +86,6 @@ import com.lhzw.searchlocmap.adapter.PlotHorizonAdapter;
 import com.lhzw.searchlocmap.adapter.PortaitAdapter;
 import com.lhzw.searchlocmap.adapter.SrollAdapter;
 import com.lhzw.searchlocmap.adapter.TimerSearchAdapter;
-import com.lhzw.searchlocmap.adapter.UndeterminedAdapter;
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bdsignal.BDSignal;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
@@ -153,13 +150,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import butterknife.BindView;
-
 public class SecurityFragment extends BaseFragment implements IGT_Observer,
         LocationListener, OnHoriItemClickListener, ShowTimerDialog.onTimeItemClickListener,
         PopupWindow.OnDismissListener, PortaitAdapter.OnItemSelectedListener, AdapterView.OnItemLongClickListener,
         ShowStateTreeDialog.OnSearchCancelListener, MapListener, ScrollLayout.OnScrollChangedListener, SrollAdapter.OnClickScrollItemListener {
-    private View view;
     private DrawerLayout drawer;
     private boolean list_h_state;
     private Animation am1;
@@ -170,7 +164,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private final int PERSTATE_REQCODE = 0x101;
     private LinearLayout ll_plot_tools;
     private LinearLayout ll_plot_function;
-    private boolean isDrawer;
     private MeasureOverlayManager overlayManager = new MeasureOverlayManager();
     private MapView mMapView;
     private GraphicOverlay mGraphicOverlay;
@@ -181,7 +174,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private Criteria criteria;
     private double lon;
     private double lat;
-    private int radius;
     public static final String DEFAULT_LAYER_NAME = "默认标绘层";
     private static final String LOCATION_LAYER_NAME = "当前位置层";
     private static final String SOILDERINFO_LAYER_NAME = "SOS人员信息层";
@@ -195,9 +187,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private DatabaseHelper<?> helper;
     private Map<String, String> map_sos;
     private Map<String, String> map_common;
-    private UndeterminedAdapter undetermined_adpter;
-    private final String sos_path = Config.DATA_ROOT_PATH + "/marker/icon_sos.png";
-    private final String common_path = Config.DATA_ROOT_PATH + "/marker/icon_common.png";
     private List<Integer> sos_marker_id = new ArrayList<>();
     private List<Integer> common_marker_id = new ArrayList<>();
     private String[] searchTimeArr;
@@ -210,8 +199,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private TextView note_content_tv;
     private PopupWindow mPopWindow;
     private ShowAlertDialogCommand dialogCommmand;
-    private final int LOC_MODE_OFF = 0;
-    private final int LOC_MODE_ON = 3;
     private MapController mapController;
     private boolean isSettingEnable;
     private final int TIMER_REPORT = 0x0021;
@@ -261,7 +248,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private int selectID;
     private LinearLayout ll_zoom_tools;
     private final int ZOOM_DIMISS = 0x0054;
-    private final int UPLOAD_STATE = 0x0091;
     private String[] content = new String[]{"", "", "", "", "", "", "", "", "", ""};
     private final int SEARCH_NOTE = 0x6800;
     private ShowStateTreeDialog treeDialog;
@@ -298,20 +284,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private TextView tv_upload_state;
     private LoadingView loadingView;
     private final int COMPLETE = 0x0087;
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        EventBus.getDefault().register(this);
-        view = inflater.inflate(R.layout.security_fg, container, false);
-        initView();
-        initData();
-        initScrollView();
-        //动态申请权限
-        requestPermission();
-        initDEMData();
-        return view;
-    }
 
     private void initScrollView() {
         /**设置 setting*/
@@ -448,6 +420,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("Tag", "OnActlkasdjfklasjf  ....");
         super.onActivityResult(requestCode, resultCode, data);
         boolean isLocation = false;
         if (resultCode == 1) {
@@ -523,232 +496,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         }
     }
 
-    @SuppressLint("WrongConstant")
-    private void initData() {
-        helper = DatabaseHelper.getHelper(getActivity());
-        mHttpDao = helper.getHttpPerDao();
-        persondao = helper.getPersonalInfoDao();
-        plotDao = helper.getPlotItemDao();
-        treeDao = helper.getTreeStateDao();
-        locTimeDao = helper.getLastLocTimeDao();
-        plotItemDao = helper.getPlotItemDao();
-        locTrackDao = helper.getLocTrackDao();
-        bdUtils = BDUtils.getInstance();
-        map_sos = new HashMap<String, String>();
-        firePlots = new ArrayList<>();
-        newFirePlots = new ArrayList<>();
-        map_sos.put("state", Constants.PERSON_UNDETERMINED);
-        map_sos.put("state1", Constants.PERSON_SOS);
-        trackList = new ArrayList<>();
-        map_common = new HashMap<String, String>();
-        map_common.put("state", Constants.PERSON_UNDETERMINED);
-        map_common.put("state1", Constants.PERSON_COMMON);
-        isUploading = false;
-        PlotItem item = new PlotItem("火点", R.drawable.icon_fire);
-        PlotItem item1 = new PlotItem("火线", R.drawable.icon_line);
-        PlotItem item2 = new PlotItem("待定", R.drawable.icon_daiding);
-        PlotItem item3 = new PlotItem("待定", R.drawable.icon_daiding);
-        PlotItem item4 = new PlotItem("待定", R.drawable.icon_daiding);
-        landscapeList.add(item);
-        landscapeList.add(item1);
-        landscapeList.add(item2);
-        landscapeList.add(item3);
-        landscapeList.add(item4);
-        list_h_state = true;
-        isTrackState = false;
-        isSyncState = false;
-        am1 = AnimationUtils.loadAnimation(getActivity(), R.anim.anima_down);
-        am1.setFillAfter(true);
-        am1.setInterpolator(new LinearInterpolator());
-        am2 = AnimationUtils.loadAnimation(getActivity(), R.anim.anima_up);
-        am2.setInterpolator(new LinearInterpolator());
-        am2.setFillAfter(true);
-        plotHAdapter = new PlotHorizonAdapter(getActivity(), landscapeList);
-        rl_h_list.setAdapter(plotHAdapter);
-
-        rl_h_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                mGraphicOverlay.SetCurrentLayer(DEFAULT_LAYER_NAME);
-                mGraphicOverlay.Attach(SecurityFragment.this, 0, DEFAULT_LAYER_NAME);
-                mGraphicOverlay.SetLayerZoomWithMap(false, DEFAULT_LAYER_NAME);
-                GM_EditGlobalFunc.GM_GetEgraphicGlobalPropertySetPtr().SetBoolProperty("GM_EDIT2_KEEP_CREATE", true);
-                switch (position) {
-                    case 0:
-                        mGraphicOverlay.SelectTool(GM_TypeDefines.GM_TOOL_EDIT_CREATE, mMapView); //禁止拖动  -1  可以拖动
-                        GM_PnlGlobalFunc.SetCreatingInfo(GM_TypeDefines.GM_FEATURE_TYPE_SITUATION_POINT, 2001, 47);  //火点
-                        break;
-                    case 1:
-                        mGraphicOverlay.SelectTool(GM_TypeDefines.GM_TOOL_EDIT_CREATE, mMapView); //禁止拖动  -1  可以拖动
-                        GM_PnlGlobalFunc.SetCreatingInfo(GM_TypeDefines.GM_FEATURE_TYPE_BASE_LINE, 2001, 10047);     //火线
-                        break;
-                    default:
-                        mGraphicOverlay.SelectTool(-1, mMapView);
-                        showToast(getString(R.string.undetermined_function));
-                        break;
-                }
-
-                mGraphicOverlay.SetSelectable(false, SOILDERINFO_LAYER_NAME);             //
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        // 右侧的list
-        portaitAdapter = new PortaitAdapter(getActivity(), firePlots);
-        plot_listView.setOnItemClickListener(portaitAdapter);
-        portaitAdapter.setOnItemSelectedListener(this);
-        plot_listView.setAdapter(portaitAdapter);
-        plot_listView.setOnItemLongClickListener(this);
-        startBottomAnimation(list_h_state);
-        locManager = (LocationManager) getActivity().getSystemService(Service.LOCATION_SERVICE);
-        loRaManager = (LoRaManager) getActivity().getSystemService(Context.LORA_SERVICE);
-        setBDType(SpUtils.getInt(SPConstants.CHANNEL_NUM, Constants.CHANNEL_DEF));
-        mBDManager = (BDManager) getActivity().getSystemService(Context.BD_SERVICE);
-        if (locManager != null) {
-            intLoc();
-        }
-        tatolMap = new HashMap<>();
-        lat = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT);
-        lon = SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
-        radius = SpUtils.getInt(SPConstants.SECURITY_R, Constants.RADIUS);
-        searchTimeArr = getActivity().getResources().getStringArray(R.array.pick_time);
-        isTimerRuning = false;
-        bytes = new byte[11];
-        bdByteArr = null;
-        isSettingEnable = false;
-        syncFLId = -1;
-        isShowing = false;
-        sos_bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_sos);
-        common_bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_common);
-        initMessageNum();
-    }
-
-
-    private void initView() {
-        drawer = (DrawerLayout) view.findViewById(R.id.drawer);
-        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        mScrollLayout = (ScrollLayout) view.findViewById(R.id.scrolllayout);
-        Button communication_btn = (Button) view.findViewById(R.id.communication_btn);
-        communication_btn.setOnClickListener(this);
-
-        Button bt_plot_list = (Button) view.findViewById(R.id.bt_plot_list);
-        bt_plot_list.setOnClickListener(this);
-
-        Button total_search_btn = (Button) view.findViewById(R.id.total_search_btn);
-        total_search_btn.setOnClickListener(this);
-
-        Button switch_location_btn = (Button) view.findViewById(R.id.switch_location_btn);
-        switch_location_btn.setOnClickListener(this);
-
-        ImageView im_person_state = (ImageView) view.findViewById(R.id.im_person_state);
-        im_person_state.setOnClickListener(this);
-
-        TextView tv_function = (TextView) view.findViewById(R.id.tv_function);
-        tv_function.setOnClickListener(this);
-
-        LinearLayout rl_mesure_distance = (LinearLayout) view.findViewById(R.id.rl_mesure_distance);
-        rl_mesure_distance.setOnClickListener(this);
-
-        LinearLayout rl_mesure_area = (LinearLayout) view.findViewById(R.id.rl_mesure_area);
-        rl_mesure_area.setOnClickListener(this);
-
-        LinearLayout rl_mesure_height = (LinearLayout) view.findViewById(R.id.rl_mesure_height);
-        rl_mesure_height.setOnClickListener(this);
-
-        LinearLayout rl_mesure_p2p = (LinearLayout) view.findViewById(R.id.rl_mesure_p2p);
-        rl_mesure_p2p.setOnClickListener(this);
-
-        LinearLayout rl_plot = (LinearLayout) view.findViewById(R.id.rl_plot);
-        rl_plot.setOnClickListener(this);
-
-        LinearLayout rl_plot_list = (LinearLayout) view.findViewById(R.id.rl_plot_list);
-        rl_plot_list.setOnClickListener(this);
-
-        LinearLayout rl_loc_track = (LinearLayout) view.findViewById(R.id.rl_loc_track);
-        rl_loc_track.setOnClickListener(this);
-
-        LinearLayout rl_track_list = (LinearLayout) view.findViewById(R.id.rl_track_list);
-        rl_track_list.setOnClickListener(this);
-
-        LinearLayout rl_quick_loc = (LinearLayout) view.findViewById(R.id.rl_quick_loc);
-        rl_quick_loc.setOnClickListener(this);
-
-        LinearLayout rl_sync_fire_line = (LinearLayout) view.findViewById(R.id.rl_sync_fire_line);
-        rl_sync_fire_line.setOnClickListener(this);
-
-        Button bt_zoom_amplifier = (Button) view.findViewById(R.id.bt_zoom_amplifier);
-        bt_zoom_amplifier.setOnClickListener(this);
-
-        Button bt_zoom_shrink = (Button) view.findViewById(R.id.bt_zoom_shrink);
-        bt_zoom_shrink.setOnClickListener(this);
-
-        ll_zoom_tools = (LinearLayout) view.findViewById(R.id.ll_zoom_tools);
-
-        tv_location = (TextView) view.findViewById(R.id.tv_location);
-
-        tv_conmnication_num = (TextView) view.findViewById(R.id.tv_conmnication_num);
-        tv_search_note = (TextView) view.findViewById(R.id.tv_search_note);
-        tv_signal_search_note = (TextView) view.findViewById(R.id.tv_signal_search_note);
-
-        bt_track_complete = (Button) view.findViewById(R.id.bt_track_complete);
-        bt_track_complete.setOnClickListener(this);
-        ll_plot_tools = (LinearLayout) view.findViewById(R.id.ll_plot_tools);
-        rl_h_list = (HorizontalListView) view.findViewById(R.id.rl_h_list);
-        ll_animation = (RelativeLayout) view.findViewById(R.id.ll_animation);
-        im_animation = (ImageView) view.findViewById(R.id.im_animation);
-        im_animation.setImageResource(R.drawable.persons_animation);
-        Button bt_plot_back = (Button) view.findViewById(R.id.bt_plot_back);
-        note_content_tv = (TextView) view.findViewById(R.id.note_content_tv);
-        bt_plot_back.setOnClickListener(this);
-
-        Button bt_plot_complete = (Button) view.findViewById(R.id.bt_plot_complete);
-        bt_plot_complete.setOnClickListener(this);
-
-        plot_listView = (ListView) view.findViewById(R.id.plot_listView);
-        ll_plot_function = (LinearLayout) view.findViewById(R.id.ll_plot_function);
-        Button bt_plot_move = (Button) view.findViewById(R.id.bt_plot_move);
-        bt_plot_move.setOnClickListener(this);
-        Button bt_plot_save = (Button) view.findViewById(R.id.bt_plot_save);
-        bt_plot_save.setOnClickListener(this);
-        Button bt_plot_over = (Button) view.findViewById(R.id.bt_plot_over);
-        bt_plot_over.setOnClickListener(this);
-//        HorizontalListView undetermined_listview = (HorizontalListView) view.findViewById(R.id.sos_horizon_listview);
-//        undetermined_adpter = new UndeterminedAdapter(getActivity(), undetermined_List, SecurityFragment.this);
-//        undetermined_listview.setAdapter(undetermined_adpter);
-
-        rl_upload_inner = (RelativeLayout) view.findViewById(R.id.rl_upload_inner);
-        im_upload_state_cancel = (Button) view.findViewById(R.id.im_upload_state_cancel);
-        rl_upload_state_progress = (RelativeLayout) view.findViewById(R.id.rl_upload_state_progress);
-        rl_upload_outer = (RelativeLayout) view.findViewById(R.id.rl_upload_outer);
-        rl_upload_inner.setOnClickListener(this);
-        im_upload_state_cancel.setOnClickListener(this);
-        scanani_view = (ScanAnimView) view.findViewById(R.id.scanani_view);
-
-        his_bar = (HistogramBar) view.findViewById(R.id.his_bar);
-        tv_signal_level = (TextView) view.findViewById(R.id.tv_signal_level);
-        scroll_listview = (ListView) view.findViewById(R.id.scroll_listview);
-        tv_search_state = (TextView) view.findViewById(R.id.tv_search_state);
-        tv_serach_date = (TextView) view.findViewById(R.id.tv_serach_date);
-        tv_serach_time = (TextView) view.findViewById(R.id.tv_serach_time);
-        rl_upload_time_select = (ImageView) view.findViewById(R.id.rl_upload_time_select);
-        rl_upload_time_select.setOnClickListener(this);
-        rl_upload_history = (ImageView) view.findViewById(R.id.rl_upload_history);
-        rl_upload_history.setOnClickListener(this);
-        TextView tv_per_num = (TextView) view.findViewById(R.id.tv_per_num);
-        TextView tv_update_num = (TextView) view.findViewById(R.id.tv_update_num);
-        TextView tv_sos_num = (TextView) view.findViewById(R.id.tv_sos_num);
-        tv_update_leisure = (TextView) view.findViewById(R.id.tv_update_leisure);
-        tv_upload_state = (TextView) view.findViewById(R.id.tv_upload_state);
-        scroll_cancel = view.findViewById(R.id.scroll_cancel);
-        scroll_cancel.setOnClickListener(this);
-        mScrollAdapter = new SrollAdapter(getActivity(), sosList, commonList, undetermined_List, tv_per_num, tv_update_num, tv_sos_num);
-        scroll_listview.setAdapter(mScrollAdapter);
-        scroll_listview.setOnItemClickListener(mScrollAdapter);
-        mScrollAdapter.setOnClickScrollItemListener(this);
+    @Override
+    protected void onReflesh() {
+        initSoilderInfoList();
     }
 
     @Override
@@ -768,7 +518,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 }
             }
         }
-
         refreshMap();
     }
 
@@ -977,7 +726,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 //                    timerCloseDialog.setListener(this);
 //                    return;
 //                }
-                if(isOpen) {
+                if (isOpen) {
                     mScrollLayout.scrollToExit();
                 } else {
                     mScrollLayout.setToOpen();
@@ -1312,7 +1061,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 tv_update_leisure.setVisibility(View.VISIBLE);
                 break;
             case R.id.scroll_cancel:
-                if(isOpen) {
+                if (isOpen) {
                     mScrollLayout.setToExit();
                     mScrollLayout.getBackground().setAlpha(0);
                 }
@@ -1333,6 +1082,241 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 new Thread(new Action()).start();
                 break;
         }
+    }
+
+    @Override
+    protected int initView() {
+        return R.layout.security_fg;
+    }
+
+    @SuppressLint("WrongConstant")
+    @Override
+    protected void initData() {
+        drawer = (DrawerLayout) view.findViewById(R.id.drawer);
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        mScrollLayout = (ScrollLayout) view.findViewById(R.id.scrolllayout);
+        Button communication_btn = (Button) view.findViewById(R.id.communication_btn);
+        communication_btn.setOnClickListener(this);
+
+        Button bt_plot_list = (Button) view.findViewById(R.id.bt_plot_list);
+        bt_plot_list.setOnClickListener(this);
+
+        Button total_search_btn = (Button) view.findViewById(R.id.total_search_btn);
+        total_search_btn.setOnClickListener(this);
+
+        Button switch_location_btn = (Button) view.findViewById(R.id.switch_location_btn);
+        switch_location_btn.setOnClickListener(this);
+
+        ImageView im_person_state = (ImageView) view.findViewById(R.id.im_person_state);
+        im_person_state.setOnClickListener(this);
+
+        TextView tv_function = (TextView) view.findViewById(R.id.tv_function);
+        tv_function.setOnClickListener(this);
+
+        LinearLayout rl_mesure_distance = (LinearLayout) view.findViewById(R.id.rl_mesure_distance);
+        rl_mesure_distance.setOnClickListener(this);
+
+        LinearLayout rl_mesure_area = (LinearLayout) view.findViewById(R.id.rl_mesure_area);
+        rl_mesure_area.setOnClickListener(this);
+
+        LinearLayout rl_mesure_height = (LinearLayout) view.findViewById(R.id.rl_mesure_height);
+        rl_mesure_height.setOnClickListener(this);
+
+        LinearLayout rl_mesure_p2p = (LinearLayout) view.findViewById(R.id.rl_mesure_p2p);
+        rl_mesure_p2p.setOnClickListener(this);
+
+        LinearLayout rl_plot = (LinearLayout) view.findViewById(R.id.rl_plot);
+        rl_plot.setOnClickListener(this);
+
+        LinearLayout rl_plot_list = (LinearLayout) view.findViewById(R.id.rl_plot_list);
+        rl_plot_list.setOnClickListener(this);
+
+        LinearLayout rl_loc_track = (LinearLayout) view.findViewById(R.id.rl_loc_track);
+        rl_loc_track.setOnClickListener(this);
+
+        LinearLayout rl_track_list = (LinearLayout) view.findViewById(R.id.rl_track_list);
+        rl_track_list.setOnClickListener(this);
+
+        LinearLayout rl_quick_loc = (LinearLayout) view.findViewById(R.id.rl_quick_loc);
+        rl_quick_loc.setOnClickListener(this);
+
+        LinearLayout rl_sync_fire_line = (LinearLayout) view.findViewById(R.id.rl_sync_fire_line);
+        rl_sync_fire_line.setOnClickListener(this);
+
+        Button bt_zoom_amplifier = (Button) view.findViewById(R.id.bt_zoom_amplifier);
+        bt_zoom_amplifier.setOnClickListener(this);
+
+        Button bt_zoom_shrink = (Button) view.findViewById(R.id.bt_zoom_shrink);
+        bt_zoom_shrink.setOnClickListener(this);
+
+        ll_zoom_tools = (LinearLayout) view.findViewById(R.id.ll_zoom_tools);
+
+        tv_location = (TextView) view.findViewById(R.id.tv_location);
+
+        tv_conmnication_num = (TextView) view.findViewById(R.id.tv_conmnication_num);
+        tv_search_note = (TextView) view.findViewById(R.id.tv_search_note);
+        tv_signal_search_note = (TextView) view.findViewById(R.id.tv_signal_search_note);
+
+        bt_track_complete = (Button) view.findViewById(R.id.bt_track_complete);
+        bt_track_complete.setOnClickListener(this);
+        ll_plot_tools = (LinearLayout) view.findViewById(R.id.ll_plot_tools);
+        rl_h_list = (HorizontalListView) view.findViewById(R.id.rl_h_list);
+        ll_animation = (RelativeLayout) view.findViewById(R.id.ll_animation);
+        im_animation = (ImageView) view.findViewById(R.id.im_animation);
+        im_animation.setImageResource(R.drawable.persons_animation);
+        Button bt_plot_back = (Button) view.findViewById(R.id.bt_plot_back);
+        note_content_tv = (TextView) view.findViewById(R.id.note_content_tv);
+        bt_plot_back.setOnClickListener(this);
+
+        Button bt_plot_complete = (Button) view.findViewById(R.id.bt_plot_complete);
+        bt_plot_complete.setOnClickListener(this);
+
+        plot_listView = (ListView) view.findViewById(R.id.plot_listView);
+        ll_plot_function = (LinearLayout) view.findViewById(R.id.ll_plot_function);
+        Button bt_plot_move = (Button) view.findViewById(R.id.bt_plot_move);
+        bt_plot_move.setOnClickListener(this);
+        Button bt_plot_save = (Button) view.findViewById(R.id.bt_plot_save);
+        bt_plot_save.setOnClickListener(this);
+        Button bt_plot_over = (Button) view.findViewById(R.id.bt_plot_over);
+        bt_plot_over.setOnClickListener(this);
+//        HorizontalListView undetermined_listview = (HorizontalListView) view.findViewById(R.id.sos_horizon_listview);
+//        undetermined_adpter = new UndeterminedAdapter(getActivity(), undetermined_List, SecurityFragment.this);
+//        undetermined_listview.setAdapter(undetermined_adpter);
+
+        rl_upload_inner = (RelativeLayout) view.findViewById(R.id.rl_upload_inner);
+        im_upload_state_cancel = (Button) view.findViewById(R.id.im_upload_state_cancel);
+        rl_upload_state_progress = (RelativeLayout) view.findViewById(R.id.rl_upload_state_progress);
+        rl_upload_outer = (RelativeLayout) view.findViewById(R.id.rl_upload_outer);
+        rl_upload_inner.setOnClickListener(this);
+        im_upload_state_cancel.setOnClickListener(this);
+        scanani_view = (ScanAnimView) view.findViewById(R.id.scanani_view);
+
+        his_bar = (HistogramBar) view.findViewById(R.id.his_bar);
+        tv_signal_level = (TextView) view.findViewById(R.id.tv_signal_level);
+        scroll_listview = (ListView) view.findViewById(R.id.scroll_listview);
+        tv_search_state = (TextView) view.findViewById(R.id.tv_search_state);
+        tv_serach_date = (TextView) view.findViewById(R.id.tv_serach_date);
+        tv_serach_time = (TextView) view.findViewById(R.id.tv_serach_time);
+        rl_upload_time_select = (ImageView) view.findViewById(R.id.rl_upload_time_select);
+        rl_upload_time_select.setOnClickListener(this);
+        rl_upload_history = (ImageView) view.findViewById(R.id.rl_upload_history);
+        rl_upload_history.setOnClickListener(this);
+        TextView tv_per_num = (TextView) view.findViewById(R.id.tv_per_num);
+        TextView tv_update_num = (TextView) view.findViewById(R.id.tv_update_num);
+        TextView tv_sos_num = (TextView) view.findViewById(R.id.tv_sos_num);
+        tv_update_leisure = (TextView) view.findViewById(R.id.tv_update_leisure);
+        tv_upload_state = (TextView) view.findViewById(R.id.tv_upload_state);
+        scroll_cancel = view.findViewById(R.id.scroll_cancel);
+        scroll_cancel.setOnClickListener(this);
+        mScrollAdapter = new SrollAdapter(getActivity(), sosList, commonList, undetermined_List, tv_per_num, tv_update_num, tv_sos_num);
+        scroll_listview.setAdapter(mScrollAdapter);
+        scroll_listview.setOnItemClickListener(mScrollAdapter);
+        mScrollAdapter.setOnClickScrollItemListener(this);
+
+        helper = DatabaseHelper.getHelper(getActivity());
+        mHttpDao = helper.getHttpPerDao();
+        persondao = helper.getPersonalInfoDao();
+        plotDao = helper.getPlotItemDao();
+        treeDao = helper.getTreeStateDao();
+        locTimeDao = helper.getLastLocTimeDao();
+        plotItemDao = helper.getPlotItemDao();
+        locTrackDao = helper.getLocTrackDao();
+        bdUtils = BDUtils.getInstance();
+        map_sos = new HashMap<String, String>();
+        firePlots = new ArrayList<>();
+        newFirePlots = new ArrayList<>();
+        map_sos.put("state", Constants.PERSON_UNDETERMINED);
+        map_sos.put("state1", Constants.PERSON_SOS);
+        trackList = new ArrayList<>();
+        map_common = new HashMap<String, String>();
+        map_common.put("state", Constants.PERSON_UNDETERMINED);
+        map_common.put("state1", Constants.PERSON_COMMON);
+        isUploading = false;
+        PlotItem item = new PlotItem("火点", R.drawable.icon_fire);
+        PlotItem item1 = new PlotItem("火线", R.drawable.icon_line);
+        PlotItem item2 = new PlotItem("待定", R.drawable.icon_daiding);
+        PlotItem item3 = new PlotItem("待定", R.drawable.icon_daiding);
+        PlotItem item4 = new PlotItem("待定", R.drawable.icon_daiding);
+        landscapeList.add(item);
+        landscapeList.add(item1);
+        landscapeList.add(item2);
+        landscapeList.add(item3);
+        landscapeList.add(item4);
+        list_h_state = true;
+        isTrackState = false;
+        isSyncState = false;
+        am1 = AnimationUtils.loadAnimation(getActivity(), R.anim.anima_down);
+        am1.setFillAfter(true);
+        am1.setInterpolator(new LinearInterpolator());
+        am2 = AnimationUtils.loadAnimation(getActivity(), R.anim.anima_up);
+        am2.setInterpolator(new LinearInterpolator());
+        am2.setFillAfter(true);
+        plotHAdapter = new PlotHorizonAdapter(getActivity(), landscapeList);
+        rl_h_list.setAdapter(plotHAdapter);
+
+        rl_h_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                mGraphicOverlay.SetCurrentLayer(DEFAULT_LAYER_NAME);
+                mGraphicOverlay.Attach(SecurityFragment.this, 0, DEFAULT_LAYER_NAME);
+                mGraphicOverlay.SetLayerZoomWithMap(false, DEFAULT_LAYER_NAME);
+                GM_EditGlobalFunc.GM_GetEgraphicGlobalPropertySetPtr().SetBoolProperty("GM_EDIT2_KEEP_CREATE", true);
+                switch (position) {
+                    case 0:
+                        mGraphicOverlay.SelectTool(GM_TypeDefines.GM_TOOL_EDIT_CREATE, mMapView); //禁止拖动  -1  可以拖动
+                        GM_PnlGlobalFunc.SetCreatingInfo(GM_TypeDefines.GM_FEATURE_TYPE_SITUATION_POINT, 2001, 47);  //火点
+                        break;
+                    case 1:
+                        mGraphicOverlay.SelectTool(GM_TypeDefines.GM_TOOL_EDIT_CREATE, mMapView); //禁止拖动  -1  可以拖动
+                        GM_PnlGlobalFunc.SetCreatingInfo(GM_TypeDefines.GM_FEATURE_TYPE_BASE_LINE, 2001, 10047);     //火线
+                        break;
+                    default:
+                        mGraphicOverlay.SelectTool(-1, mMapView);
+                        showToast(getString(R.string.undetermined_function));
+                        break;
+                }
+
+                mGraphicOverlay.SetSelectable(false, SOILDERINFO_LAYER_NAME);             //
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        // 右侧的list
+        portaitAdapter = new PortaitAdapter(getActivity(), firePlots);
+        plot_listView.setOnItemClickListener(portaitAdapter);
+        portaitAdapter.setOnItemSelectedListener(this);
+        plot_listView.setAdapter(portaitAdapter);
+        plot_listView.setOnItemLongClickListener(this);
+        startBottomAnimation(list_h_state);
+        locManager = (LocationManager) getActivity().getSystemService(Service.LOCATION_SERVICE);
+        loRaManager = (LoRaManager) getActivity().getSystemService(Context.LORA_SERVICE);
+        setBDType(SpUtils.getInt(SPConstants.CHANNEL_NUM, Constants.CHANNEL_DEF));
+        mBDManager = (BDManager) getActivity().getSystemService(Context.BD_SERVICE);
+        if (locManager != null) {
+            intLoc();
+        }
+        tatolMap = new HashMap<>();
+        lat = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT);
+        lon = SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
+//        radius = SpUtils.getInt(SPConstants.SECURITY_R, Constants.RADIUS);
+        searchTimeArr = getActivity().getResources().getStringArray(R.array.pick_time);
+        isTimerRuning = false;
+        bytes = new byte[11];
+        bdByteArr = null;
+        isSettingEnable = false;
+        syncFLId = -1;
+        isShowing = false;
+        sos_bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_sos);
+        common_bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_common);
+        initMessageNum();
+        initScrollView();
+        //动态申请权限
+        requestPermission();
+        initDEMData();
     }
 
     private void uploadItem() {
@@ -1570,7 +1554,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     break;
                 case TIMER_REPORT:
                     //上报搜索信息
-                    if(!isUpload) {
+                    if (!isUpload) {
                         return;
                     }
                     List<PersonalInfo> rxList = CommonDBOperator.queryByOrderKey(persondao, "num");
@@ -1684,7 +1668,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     ll_zoom_tools.setVisibility(View.GONE);
                     break;
                 case SEARCH_NOTE:
-                    if(isUpload){
+                    if (isUpload) {
                         tv_search_state.setText(getString(R.string.send_success));
                         tv_upload_state.setText(getString(R.string.upload_state_sent));
                         String[] rev1 = BaseUtils.formatTime(System.currentTimeMillis()).split("  ");
@@ -1718,15 +1702,15 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private void saveWactchTime() {
         CommonDBOperator.deleteAllItems(locTimeDao);
         List<WatchLastLocTime> watchLastLoc = new ArrayList<>();
-        for(PersonalInfo bean : sosList) {
+        for (PersonalInfo bean : sosList) {
             WatchLastLocTime item = new WatchLastLocTime(bean.getNum(), bean.getLocTime());
             watchLastLoc.add(item);
         }
-        for(PersonalInfo bean : commonList) {
+        for (PersonalInfo bean : commonList) {
             WatchLastLocTime item = new WatchLastLocTime(bean.getNum(), bean.getLocTime());
             watchLastLoc.add(item);
         }
-        for(PersonalInfo bean : undetermined_List) {
+        for (PersonalInfo bean : undetermined_List) {
             WatchLastLocTime item = new WatchLastLocTime(bean.getNum(), bean.getLocTime());
             watchLastLoc.add(item);
         }
@@ -2149,15 +2133,15 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             //更新数据库
             CommonDBOperator.deleteAllItems(locTimeDao);
             List<WatchLastLocTime> watchLastLoc = new ArrayList<>();
-            for(PersonalInfo bean : sosList) {
+            for (PersonalInfo bean : sosList) {
                 WatchLastLocTime item = new WatchLastLocTime(bean.getNum(), bean.getLocTime());
                 watchLastLoc.add(item);
             }
-            for(PersonalInfo bean : commonList) {
+            for (PersonalInfo bean : commonList) {
                 WatchLastLocTime item = new WatchLastLocTime(bean.getNum(), bean.getLocTime());
                 watchLastLoc.add(item);
             }
-            for(PersonalInfo bean : undetermined_List) {
+            for (PersonalInfo bean : undetermined_List) {
                 WatchLastLocTime item = new WatchLastLocTime(bean.getNum(), bean.getLocTime());
                 watchLastLoc.add(item);
             }
@@ -2212,7 +2196,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     @Override
     public boolean onTouch(TouchEvent touchEvent) {
-        if(isOpen) {
+        if (isOpen) {
             mScrollLayout.setToExit();
             mScrollLayout.getBackground().setAlpha(0);
         }
@@ -2230,13 +2214,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     @Override
     public void onSrollItemClick(String state, int pos) {
-        if(state.equals(Constants.PERSON_SOS)) {
+        if (state.equals(Constants.PERSON_SOS)) {
             mapController = mMapView.getController();
             mapController.setCenter(new GeoPoint(Double.valueOf(sosList.get(pos).getLatitude()), Double.valueOf(sosList.get(pos).getLongitude())));
-        }else if(state.equals(Constants.PERSON_COMMON)) {
+        } else if (state.equals(Constants.PERSON_COMMON)) {
             mapController = mMapView.getController();
             mapController.setCenter(new GeoPoint(Double.valueOf(commonList.get(pos).getLatitude()), Double.valueOf(commonList.get(pos).getLongitude())));
-        } else if(state.equals(Constants.PERSON_UNDETERMINED)) {
+        } else if (state.equals(Constants.PERSON_UNDETERMINED)) {
             //点击事件处理
             Log.e("Tag", "pos : " + pos);
             if ((Constants.PERSON_COMMON).equals(undetermined_List.get(pos)
@@ -2256,7 +2240,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 showUnderlineOfflinePopupWindow(pos);
             }
         }
-        if(isOpen) {
+        if (isOpen) {
             mScrollLayout.setToExit();
             mScrollLayout.getBackground().setAlpha(0);
         }
@@ -2367,10 +2351,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 //TODO 发指令  就清空上次的指令  更新指令表的状态
                 Dao<PersonalInfo, Integer> infoDao = helper.getPersonalInfoDao();
                 List<PersonalInfo> infoList = CommonDBOperator.getList(infoDao);
-                if(infoList!=null && infoList.size()>0){
+                if (infoList != null && infoList.size() > 0) {
                     for (int i = 0; i < infoList.size(); i++) {
                         infoList.get(i).setFeedback(0);//重置为未确认
-                        CommonDBOperator.updateItem(infoDao,infoList.get(i));
+                        CommonDBOperator.updateItem(infoDao, infoList.get(i));
                     }
                 }
 
@@ -2703,8 +2687,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             for (int i = 0; i < list.size(); i++) {
                 //根据消息关联人的ID 查设备类型0 1
                 List<HttpPersonInfo> personInfos = CommonDBOperator.queryByKeys(mHttpDao, "id", String.valueOf(list.get(i).getID()));
-                if(personInfos != null && personInfos.size() > 0){
-                    if(personInfos.get(0).getDeviceType() == 0 || personInfos.get(0).getDeviceType() == 1){//是可接受的消息
+                if (personInfos != null && personInfos.size() > 0) {
+                    if (personInfos.get(0).getDeviceType() == 0 || personInfos.get(0).getDeviceType() == 1) {//是可接受的消息
                         unReadMsgCount++;
                     }
                 }
@@ -2735,7 +2719,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             list.clear();
         }
         if (sendID == BaseUtils.getSendID()) {
-            if(isOpen && isUpload) {
+            if (isOpen && isUpload) {
                 tv_search_state.setText(getString(R.string.upload_success_1));
                 tv_upload_state.setText(getString(R.string.upload_state_commplted));
                 String[] rev1 = BaseUtils.formatTime(System.currentTimeMillis()).split("  ");
@@ -2747,7 +2731,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     @Override
     protected void refleshBdSignal(Intent intent) {
-        if(isOpen) {
+        if (isOpen) {
             float[] values = intent.getFloatArrayExtra("values");
             his_bar.refleshView(values);
             switch (BDSignal.value) {
@@ -2781,7 +2765,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
      * 上传dialog
      */
 
-    public void showUploadDetailDialog(int total, int success, int fail, String body){
+    public void showUploadDetailDialog(int total, int success, int fail, String body) {
         uploadDetail = new ShowUploadDetailDialog(getActivity(), total, success, fail, body);
         uploadDetail.show();
         uploadDetail.intContent();
@@ -2814,6 +2798,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             }
         }
     }
+
     @Override
     public void onScrollProgressChanged(float currentProgress) {
         if (currentProgress >= 0) {
@@ -2833,14 +2818,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         if (currentStatus.equals(ScrollLayout.Status.EXIT)) {
 //            mScrollLayout.getBackground().setAlpha(0);
             isOpen = false;
-            if(mGraphicOverlay != null && mMapView != null) {
+            if (mGraphicOverlay != null && mMapView != null) {
                 mGraphicOverlay.SelectTool(-1, mMapView);
             }
             scroll_cancel.setVisibility(View.GONE);
-        }  else {
+        } else {
             mScrollLayout.setBackgroundColor(getResources().getColor(R.color.tra_gray));
             isOpen = true;
-            if(mGraphicOverlay != null && mMapView != null) {
+            if (mGraphicOverlay != null && mMapView != null) {
                 mGraphicOverlay.SelectTool(GM_TypeDefines.GM_TOOL_EDIT_CREATE, mMapView); //禁止拖动  -1  可以拖动
             }
 

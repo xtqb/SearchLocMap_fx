@@ -1,40 +1,36 @@
 package com.lhzw.searchlocmap.fragment;
 
-import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gtmap.api.IGeoPoint;
-import com.gtmap.util.GeoPoint;
-import com.gtmap.views.MapView;
-import com.gtmap.views.overlay.OverlayItem;
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.bean.PlotItemInfo;
-import com.lhzw.searchlocmap.bean.SyncFireLine;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
-import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.view.ShowMesureDisDialog;
 
-import java.util.List;
-
+/**
+ * description：可实现懒加载的fragment - 若把初始化内容放到initData实现,就是采用Lazy方式加载的Fragment
+ * 若不需要Lazy加载则initData方法内留空,初始化内容放到initViews即可 -注1:
+ * 如果是与ViewPager一起使用，调用的是setUserVisibleHint。
+ * ------可以调用mViewPager.setOffscreenPageLimit(size),若设置了该属性
+ * 则viewpager会缓存指定数量的Fragment -注2:
+ * 如果是通过FragmentTransaction的show和hide的方法来控制显示，调用的是onHiddenChanged. -注3:
+ * 针对初始就show的Fragment 为了触发onHiddenChanged事件 达到lazy效果 需要先hide再show
+ */
 public abstract class BaseFragment extends Fragment implements View.OnClickListener {
     private Toast mGlobalToast;
     protected boolean isSosFlash = false;
@@ -42,6 +38,14 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
     private Dao<PlotItemInfo, Integer> syncDao;
     private Toast searchToast;
     private TextView tv_search_content;
+
+    protected boolean isVisible;// 是否可见状态
+    private boolean isPrepared;// 标志位，View已经初始化完成。
+    private boolean isFirstLoad = true;// 是否第一次加载
+    private boolean isReflesh = false;
+    protected LayoutInflater inflater;
+    protected Context mContext;
+    protected View view;
 
     protected abstract void initSoilderInfoList();
 
@@ -56,60 +60,28 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
     private ShowMesureDisDialog mesureDialog;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        isFirstLoad = true;
+        view = inflater.inflate(initView(), container, false);
+        isPrepared = true;
+        lazyLoad();
         registerBroadcastReceiver();
+        return view;
     }
 
     @Override
     public void onDestroy() {
         // TODO Auto-generated method stub
         super.onDestroy();
-        if (receiver != null) {
-            getActivity().unregisterReceiver(receiver);
+        try {
+            if (receiver != null && getActivity() != null) {
+                getActivity().unregisterReceiver(receiver);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
-
-
-    /**
-     * marker点击时跳动一下
-     */
-    public void jumpPoint(final MapView mapView, final GeoPoint gPoint, final List<OverlayItem> list) {
-        final Handler handler = new Handler();
-        final long start = SystemClock.uptimeMillis();// 从开机到现在的毫秒数（手机睡眠时间不包括） final LatLng
-        Point sPoint = mapView.getProjection().CGCS2000toPixels(gPoint, new Point());
-        sPoint.offset(0, -100);
-        final IGeoPoint IgPoint;
-        IgPoint = mapView.getProjection().CGCS2000fromPixels(sPoint.x, sPoint.y);
-        list.clear();
-        list.add(new OverlayItem("", "", (GeoPoint) IgPoint));
-        mapView.postInvalidate();
-//        final long duration = 1500;
-//        final Interpolator interpolator = new BounceInterpolator();
-//        handler.post(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                long elapsed = SystemClock.uptimeMillis() - start;
-//                float t = interpolator.getInterpolation((float) elapsed / duration);
-//                double lng = t * IgPoint.getLongitudeE6()/ (10^6) + (1 - t)  * IgPoint.getLongitudeE6()/ (10^6);
-//                double lat = t * IgPoint.getLatitudeE6()/ (10^6) + (1 - t) * IgPoint.getLatitudeE6()/ (10^6);
-//                list.clear();
-//                list.add(new OverlayItem("", "", new GeoPoint(lat, lng)));
-//                mapView.postInvalidate();
-//                Log.e("Tag", "sdkljfklajsdf");
-//                if (t < 1.0) {
-//                    handler.postDelayed(this, 16);
-//                } else {
-//                    list.clear();
-//                    list.add(new OverlayItem("", "", gPoint));
-//                    mapView.postInvalidate();
-//                }
-//            }
-//        });
-    }
-
 
     public void showToast(String text) {
         if (mGlobalToast == null) {
@@ -155,6 +127,9 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
         @Override
         public void onReceive(Context context, Intent intent) {
             // TODO Auto-generated method stub
+            if(!isVisible) {
+                return;
+            }
             if (intent.getAction().equals("com.lhzw.soildersos.change")) {
                 isSosFlash = intent.getBooleanExtra("has_sos", false);
                 Log.e("Tag", "sdfdsfsda");
@@ -173,9 +148,9 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
                 drawSyncFireLine();
             } else if (intent.getAction().equals(Constants.BD_Mms_ACTION)) {
                 initMessageNum();
-            } else if(intent.getAction().equals(Constants.ACTION_FEEDBACK)){
+            } else if (intent.getAction().equals(Constants.ACTION_FEEDBACK)) {
                 updateFeedback(intent.getIntExtra("sendID", -1));
-            } else if(intent.getAction().equals(Constants.BD_SIGNAL_LIST)) {
+            } else if (intent.getAction().equals(Constants.BD_SIGNAL_LIST)) {
                 refleshBdSignal(intent);
             }
         }
@@ -187,7 +162,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
      */
     protected void showSearchToast(String content) {
         //LayoutInflater的作用：对于一个没有被载入或者想要动态载入的界面，都需要LayoutInflater.inflate()来载入，LayoutInflater是用来找res/layout/下的xml布局文件，并且实例化
-        if(searchToast == null) {
+        if (searchToast == null) {
             LayoutInflater inflater = getActivity().getLayoutInflater();//调用Activity的getLayoutInflater()
             View view = inflater.inflate(R.layout.toast_search_end, null); //加載layout下的布局
             tv_search_content = (TextView) view.findViewById(R.id.tv_search_content);
@@ -199,20 +174,75 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
         tv_search_content.setText(content);
         searchToast.show();
     }
-//    public void dimBackground(final float from, final float to) {
-//        final Window window = getActivity().getWindow();
-//        ValueAnimator valueAnimator = ValueAnimator.ofFloat(from, to);
-//        valueAnimator.setDuration(500);
-//        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//                WindowManager.LayoutParams params = window.getAttributes();
-//                params.alpha = (Float) animation.getAnimatedValue();
-//                window.setAttributes(params);
-//            }
-//        });
-//        valueAnimator.start();
-//    }
+
+    /**
+     * 如果是与ViewPager一起使用，调用的是setUserVisibleHint
+     */
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (getUserVisibleHint()) {
+            isVisible = true;
+            onVisible();
+        } else {
+            isVisible = false;
+            onInvisible();
+        }
+    }
+
+    /**
+     * 如果是通过FragmentTransaction的show和hide的方法来控制显示，调用的是onHiddenChanged.
+     * 若是初始就show的Fragment 为了触发该事件 需要先hide再show
+     */
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            isVisible = true;
+            onVisible();
+        } else {
+            isVisible = false;
+            onInvisible();
+        }
+    }
+
+    protected void onVisible() {
+        lazyLoad();
+        if (isReflesh && !isFirstLoad) {
+            onReflesh();
+        } else {
+            isReflesh = true;
+        }
+    }
+
+    protected void onInvisible() {
+    }
+
+    protected void lazyLoad() {
+        if (!isPrepared || !isVisible || !isFirstLoad) {
+            return;
+        }
+        isFirstLoad = false;
+        initData();
+    }
+
+    /**
+     * 初始化contentView
+     *
+     * @return 返回contentView的layout id
+     */
+    protected abstract int initView();
+
+    /**
+     * 初始化数据
+     */
+    protected abstract void initData();
+
+    /**
+     * 显示刷新
+     */
+
+    protected abstract void onReflesh();
 
 
 }
