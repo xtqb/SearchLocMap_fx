@@ -99,6 +99,7 @@ public class ShortMessUploadActivity extends Activity implements
 		registerBroadcastReceiver();
 		im_bd_signal.setImageLevel(0);
 		isDestroy = false;
+		mess_listview.setAdapter(adapter);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -107,7 +108,7 @@ public class ShortMessUploadActivity extends Activity implements
                 runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						mess_listview.setAdapter(adapter);
+						adapter.notifyDataSetChanged();
 					}
 				});
 			}
