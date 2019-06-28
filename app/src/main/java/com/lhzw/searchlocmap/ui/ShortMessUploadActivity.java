@@ -102,8 +102,8 @@ public class ShortMessUploadActivity extends Activity implements
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				mesgList = CommonDBOperator.queryByKeys(mesDao,"ID", ID +"" );
 				updateState();
+                mesgList = CommonDBOperator.queryByKeys(mesDao,"ID", ID +"" );
 
 			}
 		}).start();
