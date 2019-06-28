@@ -183,7 +183,13 @@ public class ShortMessageFragment extends BaseLazyFragment {
         mMessageInfoIBeanList= CommonDBOperator.getList(mMesgInfoDao);
         if(mMessageInfoIBeanList !=null && mMessageInfoIBeanList.size() > 0){
           //原来查出的数据就是升序排列的  所以你无须排序
-            tvNoMessage.setVisibility(View.GONE);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tvNoMessage.setVisibility(View.GONE);
+                        }
+                    });
+
             //2.把消息的所属人id  和 最新消息的时间放入到 hashMap 去重
             for (int i = 0; i < mMessageInfoIBeanList.size(); i++) {
                 mHashMap.put( mMessageInfoIBeanList.get(i).getID(),mMessageInfoIBeanList.get(i).getTime());
