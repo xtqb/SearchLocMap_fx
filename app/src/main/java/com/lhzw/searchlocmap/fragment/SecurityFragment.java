@@ -499,7 +499,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     @Override
     protected void onReflesh() {
         initSoilderInfoList();
-        initDEMData();
+        initMessageNum();
     }
 
     @Override
