@@ -47,11 +47,11 @@ public class ShortMessageFragment extends BaseLazyFragment {
     RecyclerView mRvShortMsg;
     @BindView(R.id.tv_no_message)
     TextView tvNoMessage;
-    private List<MessageInfoIBean> mMessageInfoIBeanList=new ArrayList<>();
-    private List<HttpPersonInfo> mPersonInfoList=new ArrayList<>();
+    private volatile List<MessageInfoIBean> mMessageInfoIBeanList=new ArrayList<>();
+    private volatile List<HttpPersonInfo> mPersonInfoList=new ArrayList<>();
     private ShortMsgAdapter mAdapter;
     private DatabaseHelper mHelper;
-    private Map<Integer,Long> mHashMap =new LinkedHashMap<>();//<id,time> id为消息所属人id   time 为消息时间
+    private volatile Map<Integer,Long> mHashMap =new LinkedHashMap<>();//<id,time> id为消息所属人id   time 为消息时间
     private Dao mHttpPerDao;
     private Dao mMesgInfoDao;
 
