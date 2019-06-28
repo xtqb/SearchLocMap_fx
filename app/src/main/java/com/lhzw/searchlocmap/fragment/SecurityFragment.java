@@ -1093,6 +1093,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     @SuppressLint("WrongConstant")
     @Override
     protected void initData() {
+        EventBus.getDefault().register(this);
         drawer = (DrawerLayout) view.findViewById(R.id.drawer);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mScrollLayout = (ScrollLayout) view.findViewById(R.id.scrolllayout);
@@ -2790,7 +2791,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void getEventBus(EventBusBean eventBusBean) {
-        if (eventBusBean != null) {
+        if (isVisible && eventBusBean != null) {
             switch (eventBusBean.getCode()) {
                 case Constants.EVENT_CODE_REFRESH_MSG_NUM://刷新未读消息数
                     LogUtil.d("eventBus有新的未读消息");
