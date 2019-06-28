@@ -89,8 +89,6 @@ public class ShortMessageFragment extends BaseLazyFragment {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 HttpPersonInfo httpPersonInfo = (HttpPersonInfo) adapter.getItem(position);
-                httpPersonInfo.setUnReadMsgNum(0);
-                mAdapter.notifyItemChanged(position);//点击就设置未读消息为0
                 Intent intent = new Intent(mContext, ShortMessUploadActivity.class);
                 intent.putExtra("msg_Id", httpPersonInfo.getId());
                 intent.putExtra("realName", httpPersonInfo.getRealName());
@@ -173,7 +171,7 @@ public class ShortMessageFragment extends BaseLazyFragment {
     /**
      * 刷新最近联系人
      */
-    private void updateRecentContactList() {
+    private synchronized void  updateRecentContactList() {
         //先清数据
         mPersonInfoList.clear();
         mMessageInfoIBeanList.clear();
