@@ -94,12 +94,21 @@ public class ShortMessUploadActivity extends Activity implements
 		helper = DatabaseHelper.getHelper(ShortMessUploadActivity.this);
 		mesDao = helper.getMesgInfoDao();
 		bdUtils = BDUtils.getInstance();
-		mesgList = CommonDBOperator.queryByKeys(mesDao,"ID", ID +"" );
+
 		isCurrentActivity = true;
 		registerBroadcastReceiver();
-		updateState();
 		im_bd_signal.setImageLevel(0);
 		isDestroy = false;
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				mesgList = CommonDBOperator.queryByKeys(mesDao,"ID", ID +"" );
+				updateState();
+
+			}
+		}).start();
+
+
 	}
 
 	private void initTitle() {
@@ -192,12 +201,24 @@ public class ShortMessUploadActivity extends Activity implements
 	}
 
 	private void updataList() {
-		updateState();
-		if (mesgList != null && mesgList.size() > 0) {
-			mesgList.clear();
-		}
-		mesgList = CommonDBOperator.queryByKeys(mesDao,"ID", ID + "");
-		adapter.notifyDataSetChanged();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				updateState();
+				if (mesgList != null && mesgList.size() > 0) {
+					mesgList.clear();
+				}
+				mesgList = CommonDBOperator.queryByKeys(mesDao,"ID", ID + "");
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						adapter.notifyDataSetChanged();
+					}
+				});
+
+			}
+		}).start();
+
 	}
 
 	private void updateState() {
