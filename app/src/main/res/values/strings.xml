@@ -360,6 +360,8 @@
     <string name="upload_state_sent">发送完</string>
     <string name="upload_state_commplted">已确认</string>
     <string name="upload_state_cancel_monitor">取消监控</string>
+    <string name="upload_search_ing">搜索中</string>
+    <string name="upload_cancel_search">取消搜索</string>
 
     <string name="bd_signal_level_excellent">优</string>
     <string name="bd_signal_level_good">良</string>
@@ -372,5 +374,5 @@
     <string name="per_sos_num">呼叫sos</string>
     <string name="update_state_note">当前无状态</string>
     <string name="function_search_ennable_note">请先退出搜索功能</string>
-    <string name="searching_note">正在@次搜索...</string>
+    <string name="searching_note">正在进行@次搜索...</string>
 </resources>

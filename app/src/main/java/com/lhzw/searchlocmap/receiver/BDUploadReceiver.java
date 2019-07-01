@@ -140,6 +140,11 @@ public class BDUploadReceiver extends BroadcastReceiver {
                         }
                     }
                 }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             } while (!taskQueue.isEmpty());
             isRunning = false;
             doTask();

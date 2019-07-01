@@ -282,7 +282,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private TextView tv_update_leisure;
     private View scroll_cancel;
     private TextView tv_upload_state;
-    private LoadingView loadingView;
+//    private LoadingView loadingView;
     private final int COMPLETE = 0x0087;
 
     private void initScrollView() {
@@ -1043,6 +1043,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 uploadDetail = null;
                 break;
             case R.id.rl_upload_inner:
+                im_upload_state_cancel.setText(getString(R.string.upload_state_cancel_monitor));
                 BaseUtils.flipAnimatorXViewShow(rl_upload_outer, rl_upload_state_progress, 200);
                 scanani_view.startAnimation();
                 tv_update_leisure.setVisibility(View.GONE);
@@ -1050,10 +1051,16 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 tatolSearch();
                 break;
             case R.id.im_upload_state_cancel:
-                isUpload = false;
-                mHandler.removeMessages(SEARCH_NOTE);
-                mHandler.removeMessages(TIMER_REPORT);
-                mHandler.removeMessages(COMPLETE);
+                if(isUpload) {
+                    isUpload = false;
+                    mHandler.removeMessages(SEARCH_NOTE);
+                    mHandler.removeMessages(TIMER_REPORT);
+                    mHandler.removeMessages(COMPLETE);
+                }
+                if(isTimerRuning) {
+                    isTimerRuning = false;
+                    mHandler.removeMessages(REFLESH_TV);
+                }
                 BaseUtils.flipAnimatorXViewShow(rl_upload_state_progress, rl_upload_outer, 200);
                 scanani_view.stopAnimation();
                 tv_search_state.setText("");
@@ -1074,12 +1081,17 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 break;
             case R.id.rl_upload_history:
                 // 单次搜索
+                if(sosList.size() == 0 && commonList.size() == 0 && undetermined_List.size() == 0) {
+                    showToast(getString(R.string.total_search_person_none));
+                    return;
+                }
                 cleanDatabase();
-                loadingView = new LoadingView(getActivity());
-//                loadingView.setLoadingTitle(getString(R.string.searching_note).replace("@", "①"));
-                loadingView.setCancelable(false);
-                loadingView.show();
+                im_upload_state_cancel.setText(getString(R.string.upload_cancel_search));
+                BaseUtils.flipAnimatorXViewShow(rl_upload_outer, rl_upload_state_progress, 200);
+                scanani_view.startAnimation();
+                tv_update_leisure.setVisibility(View.GONE);
                 isTimerRuning = true;
+                tv_upload_state.setText(getString(R.string.upload_search_ing));
                 new Thread(new Action()).start();
                 break;
         }
@@ -1685,9 +1697,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     treeDialog.refleshView(content);
                     break;
                 case REFLESH_TV:
-//                    treeDialog.initDetail(uploadLocTimeBean.getTotal(), uploadLocTimeBean.getSuccessNum(), uploadLocTimeBean.getFailNum(), uploadLocTimeBean.getContent());
-//                    treeDialog.setEnable(true);
-                    loadingView.setLoadingTitle(getString(R.string.searching_note).replace("@", msg.obj + ""));
+                    tv_search_state.setText(getString(R.string.searching_note).replace("@", msg.obj + ""));
+                    String[] rev1 = BaseUtils.formatTime(System.currentTimeMillis()).split("  ");
+                    tv_serach_date.setText(rev1[0]);
+                    tv_serach_time.setText(rev1[1]);
                     break;
                 case COMPLETE:
                     BaseUtils.flipAnimatorXViewShow(rl_upload_state_progress, rl_upload_outer, 200);
@@ -2281,7 +2294,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         }
                     }
                 }
-                loadingView.dismiss();
                 isTimerRuning = false;
             }
         }
