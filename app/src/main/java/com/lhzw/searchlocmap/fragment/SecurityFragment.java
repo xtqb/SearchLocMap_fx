@@ -2743,7 +2743,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         list.clear();
                     }
                 }
-                mHashMap.clear();
+               // mHashMap.clear();
             }
         }).start();
 
