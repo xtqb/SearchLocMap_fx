@@ -284,6 +284,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private TextView tv_upload_state;
     private LoadingView loadingView;
     private final int COMPLETE = 0x0087;
+    private Map<String, String> mHashMap;
+    private Dao<MessageInfoIBean, Integer> mMsgDao;
 
     private void initScrollView() {
         /**设置 setting*/
@@ -1094,6 +1096,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     @Override
     protected void initData() {
         EventBus.getDefault().register(this);
+
+        mHashMap = new HashMap<>();
+        mHashMap.put("type", ShortMessUploadActivity.MESSAGE_RECEIVE + "");
+        mHashMap.put("state", Constants.MESSAGE_UNREAD + "");
+        mMsgDao = helper.getMesgInfoDao();
+
         drawer = (DrawerLayout) view.findViewById(R.id.drawer);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mScrollLayout = (ScrollLayout) view.findViewById(R.id.scrolllayout);
@@ -2676,40 +2684,55 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     @Override
     public void initMessageNum() {
-        int unReadMsgCount = 0;//初始化未读数字为0
-        //1.先查出所有的未读消息
-        Map<String, String> map = new HashMap<>();
-        map.put("type", ShortMessUploadActivity.MESSAGE_RECEIVE + "");
-        map.put("state", Constants.MESSAGE_UNREAD + "");
-        Dao<MessageInfoIBean, Integer> msgDao = helper.getMesgInfoDao();
-        List<MessageInfoIBean> list = CommonDBOperator.queryByMultiKeys(msgDao, map);
 
-        if (list != null && list.size() > 0) {
-            //计算可通信的未读消息
-            for (int i = 0; i < list.size(); i++) {
-                //根据消息关联人的ID 查设备类型0 1
-                List<HttpPersonInfo> personInfos = CommonDBOperator.queryByKeys(mHttpDao, "id", String.valueOf(list.get(i).getID()));
-                if (personInfos != null && personInfos.size() > 0) {
-                    if (personInfos.get(0).getDeviceType() == 0 || personInfos.get(0).getDeviceType() == 1) {//是可接受的消息
-                        unReadMsgCount++;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int unReadMsgCount = 0;//初始化未读数字为0
+                //1.先查出所有的未读消息
+                List<MessageInfoIBean> list = CommonDBOperator.queryByMultiKeys(mMsgDao, mHashMap);
+                if (list != null && list.size() > 0) {
+                    //计算可通信的未读消息
+                    for (int i = 0; i < list.size(); i++) {
+                        //根据消息关联人的ID 查设备类型0 1
+                        List<HttpPersonInfo> personInfos = CommonDBOperator.queryByKeys(mHttpDao, "id", String.valueOf(list.get(i).getID()));
+                        if (personInfos != null && personInfos.size() > 0) {
+                            if (personInfos.get(0).getDeviceType() == 0 || personInfos.get(0).getDeviceType() == 1) {//是可接受的消息
+                                unReadMsgCount++;
+                            }
+                        }
+
                     }
                 }
+                if (unReadMsgCount == 0) {
+                    getActivity().runOnUiThread(new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tv_conmnication_num.setText("");
+                            tv_conmnication_num.setVisibility(View.GONE);
+                        }
+                    }));
 
+                } else {
+                    final int finalUnReadMsgCount = unReadMsgCount;
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tv_conmnication_num.setVisibility(View.VISIBLE);
+                            if (finalUnReadMsgCount > 99) {
+                                tv_conmnication_num.setText("99+");
+                            } else {
+                                tv_conmnication_num.setText(String.valueOf(finalUnReadMsgCount));
+                            }
+                        }
+                    });
+
+                    list.clear();
+                }
+                mHashMap.clear();
             }
-        }
-        if (unReadMsgCount == 0) {
-            tv_conmnication_num.setText("");
-            tv_conmnication_num.setVisibility(View.GONE);
-        } else {
-            tv_conmnication_num.setVisibility(View.VISIBLE);
-            if (unReadMsgCount > 99) {
-                tv_conmnication_num.setText("99+");
-            } else {
-                tv_conmnication_num.setText(String.valueOf(unReadMsgCount));
-            }
-            list.clear();
-        }
-        map.clear();
+        }).start();
+
     }
 
     @Override
