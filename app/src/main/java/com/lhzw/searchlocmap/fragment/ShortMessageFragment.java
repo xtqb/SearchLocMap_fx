@@ -181,13 +181,14 @@ public class ShortMessageFragment extends BaseLazyFragment {
         mMessageInfoIBeanList= CommonDBOperator.getList(mMesgInfoDao);
         if(mMessageInfoIBeanList !=null && mMessageInfoIBeanList.size() > 0){
           //原来查出的数据就是升序排列的  所以你无须排序
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tvNoMessage.setVisibility(View.GONE);
-                        }
-                    });
-
+             if(getActivity()!=null){
+                 getActivity().runOnUiThread(new Runnable() {
+                     @Override
+                     public void run() {
+                         tvNoMessage.setVisibility(View.GONE);
+                     }
+                 });
+             }
             //2.把消息的所属人id  和 最新消息的时间放入到 hashMap 去重
             for (int i = 0; i < mMessageInfoIBeanList.size(); i++) {
                 mHashMap.put( mMessageInfoIBeanList.get(i).getID(),mMessageInfoIBeanList.get(i).getTime());
@@ -238,21 +239,26 @@ public class ShortMessageFragment extends BaseLazyFragment {
                 LogUtil.d("最近联系人个数=="+mPersonInfoList.size());
                 //排序
                 sortByTimeCurrentToLast(mPersonInfoList);
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.setNewData(mPersonInfoList);
-                    }
-                });
+                if(getActivity()!=null){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mAdapter.setNewData(mPersonInfoList);
+                        }
+                    });
+                }
+
             }
 
     }else {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    tvNoMessage.setVisibility(View.VISIBLE);
-                }
-            });
+            if(getActivity()!=null){
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tvNoMessage.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
         }
 
 }

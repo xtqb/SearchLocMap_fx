@@ -2716,29 +2716,32 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     }
                 }
                 if (unReadMsgCount == 0) {
-                    getActivity().runOnUiThread(new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tv_conmnication_num.setText("");
-                            tv_conmnication_num.setVisibility(View.GONE);
-                        }
-                    }));
+                    if(getActivity()!=null){
+                        getActivity().runOnUiThread(new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tv_conmnication_num.setText("");
+                                tv_conmnication_num.setVisibility(View.GONE);
+                            }
+                        }));
+                    }
 
                 } else {
                     final int finalUnReadMsgCount = unReadMsgCount;
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tv_conmnication_num.setVisibility(View.VISIBLE);
-                            if (finalUnReadMsgCount > 99) {
-                                tv_conmnication_num.setText("99+");
-                            } else {
-                                tv_conmnication_num.setText(String.valueOf(finalUnReadMsgCount));
+                    if(getActivity()!=null){
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tv_conmnication_num.setVisibility(View.VISIBLE);
+                                if (finalUnReadMsgCount > 99) {
+                                    tv_conmnication_num.setText("99+");
+                                } else {
+                                    tv_conmnication_num.setText(String.valueOf(finalUnReadMsgCount));
+                                }
                             }
-                        }
-                    });
-
-                    list.clear();
+                        });
+                        list.clear();
+                    }
                 }
                 mHashMap.clear();
             }
