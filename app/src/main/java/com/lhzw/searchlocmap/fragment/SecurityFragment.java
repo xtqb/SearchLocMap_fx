@@ -124,7 +124,6 @@ import com.lhzw.searchlocmap.utils.LogWrite;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.searchlocmap.view.HistogramBar;
 import com.lhzw.searchlocmap.view.HorizontalListView;
-import com.lhzw.searchlocmap.view.LoadingView;
 import com.lhzw.searchlocmap.view.LocationDialog;
 import com.lhzw.searchlocmap.view.ScanAnimView;
 import com.lhzw.searchlocmap.view.ShowAlertDialogCommand;
@@ -1108,7 +1107,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     @Override
     protected void initData() {
         EventBus.getDefault().register(this);
-
+        helper = DatabaseHelper.getHelper(getActivity());
         mHashMap = new HashMap<>();
         mHashMap.put("type", ShortMessUploadActivity.MESSAGE_RECEIVE + "");
         mHashMap.put("state", Constants.MESSAGE_UNREAD + "");
@@ -1235,7 +1234,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         scroll_listview.setOnItemClickListener(mScrollAdapter);
         mScrollAdapter.setOnClickScrollItemListener(this);
 
-        helper = DatabaseHelper.getHelper(getActivity());
+
         mHttpDao = helper.getHttpPerDao();
         persondao = helper.getPersonalInfoDao();
         plotDao = helper.getPlotItemDao();
