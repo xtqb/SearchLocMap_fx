@@ -621,7 +621,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="25dp"
                         android:layout_toRightOf="@+id/rl_upload_time_select"
-                        android:background="@drawable/bg_selector_upload_history"
+                        android:background="@drawable/bg_selector_upload_search"
                         android:onClick="onClick" />
 
                 </RelativeLayout>
@@ -651,7 +651,6 @@
                         android:text="@string/upload_state_sending"
                         android:textColor="@color/white"
                         android:textSize="11sp" />
-
                     <Button
                         android:id="@+id/im_upload_state_cancel"
                         android:layout_width="130dp"
