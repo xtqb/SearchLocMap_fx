@@ -2302,6 +2302,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     }
                 }
                 isTimerRuning = false;
+                mHandler.sendEmptyMessage(COMPLETE);
             }
         }
     }
