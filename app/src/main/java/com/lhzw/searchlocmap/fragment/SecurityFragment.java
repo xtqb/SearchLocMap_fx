@@ -1905,6 +1905,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         if(isShow){
             mRadioGroup.setVisibility(View.GONE);
             isShow=!isShow;
+            mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_open));
         }
         for (Map.Entry<Integer, PersonalInfo> entry : tatolMap.entrySet()) {
             if (entry.getKey() == id) {
