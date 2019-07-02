@@ -1151,14 +1151,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         SpUtils.putInt(SPConstants.COM_MODE,Constants.COM_MODE_AUTO);
                         break;
                 }
-                mRadioGroup.setVisibility(View.GONE);
-                mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_open));
+                //mRadioGroup.setVisibility(View.GONE);
+                //mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_open));
             }
         });
 
-        switch (SpUtils.getInt(SPConstants.COM_MODE,0)){
+        switch (SpUtils.getInt(SPConstants.COM_MODE,Constants.COM_MODE_BD)){
             case Constants.COM_MODE_BD :
-                mRadioGroup.check(R.id.rg_bd);
+                mRadioGroup.check(R.id.rg_btn_bd);
                 break;
             case Constants.COM_MODE_NET:
                 mRadioGroup.check(R.id.rg_btn_net);
