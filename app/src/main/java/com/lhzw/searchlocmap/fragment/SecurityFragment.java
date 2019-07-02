@@ -1168,7 +1168,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 break;
         }
 
-        LogUtil.d("当前网络模式为"+SpUtils.getInt(SPConstants.COM_MODE,0));
+        LogUtil.d("当前网络模式为"+SpUtils.getInt(SPConstants.COM_MODE,Constants.COM_MODE_BD));
 
         mScrollLayout = (ScrollLayout) view.findViewById(R.id.scrolllayout);
 
