@@ -130,7 +130,7 @@ public class BDUtils {
         //uploadQueue.add(infoBean)
     }
 
-    public void autoCom() {
+    private void autoCom() {
         if (BaseUtils.isNetConnected(SearchLocMapApplication.getContext())) {
             netCom();
         } else {
@@ -138,7 +138,7 @@ public class BDUtils {
         }
     }
 
-    public void uploadToNet(Object request, final UploadInfoBean infoBean){
+    private void uploadToNet(Object request, final UploadInfoBean infoBean){
         //短消息
         Observable<NetResponseBean> observable = SLMRetrofit.getInstance().getApi().uploadInfo(BaseUtils.getRequestBody(request));
         observable.compose(new ThreadSwitchTransformer<NetResponseBean>()).subscribe(new CallbackListObserver<NetResponseBean>() {
@@ -147,10 +147,10 @@ public class BDUtils {
                 LogUtil.e(bean.toString());
                 if("ok".equals(bean.getStatus())){
                     //请求成功
-                    ToastUtil.showToast("发送短消息成功");
+                    ToastUtil.showToast("成功");
                 }else {
                     //请求成功
-                    ToastUtil.showToast("发送短消息失败"+bean.getStatus());
+                    ToastUtil.showToast("失败"+bean.getStatus());
                     uploadQueue.add(infoBean);
                 }
             }
