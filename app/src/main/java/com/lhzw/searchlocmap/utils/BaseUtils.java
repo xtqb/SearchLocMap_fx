@@ -565,7 +565,7 @@ public class BaseUtils {
                 watchstatus = "normal";
                 lat = Double.valueOf(latLng[0]);
                 lng = Double.valueOf(latLng[1]);
-                time = sdf.format(locTimes[pos]);
+                time = sdf.format(Double.valueOf(locTimes[pos]));
             }
             WatchLocBean bean = new WatchLocBean("watch", idArr[pos], "", watchstatus, "", "", lat, lng, time);
             list.add(bean);
