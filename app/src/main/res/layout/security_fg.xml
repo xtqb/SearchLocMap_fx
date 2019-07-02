@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
     <com.lhzw.searchlocmap.view.MyDrawerLayout
         android:id="@+id/drawer"
@@ -10,7 +10,7 @@
 
         <include
             android:id="@+id/security_main"
-            layout="@layout/security_main" />
+            layout="@layout/security_main"/>
 
         <ScrollView
             android:layout_width="240dp"
@@ -38,7 +38,7 @@
                         android:layout_height="40dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_setting_top" />
+                        android:background="@drawable/icon_setting_top"/>
 
                     <TextView
                         android:layout_width="match_parent"
@@ -47,7 +47,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/function_list"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -63,7 +63,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_distance" />
+                        android:background="@drawable/icon_distance"/>
 
                     <TextView
                         android:id="@+id/tv_mesure_distance"
@@ -75,7 +75,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/mesure_distance"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -92,7 +92,7 @@
                         android:layout_gravity="center_vertical"
 
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_area" />
+                        android:background="@drawable/icon_area"/>
 
                     <TextView
                         android:id="@+id/tv_mesure_area"
@@ -102,7 +102,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/mesure_area"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -118,7 +118,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_heiht" />
+                        android:background="@drawable/icon_heiht"/>
 
                     <TextView
                         android:id="@+id/tv_mesure_height"
@@ -128,7 +128,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/mesure_height"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -145,7 +145,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_scan" />
+                        android:background="@drawable/icon_scan"/>
 
                     <TextView
                         android:id="@+id/tv_mesure_p2p"
@@ -155,7 +155,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/mesure_p2p"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -171,7 +171,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_plot" />
+                        android:background="@drawable/icon_plot"/>
 
                     <TextView
                         android:id="@+id/tv_plot"
@@ -181,7 +181,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/plot_func"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -197,7 +197,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_plot_manager" />
+                        android:background="@drawable/icon_plot_manager"/>
 
                     <TextView
                         android:id="@+id/tv_plot_list"
@@ -207,7 +207,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/plot_manager"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -223,7 +223,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_track" />
+                        android:background="@drawable/icon_track"/>
 
                     <TextView
                         android:id="@+id/tv_loc_track"
@@ -233,7 +233,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/track_location"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -249,7 +249,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_track_list" />
+                        android:background="@drawable/icon_track_list"/>
 
                     <TextView
                         android:id="@+id/tv_track_list"
@@ -259,7 +259,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/track_list"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -275,7 +275,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_location" />
+                        android:background="@drawable/icon_location"/>
 
                     <TextView
                         android:id="@+id/tv_quick_loc"
@@ -285,7 +285,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/quick_location"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -301,7 +301,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_sync" />
+                        android:background="@drawable/icon_sync"/>
 
                     <TextView
                         android:id="@+id/tv_sync_fire_line"
@@ -311,12 +311,12 @@
                         android:gravity="center_vertical"
                         android:text="@string/sync_fire_line"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"/>
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="2dp" />
+                    android:layout_height="2dp"/>
             </LinearLayout>
         </ScrollView>
 
@@ -341,7 +341,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/icon_plot_list_title" />
+                    android:background="@drawable/icon_plot_list_title"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -349,14 +349,65 @@
                     android:gravity="center"
                     android:text="@string/plot_list_top"
                     android:textColor="#0B0B0B"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"/>
             </LinearLayout>
 
             <ListView
                 android:id="@+id/plot_listView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scrollbars="none" />
+                android:scrollbars="none"/>
         </LinearLayout>
     </com.lhzw.searchlocmap.view.MyDrawerLayout>
+    <RadioGroup
+        android:layout_marginTop="40dp"
+        android:visibility="gone"
+        android:id="@+id/radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/green_dark"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:checked="true"
+            android:id="@+id/rg_btn_bd"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:button="@null"
+            android:drawableLeft="@drawable/selector_bg_rg_bd"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="北斗"
+            android:textColor="@color/selector_radio_btn"/>
+
+        <RadioButton
+            android:id="@+id/rg_btn_net"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:button="@null"
+            android:drawableLeft="@drawable/selector_bg_rg_net"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="网络"
+            android:textColor="@color/selector_radio_btn"/>
+
+        <RadioButton
+            android:id="@+id/rg_btn_auto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:button="@null"
+            android:drawableLeft="@drawable/selector_bg_rg_auto"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="自动"
+            android:textColor="@color/selector_radio_btn"/>
+    </RadioGroup>
+
+
 </RelativeLayout>

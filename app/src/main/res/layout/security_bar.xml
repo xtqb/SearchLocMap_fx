@@ -12,6 +12,7 @@
         android:background="@drawable/bg_selector_functions"
         android:padding="2dp" />
 
+
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
@@ -31,6 +32,13 @@
         android:background="@drawable/bg_selector_location"
         android:padding="2dp"
         android:visibility="gone" />
+    <ImageView
+        android:id="@+id/iv_switch_rg"
+        android:layout_toLeftOf="@+id/im_person_state"
+        android:layout_marginRight="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon_open"/>
 
     <ImageView
         android:id="@+id/im_person_state"
@@ -47,5 +55,6 @@
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
         android:visibility="gone"/>
+
 
 </RelativeLayout>

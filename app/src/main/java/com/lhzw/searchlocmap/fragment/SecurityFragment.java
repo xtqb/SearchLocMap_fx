@@ -43,6 +43,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -285,6 +286,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private final int COMPLETE = 0x0087;
     private Map<String, String> mHashMap;
     private Dao<MessageInfoIBean, Integer> mMsgDao;
+    private RadioGroup mRadioGroup;
+    private ImageView mIvSwitchRg;
 
     private void initScrollView() {
         /**设置 setting*/
@@ -923,7 +926,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 dialogCommmand.clear();
                 break;
             case R.id.tv_state://查看指令状态
-                //TODO 进入指令状态页
                 dialogCommmand.clear();//dialog消失
                 Intent intent = new Intent(getActivity(), CommandStateActivity.class);
                 startActivity(intent);
@@ -1102,6 +1104,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     protected int initView() {
         return R.layout.security_fg;
     }
+    private boolean isShow;//是否显示radioGroup
 
     @SuppressLint("WrongConstant")
     @Override
@@ -1115,7 +1118,60 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
         drawer = (DrawerLayout) view.findViewById(R.id.drawer);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+
+        mIvSwitchRg = (ImageView) view.findViewById(R.id.iv_switch_rg);
+        mIvSwitchRg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isShow){
+                   mRadioGroup.setVisibility(View.GONE);
+                   mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_open));
+                }else {
+                    mRadioGroup.setVisibility(View.VISIBLE);
+                    mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_close));
+                }
+                isShow=!isShow;
+
+            }
+        });
+        //网络通信模式选择
+        mRadioGroup = (RadioGroup) view.findViewById(R.id.radio_group);
+        mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId){
+                    case R.id.rg_btn_bd:
+                       SpUtils.putInt(SPConstants.COM_MODE,Constants.COM_MODE_BD);
+                        break;
+                    case R.id.rg_btn_net:
+                        SpUtils.putInt(SPConstants.COM_MODE,Constants.COM_MODE_NET);
+                        break;
+                    case R.id.rg_btn_auto:
+                        SpUtils.putInt(SPConstants.COM_MODE,Constants.COM_MODE_AUTO);
+                        break;
+                }
+                mRadioGroup.setVisibility(View.GONE);
+                mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_open));
+            }
+        });
+
+        switch (SpUtils.getInt(SPConstants.COM_MODE,0)){
+            case Constants.COM_MODE_BD :
+                mRadioGroup.check(R.id.rg_bd);
+                break;
+            case Constants.COM_MODE_NET:
+                mRadioGroup.check(R.id.rg_btn_net);
+                break;
+            case Constants.COM_MODE_AUTO:
+                mRadioGroup.check(R.id.rg_btn_auto);
+                break;
+        }
+
+        LogUtil.d("当前网络模式为"+SpUtils.getInt(SPConstants.COM_MODE,0));
+
         mScrollLayout = (ScrollLayout) view.findViewById(R.id.scrolllayout);
+
         Button communication_btn = (Button) view.findViewById(R.id.communication_btn);
         communication_btn.setOnClickListener(this);
 
@@ -1846,6 +1902,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     //点击变大
     private void setTouched(int id) {
+        if(isShow){
+            mRadioGroup.setVisibility(View.GONE);
+            isShow=!isShow;
+        }
         for (Map.Entry<Integer, PersonalInfo> entry : tatolMap.entrySet()) {
             if (entry.getKey() == id) {
                 if (mGraphicOverlay != null) {
@@ -2089,7 +2149,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 locManager.removeUpdates(this);
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -2296,7 +2355,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         try {
                             Thread.sleep(5000);
                         } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                     }
@@ -2388,7 +2446,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         new Thread(new Runnable() {
             @Override
             public void run() {
-                // TODO Auto-generated method stub
                 loRaManager.sendActionCmd(num, (byte) cmd);
                 Log.e("Tag", "sendCMDAction  action  " + cmd + "  num  " + num);
             }
@@ -2400,7 +2457,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
             @Override
             public void run() {
-                // TODO Auto-generated method stub
                 loRaManager.searchCard(num);
             }
         }).start();
@@ -2551,7 +2607,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 // loRaManager.sosComplete(codeArr);
                 sendCMDSOSComplete(codeArr);
                 updataState(item.getNum());
@@ -2572,7 +2627,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
             @Override
             public void run() {
-                // TODO Auto-generated method stub
                 loRaManager.sosComplete(num);
             }
         }).start();

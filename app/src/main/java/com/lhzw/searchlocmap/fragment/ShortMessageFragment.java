@@ -89,19 +89,25 @@ public class ShortMessageFragment extends BaseLazyFragment {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 HttpPersonInfo httpPersonInfo = (HttpPersonInfo) adapter.getItem(position);
-                Intent intent = new Intent(mContext, ShortMessUploadActivity.class);
-                intent.putExtra("msg_Id", httpPersonInfo.getId());
-                intent.putExtra("realName", httpPersonInfo.getRealName());
-                intent.putExtra("org", httpPersonInfo.getOrgName());
-                intent.putExtra("bdNum",httpPersonInfo.getDeviceNumbers());//接收人的北斗号
-                startActivity(intent);
+                if(httpPersonInfo!=null){
+                    Intent intent = new Intent(mContext, ShortMessUploadActivity.class);
+                    intent.putExtra("msg_Id", httpPersonInfo.getId());
+                    intent.putExtra("realName", httpPersonInfo.getRealName());
+                    intent.putExtra("org", httpPersonInfo.getOrgName());
+                    intent.putExtra("bdNum",httpPersonInfo.getDeviceNumbers());//接收人的北斗号
+                    startActivity(intent);
+                }
+
             }
         });
         mAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+
                 HttpPersonInfo httpPersonInfo = (HttpPersonInfo) adapter.getItem(position);
-                showPopWindows(view,httpPersonInfo,position);
+                if(httpPersonInfo!=null){
+                    showPopWindows(view,httpPersonInfo,position);
+                }
                 return false;
             }
         });
