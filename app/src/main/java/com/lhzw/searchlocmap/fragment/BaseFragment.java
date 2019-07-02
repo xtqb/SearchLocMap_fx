@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,6 +23,9 @@ import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 import com.lhzw.searchlocmap.view.ShowMesureDisDialog;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * description：可实现懒加载的fragment - 若把初始化内容放到initData实现,就是采用Lazy方式加载的Fragment
@@ -43,9 +48,12 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
     private boolean isPrepared;// 标志位，View已经初始化完成。
     private boolean isFirstLoad = true;// 是否第一次加载
     private boolean isReflesh = false;
-    protected LayoutInflater inflater;
     protected Context mContext;
     protected View view;
+
+    private List<Intent> taskQueue = new LinkedList<>();
+    private boolean isRunning;
+    private Handler taskHandler;
 
     protected abstract void initSoilderInfoList();
 
@@ -66,7 +74,6 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
         view = inflater.inflate(initView(), container, false);
         isPrepared = true;
         lazyLoad();
-        registerBroadcastReceiver();
         return view;
     }
 
@@ -117,7 +124,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
         filter.addAction("com.lhzw.soildersos.change");
         filter.addAction(Constants.ACTION_SYNC_FIRELINE);
         filter.addAction(Constants.BD_Mms_ACTION);
-        filter.addAction(Constants.ACTION_FEEDBACK);
+//        filter.addAction(Constants.ACTION_FEEDBACK);
         filter.addAction(Constants.BD_SIGNAL_LIST);
         receiver = new SoilderInfoChangeReceiver();
         getActivity().registerReceiver(receiver, filter);
@@ -127,13 +134,46 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
         @Override
         public void onReceive(Context context, Intent intent) {
             // TODO Auto-generated method stub
-            if(!isVisible) {
-                return;
+            if (isVisible && intent.getAction().equals("com.lhzw.soildersos.change")) {
+                taskQueue.add(intent);
+            } else if (intent.getAction().equals(Constants.ACTION_SYNC_FIRELINE)) {
+                taskQueue.add(intent);
+            } else if (isVisible && intent.getAction().equals(Constants.BD_Mms_ACTION)) {
+                initMessageNum();
+            } else if (isVisible && intent.getAction().equals(Constants.ACTION_FEEDBACK)) {
+//                updateFeedback(intent.getIntExtra("sendID", -1));
+            } else if (isVisible && !isRunning && intent.getAction().equals(Constants.BD_SIGNAL_LIST)) {
+                taskQueue.add(intent);
             }
+            if(!isRunning) {
+                doTask();
+            }
+        }
+    }
+
+    private void doTask(){
+        if(!isRunning && !taskQueue.isEmpty()) {
+            isRunning = true;
+            taskHandler.post(new Action());
+        }
+    }
+
+
+    private class Action implements Runnable{
+        @Override
+        public void run() {
+            final Intent intent = taskQueue.get(0);
+            taskQueue.remove(0);
             if (intent.getAction().equals("com.lhzw.soildersos.change")) {
-                isSosFlash = intent.getBooleanExtra("has_sos", false);
-                Log.e("Tag", "sdfdsfsda");
-                initSoilderInfoList();
+//                isSosFlash = intent.getBooleanExtra("has_sos", false);
+                if(getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initSoilderInfoList();
+                        }
+                    });
+                }
             } else if (intent.getAction().equals(Constants.ACTION_SYNC_FIRELINE)) {
                 String fireLine = intent.getStringExtra("fireLine");
                 long time = intent.getLongExtra("time", System.currentTimeMillis());
@@ -145,16 +185,32 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
                 PlotItemInfo plot = new PlotItemInfo("", -1, time, fireLine, Constants.TX_SYNCFL, 0, Constants.TX_JZH, Constants.UPLOAD_STATE_ON);
                 CommonDBOperator.saveToDB(syncDao, plot);
                 //绘制下发火线
-                drawSyncFireLine();
+                if(isVisible && getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            drawSyncFireLine();
+                        }
+                    });
+                }
             } else if (intent.getAction().equals(Constants.BD_Mms_ACTION)) {
                 initMessageNum();
             } else if (intent.getAction().equals(Constants.ACTION_FEEDBACK)) {
                 updateFeedback(intent.getIntExtra("sendID", -1));
             } else if (intent.getAction().equals(Constants.BD_SIGNAL_LIST)) {
-                refleshBdSignal(intent);
+                if(getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            refleshBdSignal(intent);
+                        }
+                    });
+                }
             }
+            isRunning = false;
         }
     }
+
 
     /**
      * 69      * 将Toast封装在一个方法中，在其它地方使用时直接输入要弹出的内容即可
@@ -223,6 +279,11 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
             return;
         }
         isFirstLoad = false;
+        isRunning = false;
+        HandlerThread thread = new HandlerThread("doTaskThread");
+        thread.start();
+        taskHandler = new Handler(thread.getLooper());
+        registerBroadcastReceiver();
         initData();
     }
 

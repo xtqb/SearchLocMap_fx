@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
@@ -49,6 +51,7 @@ public class BDUploadReceiver extends BroadcastReceiver {
     private static List<Intent> taskQueue = new LinkedList<>();
     private static boolean isRunning = false;
     private static float[] values = new float[10];
+    private static Handler threadHandler;
 
     @Override
     public void onReceive(Context mContext, Intent intent) {
@@ -65,8 +68,14 @@ public class BDUploadReceiver extends BroadcastReceiver {
     private static synchronized void doTask() {
         if (!isRunning && !taskQueue.isEmpty()) {
             isRunning = true;
-            new Thread(new Action()).start();
+            threadHandler.post(new Action());
         }
+    }
+
+    static {
+        HandlerThread thread = new HandlerThread("bdsinal");
+        thread.start();
+        threadHandler = new Handler(thread.getLooper());
     }
 
     private static class Action implements Runnable {
@@ -74,6 +83,7 @@ public class BDUploadReceiver extends BroadcastReceiver {
         public void run() {
             do {
                 Intent intent = taskQueue.get(0);
+                Log.e("Tag", "taskQueue = " + (taskQueue == null));
                 taskQueue.remove(0);
                 if (intent.getAction().equals(Constants.ACTION_MESSAGE)) {
                     if (intent.getIntExtra("bdType", -1) == 2) {

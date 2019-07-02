@@ -25,4 +25,6 @@ public class SPConstants {
 	public static final String CHANNEL_NUM = "CHANNEL_NUM";
 
 	public static final String SEND_ID = "SEND_ID";
+
+	public static final String COM_MODE = "COM_MODE"; //通信模式
 }

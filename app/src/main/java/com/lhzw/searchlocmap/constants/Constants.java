@@ -113,5 +113,10 @@ public class Constants {
 	public static final int EVENT_CODE_REFRESH_COMMAND_STATE = 0X886;//刷新指令接收页的状态
 	public static final String SAVEPATH = Environment.getExternalStorageDirectory().getPath()+"/apk/";
 
+	//三种通信类型
+	public static final int COM_MODE_BD = 0;
+	public static final int COM_MODE_NET = 1;
+	public static final int COM_MODE_AUTO = 3;
+
 
 }

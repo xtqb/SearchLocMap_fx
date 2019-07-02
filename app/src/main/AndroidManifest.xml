@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lhzw.searchlocmap"
     android:sharedUserId="com.fireproof"
-    android:versionCode="10"
-    android:versionName="2.1.1e">
+    android:versionCode="11"
+    android:versionName="2.2.1e">
 
     <application
         android:name=".application.SearchLocMapApplication"
