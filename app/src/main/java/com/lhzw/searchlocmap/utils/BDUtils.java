@@ -5,13 +5,20 @@ import android.os.HandlerThread;
 import android.os.RemoteException;
 
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
+import com.lhzw.searchlocmap.bean.NetResponseBean;
+import com.lhzw.searchlocmap.bean.RequestMMSBean;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
+import com.lhzw.searchlocmap.net.CallbackListObserver;
+import com.lhzw.searchlocmap.net.SLMRetrofit;
+import com.lhzw.searchlocmap.net.ThreadSwitchTransformer;
 import com.lhzw.uploadmms.UploadInfoBean;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import io.reactivex.Observable;
 
 /**
  * Created by xtqb on 2019/3/27.
@@ -72,7 +79,7 @@ public class BDUtils {
         }
     }
 
-    private void bdCom(){
+    private void bdCom() {
         try {
             List<UploadInfoBean> uploadList = new ArrayList<>();
             do {
@@ -86,12 +93,59 @@ public class BDUtils {
         }
     }
 
-    private void netCom(){
+    private void netCom() {
+//        public static final int TX_FIREPOIT = 0;
+//        public static final int TX_COMMON = 1;
+//        public static final int TX_SOS = 2;
+//        public static final int TX_MMS = 3;
+//        public static final int TX_FIRELINE = 4;
+        UploadInfoBean infoBean = uploadQueue.poll();
+        LogUtil.d("通信类型=="+infoBean.getData_type());
+        switch (infoBean.getData_type()) {
 
+            case Constants.TX_FIREPOIT:
+
+                break;
+            case Constants.TX_COMMON:
+
+                break;
+            case Constants.TX_SOS:
+                break;
+            case Constants.TX_MMS:
+                RequestMMSBean request = new RequestMMSBean(Constants.CMD_SMS, "handsetsession", "HANDSET", String.valueOf(infoBean.getTime()), BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), infoBean.getBody());
+                //短消息
+                Observable<NetResponseBean> observable = SLMRetrofit.getInstance().getApi().uploadInfo(BaseUtils.getRequestBody(request));
+                observable.compose(new ThreadSwitchTransformer<NetResponseBean>()).subscribe(new CallbackListObserver<NetResponseBean>() {
+                    @Override
+                    protected void onSucceed(NetResponseBean bean) {
+                        LogUtil.e(bean.toString());
+                        if("ok".equals(bean.getStatus())){
+                            //请求成功
+                            ToastUtil.showToast("发送短消息成功");
+                        }else {
+                            //请求成功
+                            ToastUtil.showToast("发送短消息失败"+bean.getStatus());
+                        }
+                    }
+
+                    @Override
+                    protected void onFailed() {
+                        //请求成功
+                        ToastUtil.showToast("网络错误");
+                    }
+                });
+                break;
+            case Constants.TX_FIRELINE:
+                break;
+
+        }
+
+        //todo  失败重试
+        //uploadQueue.add(infoBean)
     }
 
-    public void autoCom(){
-        if(BaseUtils.isNetConnected(SearchLocMapApplication.getContext())){
+    public void autoCom() {
+        if (BaseUtils.isNetConnected(SearchLocMapApplication.getContext())) {
             netCom();
         } else {
             bdCom();

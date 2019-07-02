@@ -33,6 +33,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+
 public class BaseUtils {
 
     public static double pi = 3.1415926535897932384626;
@@ -528,5 +531,18 @@ public class BaseUtils {
         });
         animator1.setDuration(time).start();
     }
+
+    /**
+     * 将对象转化为json作为请求体 请求接口
+     * @param object
+     * @return
+     */
+    public static RequestBody getRequestBody(Object object){
+        RequestBody requestBody =
+                RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
+                        ToJsonUtil.getInstance().toJson(object));
+        return requestBody;
+    }
+
 }
 

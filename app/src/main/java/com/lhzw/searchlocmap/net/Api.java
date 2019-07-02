@@ -2,8 +2,11 @@ package com.lhzw.searchlocmap.net;
 
 import com.lhzw.searchlocmap.bean.AllBDInfosBean;
 import com.lhzw.searchlocmap.bean.BaseBean;
+import com.lhzw.searchlocmap.bean.NetResponseBean;
 
 import io.reactivex.Observable;
+import okhttp3.RequestBody;
+import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
@@ -49,4 +52,10 @@ public interface Api {
     @GET("bds")
     Observable<AllBDInfosBean> getAllBDInfos();
 
+    /**
+     * 4g 通信接口
+     */
+
+    @POST("remoteapi/bd")
+    Observable<NetResponseBean> uploadInfo(@Body RequestBody requestBody);
 }
