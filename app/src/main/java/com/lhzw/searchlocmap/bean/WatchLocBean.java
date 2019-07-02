@@ -1,15 +1,15 @@
 package com.lhzw.searchlocmap.bean;
 
 public class WatchLocBean {
-    private String watchtype;
-    private String watchid;
-    private String personname;
-    private String identitycardid;
-    private String watchstatus;
-    private String sostype;
-    private double lat;
-    private double lng;
-    private String time;
+    private String watchtype;          // 设备类型，watch手表
+    private String watchid;            // 手表（信标）唯一编号
+    private String personname;        // 使用者姓名
+    private String identitycardid;   // 身份证号
+    private String watchstatus;      // 状态，normal正常，sosing求救，sosstarted开始救援，sosfinished救援完成，offline离线
+    private String sostype;           // 搜救类型，包含主动求救seekhelp、落水overboard、摔倒falldown、体征异常abnormalsigns watchstatus为正常时sostype为”“
+    private double lat;               // 纬度
+    private double lng;                // 经度
+    private String time;                // 手表定位时间
 
     public WatchLocBean(String watchtype, String watchid, String personname, String identitycardid, String watchstatus, String sostype, double lat, double lng, String time) {
         this.watchtype = watchtype;

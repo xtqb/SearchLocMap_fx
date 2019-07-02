@@ -2,15 +2,16 @@ package com.lhzw.searchlocmap.bean;
 
 import java.util.List;
 
+
 public class RequestCommonBean {
-    private String cmd;
-    private String sessionidbd;
-    private String registerid;
-    private String handsetnumber;
-    private double lat;
-    private double lng;
-    private String time;
-    private List<WatchLocBean> watchloclist;
+    private String cmd;             //"cmd":"locationindication"
+    private String sessionidbd;    // 手持机的会话ID，当前填“handsetsession”
+    private String registerid;     // 项目ID，当前填“HANDSET”
+    private String handsetnumber;  // 手持机本机北斗号
+    private double lat;             // 手持机位置纬度
+    private double lng;             // 手持机位置经度
+    private String time;             // 手持机位置记录时间
+    private List<WatchLocBean> watchloclist;  //手表位置列表
 
     public RequestCommonBean(String cmd, String sessionidbd, String registerid, String handsetnumber, double lat, double lng, String time, List<WatchLocBean> watchloclist) {
         this.cmd = cmd;
