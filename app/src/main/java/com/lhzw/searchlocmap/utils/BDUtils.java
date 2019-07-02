@@ -91,7 +91,11 @@ public class BDUtils {
     }
 
     public void autoCom(){
-
+        if(BaseUtils.isNetConnected(SearchLocMapApplication.getContext())){
+            netCom();
+        } else {
+            bdCom();
+        }
     }
 
 }
