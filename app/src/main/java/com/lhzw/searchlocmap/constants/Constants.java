@@ -119,6 +119,7 @@ public class Constants {
 	public static final int COM_MODE_AUTO = 3;//自动
 	//短消息的cmd
 	public static final String CMD_SMS="receivesmsindication";
+	public static final String CMD_COMMON = "locationindication";
 
 
 }

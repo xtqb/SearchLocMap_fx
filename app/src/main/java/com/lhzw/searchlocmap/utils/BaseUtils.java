@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.gtmap.util.GeoPoint;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.bean.PlotItemInfo;
+import com.lhzw.searchlocmap.bean.WatchLocBean;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.uploadmms.UploadInfoBean;
@@ -42,6 +43,7 @@ public class BaseUtils {
     public static double ee = 0.00669342162296594323;
     public static double a = 6378245.0;
     private static DecimalFormat df = new DecimalFormat("######0.0");
+    public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static boolean isStringEmpty(String str) {
         if (null == str || str.length() == 0 || "".equals(str.trim()))
@@ -542,6 +544,33 @@ public class BaseUtils {
                 RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
                         ToJsonUtil.getInstance().toJson(object));
         return requestBody;
+    }
+
+    public static List<WatchLocBean> getWatchLocList(UploadInfoBean infoBean){
+        List<WatchLocBean> list = null;
+        if(infoBean.getBody() == null){
+            return list;
+        }
+        list = new ArrayList<>();
+        String[] locTimes = infoBean.getLocTimes().split("-");
+        String[] idArr = infoBean.getOffsets().split("-");
+        String[] latLngArr = infoBean.getBody().split("-");
+        for(int pos = 0; pos < latLngArr.length; pos ++) {
+            String watchstatus = "offline";
+            double lat = 0.0;
+            double lng = 0.0;
+            String time = "";
+            String[] latLng = latLngArr[pos].split(",");
+            if(latLng != null && latLng.length ==2){
+                watchstatus = "normal";
+                lat = Double.valueOf(latLng[0]);
+                lng = Double.valueOf(latLng[1]);
+                time = sdf.format(locTimes[pos]);
+            }
+            WatchLocBean bean = new WatchLocBean("watch", idArr[pos], "", watchstatus, "", "", lat, lng, time);
+            list.add(bean);
+        }
+        return list;
     }
 
 }

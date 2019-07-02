@@ -6,6 +6,7 @@ import android.os.RemoteException;
 
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bean.NetResponseBean;
+import com.lhzw.searchlocmap.bean.RequestCommonBean;
 import com.lhzw.searchlocmap.bean.RequestMMSBean;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
@@ -107,33 +108,18 @@ public class BDUtils {
 
                 break;
             case Constants.TX_COMMON:
-
+                RequestCommonBean commonBean = new RequestCommonBean(Constants.CMD_COMMON, "handsetsession", "HANDSET",
+                        BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
+                        SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
+                        System.currentTimeMillis())), BaseUtils.getWatchLocList(infoBean));
+                uploadToNet(commonBean, infoBean);
                 break;
             case Constants.TX_SOS:
                 break;
             case Constants.TX_MMS:
-                RequestMMSBean request = new RequestMMSBean(Constants.CMD_SMS, "handsetsession", "HANDSET", String.valueOf(infoBean.getTime()), BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), infoBean.getBody());
-                //短消息
-                Observable<NetResponseBean> observable = SLMRetrofit.getInstance().getApi().uploadInfo(BaseUtils.getRequestBody(request));
-                observable.compose(new ThreadSwitchTransformer<NetResponseBean>()).subscribe(new CallbackListObserver<NetResponseBean>() {
-                    @Override
-                    protected void onSucceed(NetResponseBean bean) {
-                        LogUtil.e(bean.toString());
-                        if("ok".equals(bean.getStatus())){
-                            //请求成功
-                            ToastUtil.showToast("发送短消息成功");
-                        }else {
-                            //请求成功
-                            ToastUtil.showToast("发送短消息失败"+bean.getStatus());
-                        }
-                    }
-
-                    @Override
-                    protected void onFailed() {
-                        //请求成功
-                        ToastUtil.showToast("网络错误");
-                    }
-                });
+                RequestMMSBean request = new RequestMMSBean(Constants.CMD_SMS, "handsetsession", "HANDSET", String.valueOf(infoBean.getTime()),
+                        BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), infoBean.getBody());
+                uploadToNet(request, infoBean);
                 break;
             case Constants.TX_FIRELINE:
                 break;
@@ -150,6 +136,33 @@ public class BDUtils {
         } else {
             bdCom();
         }
+    }
+
+    public void uploadToNet(Object request, final UploadInfoBean infoBean){
+        //短消息
+        Observable<NetResponseBean> observable = SLMRetrofit.getInstance().getApi().uploadInfo(BaseUtils.getRequestBody(request));
+        observable.compose(new ThreadSwitchTransformer<NetResponseBean>()).subscribe(new CallbackListObserver<NetResponseBean>() {
+            @Override
+            protected void onSucceed(NetResponseBean bean) {
+                LogUtil.e(bean.toString());
+                if("ok".equals(bean.getStatus())){
+                    //请求成功
+                    ToastUtil.showToast("发送短消息成功");
+                }else {
+                    //请求成功
+                    ToastUtil.showToast("发送短消息失败"+bean.getStatus());
+                    uploadQueue.add(infoBean);
+                }
+            }
+
+            @Override
+            protected void onFailed() {
+                //请求成功
+                ToastUtil.showToast("网络错误");
+                uploadQueue.add(infoBean);
+            }
+        });
+
     }
 
 }
