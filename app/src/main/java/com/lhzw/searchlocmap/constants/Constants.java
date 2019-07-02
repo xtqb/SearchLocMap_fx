@@ -114,9 +114,9 @@ public class Constants {
 	public static final String SAVEPATH = Environment.getExternalStorageDirectory().getPath()+"/apk/";
 
 	//三种通信类型
-	public static final int COM_MODE_BD = 0;
-	public static final int COM_MODE_NET = 1;
-	public static final int COM_MODE_AUTO = 3;
+	public static final int COM_MODE_BD = 0; //北斗
+	public static final int COM_MODE_NET = 1;//网络
+	public static final int COM_MODE_AUTO = 3;//自动
 
 
 }
