@@ -364,7 +364,7 @@
         android:visibility="gone"
         android:id="@+id/radio_group"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:background="@color/green_dark"
         android:orientation="horizontal">
 
