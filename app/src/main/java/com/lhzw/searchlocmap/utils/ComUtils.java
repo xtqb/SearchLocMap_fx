@@ -115,6 +115,11 @@ public class ComUtils {
                 uploadToNet(commonBean, infoBean);
                 break;
             case Constants.TX_SOS:
+                RequestCommonBean sosBean = new RequestCommonBean(Constants.CMD_SOS, "handsetsession", "HANDSET",
+                        BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
+                        SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
+                        System.currentTimeMillis())), BaseUtils.getWatchLocList(infoBean));
+                uploadToNet(sosBean, infoBean);
                 break;
             case Constants.TX_MMS:
                 RequestMMSBean request = new RequestMMSBean(Constants.CMD_SMS, "handsetsession", "HANDSET", String.valueOf(infoBean.getTime()),
