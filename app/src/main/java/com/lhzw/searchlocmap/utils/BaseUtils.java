@@ -568,7 +568,7 @@ public class BaseUtils {
                 lng = Double.valueOf(latLng[1]);
                 time = sdf.format(Double.valueOf(locTimes[pos]));
             }
-            RequestFirePointBean.FirepointlistBean bean = new RequestFirePointBean.FirepointlistBean(status, lat+"", lng+"", time);
+            RequestFirePointBean.FirepointlistBean bean = new RequestFirePointBean.FirepointlistBean(status,  time, lng+"",lat+"");
             list.add(bean);
         }
         return list;
