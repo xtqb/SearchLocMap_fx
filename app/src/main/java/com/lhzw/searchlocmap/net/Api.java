@@ -2,6 +2,7 @@ package com.lhzw.searchlocmap.net;
 
 import com.lhzw.searchlocmap.bean.AllBDInfosBean;
 import com.lhzw.searchlocmap.bean.BaseBean;
+import com.lhzw.searchlocmap.bean.BindingWatchBean;
 import com.lhzw.searchlocmap.bean.NetResponseBean;
 
 import io.reactivex.Observable;
@@ -58,4 +59,10 @@ public interface Api {
 
     @POST("remoteapi/bd")
     Observable<NetResponseBean> uploadInfo(@Body RequestBody requestBody);
+
+    /**
+     * 根据手持机的北斗号  查询绑定的手表
+     */
+    @GET("handsets/binding/{handsetNumber}/watch")
+    Observable<BindingWatchBean> getBindingWatch(@Path("handsetNumber") String handsetNumber);
 }

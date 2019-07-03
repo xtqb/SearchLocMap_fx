@@ -26,7 +26,6 @@ import com.lhzw.uploadmms.UploadInfoBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
 
 import io.reactivex.Observable;
 
