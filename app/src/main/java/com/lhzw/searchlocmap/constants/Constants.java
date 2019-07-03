@@ -120,6 +120,7 @@ public class Constants {
 	//短消息的cmd
 	public static final String CMD_SMS="receivesmsindication";
 	public static final String CMD_COMMON = "locationindication";
+	public static final String CMD_SOS = "soslocationindication";
 
 
 }
