@@ -30,6 +30,7 @@ import com.lhzw.searchlocmap.fragment.PersManagerFragment;
 import com.lhzw.searchlocmap.fragment.SecurityFragment;
 import com.lhzw.searchlocmap.fragment.SettingFragment;
 import com.lhzw.searchlocmap.utils.BaseUtils;
+import com.lhzw.searchlocmap.utils.ComUtils;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.searchlocmap.view.PageViewChange;
 import com.lhzw.searchlocmap.view.ShowAlertDialog;
@@ -136,6 +137,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     @SuppressLint("WrongConstant")
     private void initData() {
         mBDManager = (BDManager) getSystemService(Context.BD_SERVICE);
+        ComUtils.getInstance().registerBroadcastReceiver();
         if (SpUtils.getBoolean(SPConstants.AUTO_REPORT, true)) {
             if (Settings.Global.getInt(getContentResolver(), Settings.Global.BD_MODE_ON, 0) != 1) {// 北斗定位没开
                 alertdialog = new ShowAlertDialog(MainActivity.this);
@@ -309,4 +311,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             return list.size();
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ComUtils.getInstance().unRegisterBroadcastReceiver();
+    }
 }

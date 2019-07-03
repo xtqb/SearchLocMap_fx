@@ -1,8 +1,13 @@
 package com.lhzw.searchlocmap.utils;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.RemoteException;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
@@ -33,6 +38,7 @@ public class ComUtils {
     private static boolean isRunnable = false;
     private static ComUtils instance;
     private final Handler threadHandlerer;
+    private boolean isNetConnection;
 
     public static ComUtils getInstance() {
         if (instance == null) {
@@ -42,6 +48,7 @@ public class ComUtils {
     }
 
     private ComUtils() {
+        isNetConnection = false;
         HandlerThread thread = new HandlerThread("dataCommunication");
         thread.start();
         threadHandlerer = new Handler(thread.getLooper());
@@ -58,7 +65,7 @@ public class ComUtils {
         list.clear();
     }
 
-    private void doTask() {
+    public void doTask() {
         if (!isRunnable && !uploadQueue.isEmpty()) {
             isRunnable = true;
             threadHandlerer.post(new Action());
@@ -79,6 +86,11 @@ public class ComUtils {
                     autoCom();
                     break;
             }
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             isRunnable = false;
             doTask();
         }
@@ -87,9 +99,7 @@ public class ComUtils {
     private void bdCom() {
         try {
             List<UploadInfoBean> uploadList = new ArrayList<>();
-            do {
-                uploadList.add(uploadQueue.poll());
-            } while (!uploadQueue.isEmpty());
+            uploadList.add(uploadQueue.poll());
             if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
                 SearchLocMapApplication.getInstance().getUploadService().doTask(uploadList);
             }
@@ -99,6 +109,10 @@ public class ComUtils {
     }
 
     private void netCom() {
+        if(!isNetConnection) {
+            Toast.makeText(SearchLocMapApplication.getContext(), "当前网络已断开，请连接网络或者切换北斗模式传输", Toast.LENGTH_SHORT).show();
+            return;
+        }
 //        public static final int TX_FIREPOIT = 0;
 //        public static final int TX_COMMON = 1;
 //        public static final int TX_SOS = 2;
@@ -149,11 +163,6 @@ public class ComUtils {
                 break;
 
         }
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         //todo  失败重试
         //uploadQueue.add(infoBean)
     }
@@ -191,6 +200,32 @@ public class ComUtils {
             }
         });
 
+    }
+
+    public void registerBroadcastReceiver(){
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        SearchLocMapApplication.getContext().registerReceiver(receiver, intentFilter);
+    }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            isNetConnection = BaseUtils.isNetConnected(SearchLocMapApplication.getContext());
+            if(isNetConnection) {
+                doTask();
+            }
+        }
+    };
+
+    public void unRegisterBroadcastReceiver(){
+        try {
+            if(receiver != null) {
+                SearchLocMapApplication.getContext().unregisterReceiver(receiver);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
