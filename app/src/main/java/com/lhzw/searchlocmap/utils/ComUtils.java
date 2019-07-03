@@ -21,7 +21,6 @@ import com.lhzw.uploadmms.UploadInfoBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
 
 import io.reactivex.Observable;
 
@@ -154,8 +153,7 @@ public class ComUtils {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //todo  失败重试
-        //uploadQueue.add(infoBean)
+
     }
 
     private void autoCom() {

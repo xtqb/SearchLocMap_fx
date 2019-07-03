@@ -22,9 +22,11 @@ import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bean.AllBDInfosBean;
-import com.lhzw.searchlocmap.bean.LocalBDNum;
+import com.lhzw.searchlocmap.bean.BindingWatchBean;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.HttpRequstInfo;
+import com.lhzw.searchlocmap.bean.LocPersonalInfo;
+import com.lhzw.searchlocmap.bean.LocalBDNum;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
@@ -63,6 +65,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     private ScrollView loginBinding;
     private ImageView im_name_del;
     private Dao mBdNumDao;
+    private Dao mLocPersonDao;
+    private Dao mPersonalInfoDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +91,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         im_name_del.setOnClickListener(this);
         httpPerDao = helper.getHttpPerDao();
         mBdNumDao = helper.getBdNumDao();
+        mLocPersonDao = helper.getLocPersonDao();
+        mPersonalInfoDao = helper.getPersonalInfoDao();
     }
 
     private void initView() {
@@ -137,7 +143,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     if (token != null) {
                         SpUtils.putString(Constants.HTTP_TOOKEN, token);
 
-                        getAllBDInfoFromServer();
+                        getAllBDInfoFromServer();//获取平台的北斗号
+
+                        if(BaseUtils.getDipperNum(LoginActivity.this) != null){
+                            getBindingWatchFromServer();//获取当前手持机绑定的手表
+                        }
+
 
                         rev = NetUtils.doHttpGetClient(token, Constants.USER_PATH);
 
@@ -215,6 +226,37 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    /**
+     * 查找已绑定的手表   解决清除本地数据后登陆  无法解除绑定的问题
+     */
+    private void getBindingWatchFromServer() {
+        Observable<BindingWatchBean> observable = SLMRetrofit.getInstance().getApi().getBindingWatch(BaseUtils.getDipperNum(LoginActivity.this));
+        observable.compose(new ThreadSwitchTransformer<BindingWatchBean>()).subscribe(new CallbackListObserver<BindingWatchBean>() {
+            @Override
+            protected void onSucceed(BindingWatchBean bean) {
+           if(bean.getCode() == 0){
+               if(bean.getData() != null && bean.getData().size()>0){
+                   //有绑定数据   插入表中
+                   for (int i = 0; i < bean.getData().size(); i++) {
+                       BindingWatchBean.DataBean dataBean = bean.getData().get(i);
+                       LocPersonalInfo perInfo = new LocPersonalInfo();
+                       perInfo.setNum(dataBean.getDeviceNumber());
+                       perInfo.setName(dataBean.getDeviceName());
+                       CommonDBOperator.saveToDB(mLocPersonDao, perInfo);
+                   }
+               }
+            }else {
+             showToast("请求失败=="+bean.getCode());
+           }
+            }
+
+            @Override
+            protected void onFailed() {
+                showToast("网络错误,请先检查网络");
+            }
+        });
+
+    }
 
 
     private List<LocalBDNum> mLocalBDNums = new ArrayList<>();
