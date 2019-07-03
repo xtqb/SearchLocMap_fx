@@ -122,6 +122,7 @@ public class Constants {
 	public static final String CMD_COMMON = "locationindication";
 	public static final String CMD_FIRELINE = "receivefirelineindication";
 	public static final String CMD_SOS = "soslocationindication";
+	public static final String CMD_FIRE_POINT = "receivefirepointindication";
 
 
 }

@@ -8,6 +8,7 @@ import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bean.NetResponseBean;
 import com.lhzw.searchlocmap.bean.RequestCommonBean;
 import com.lhzw.searchlocmap.bean.RequestFireLineBean;
+import com.lhzw.searchlocmap.bean.RequestFirePointBean;
 import com.lhzw.searchlocmap.bean.RequestMMSBean;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
@@ -106,6 +107,12 @@ public class ComUtils {
         switch (infoBean.getData_type()) {
 
             case Constants.TX_FIREPOIT:
+
+                RequestFirePointBean firePointBean = new RequestFirePointBean(Constants.CMD_FIRE_POINT, "handsetsession", "HANDSET",
+                        BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
+                        SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
+                        System.currentTimeMillis())), BaseUtils.getFirePointList(infoBean));
+                uploadToNet(firePointBean, infoBean);
 
                 break;
             case Constants.TX_COMMON:

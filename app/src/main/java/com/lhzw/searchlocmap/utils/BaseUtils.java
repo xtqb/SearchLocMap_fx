@@ -21,6 +21,7 @@ import com.gtmap.util.GeoPoint;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.bean.FirePoint;
 import com.lhzw.searchlocmap.bean.PlotItemInfo;
+import com.lhzw.searchlocmap.bean.RequestFirePointBean;
 import com.lhzw.searchlocmap.bean.WatchLocBean;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
@@ -545,6 +546,32 @@ public class BaseUtils {
                 RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
                         ToJsonUtil.getInstance().toJson(object));
         return requestBody;
+    }
+
+    public static List<RequestFirePointBean.FirepointlistBean> getFirePointList(UploadInfoBean infoBean){
+        List<RequestFirePointBean.FirepointlistBean> list = null;
+        if(infoBean.getBody() == null){
+            return list;
+        }
+        list = new ArrayList<>();
+        String[] locTimes = infoBean.getLocTimes().split("-");
+       // String[] idArr = infoBean.getOffsets().split("-");
+        String[] latLngArr = infoBean.getBody().split("-");
+        for(int pos = 0; pos < latLngArr.length; pos ++) {
+            String status = "small";
+            double lat = 0.0;
+            double lng = 0.0;
+            String time = "";
+            String[] latLng = latLngArr[pos].split(",");
+            if(latLng != null && latLng.length ==2){
+                lat = Double.valueOf(latLng[0]);
+                lng = Double.valueOf(latLng[1]);
+                time = sdf.format(Double.valueOf(locTimes[pos]));
+            }
+            RequestFirePointBean.FirepointlistBean bean = new RequestFirePointBean.FirepointlistBean(status, lat+"", lng+"", time);
+            list.add(bean);
+        }
+        return list;
     }
 
     public static List<WatchLocBean> getWatchLocList(UploadInfoBean infoBean){
