@@ -1660,7 +1660,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         }
                         Log.e("Tag", "body : " + body + "  offset : " + offset + "  bdNum : " + register);
                         UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), body, locTime, offset, local_latlon,
-                                SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1);
+                                SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, register);
                         uploadList.add(bean);
                         if (SpUtils.getInt(SPConstants.SP_BD_MODE, Constants.UOLOAD_STATE_0) == Constants.UOLOAD_STATE_1) {
                             bean.setTx_type(Constants.TX_QZH);
@@ -1681,7 +1681,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         List<UploadInfoBean> uploadList = new ArrayList<>();
                         String local_latlon = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + "," + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
                         UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), null, null, null, local_latlon,
-                                SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1);
+                                SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, null);
                         uploadList.add(bean);
                         mComUtils.uploadBena(uploadList);
                     }

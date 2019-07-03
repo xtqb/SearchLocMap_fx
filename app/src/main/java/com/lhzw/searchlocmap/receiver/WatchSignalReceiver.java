@@ -164,7 +164,7 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 						+ SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
 				UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, data_type, System.currentTimeMillis(), lat +"," +
 						lon, locTime + "", list.get(0).getOffset() + "", latLonStr, SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 1,
-						SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, -1);
+						SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, -1, register_num);
 				uploadList.add(bean);
 				if(SpUtils.getInt(SPConstants.SP_BD_MODE, Constants.UOLOAD_STATE_0) == Constants.UOLOAD_STATE_1) {
 					bean.setTx_type(Constants.TX_QZH);

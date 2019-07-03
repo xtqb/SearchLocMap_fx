@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.RemoteException;
 
+import com.google.gson.Gson;
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bean.NetResponseBean;
 import com.lhzw.searchlocmap.bean.RequestCommonBean;
@@ -20,6 +21,7 @@ import com.lhzw.uploadmms.UploadInfoBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 import io.reactivex.Observable;
 
@@ -107,11 +109,11 @@ public class ComUtils {
         switch (infoBean.getData_type()) {
 
             case Constants.TX_FIREPOIT:
-
                 RequestFirePointBean firePointBean = new RequestFirePointBean(Constants.CMD_FIRE_POINT, "handsetsession", "HANDSET",
                         BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
                         SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
                         System.currentTimeMillis())), BaseUtils.getFirePointList(infoBean));
+                LogUtil.e("TX_FIREPOIT   " + new Gson().toJson(firePointBean));
                 uploadToNet(firePointBean, infoBean);
 
                 break;
@@ -119,19 +121,22 @@ public class ComUtils {
                 RequestCommonBean commonBean = new RequestCommonBean(Constants.CMD_COMMON, "handsetsession", "HANDSET",
                         BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
                         SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
-                        System.currentTimeMillis())), BaseUtils.getWatchLocList(infoBean));
+                        System.currentTimeMillis())), BaseUtils.getWatchLocList(infoBean, "normal"));
+                LogUtil.e("TX_COMMON   " + new Gson().toJson(commonBean));
                 uploadToNet(commonBean, infoBean);
                 break;
             case Constants.TX_SOS:
                 RequestCommonBean sosBean = new RequestCommonBean(Constants.CMD_SOS, "handsetsession", "HANDSET",
                         BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
                         SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
-                        System.currentTimeMillis())), BaseUtils.getWatchLocList(infoBean));
+                        System.currentTimeMillis())), BaseUtils.getWatchLocList(infoBean, "sosing"));
+                LogUtil.e("TX_SOS   " + new Gson().toJson(sosBean));
                 uploadToNet(sosBean, infoBean);
                 break;
             case Constants.TX_MMS:
                 RequestMMSBean request = new RequestMMSBean(Constants.CMD_SMS, "handsetsession", "HANDSET", String.valueOf(infoBean.getTime()),
                         BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), infoBean.getBody());
+                LogUtil.e("TX_MMS   " + new Gson().toJson(request));
                 uploadToNet(request, infoBean);
                 break;
             case Constants.TX_FIRELINE:
@@ -139,11 +144,16 @@ public class ComUtils {
                         BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
                         SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
                         System.currentTimeMillis())), BaseUtils.sdf.format(infoBean.getTime()), BaseUtils.getFirePoint(infoBean));
+                LogUtil.e("TX_FIRELINE   " + new Gson().toJson(fireLineBean));
                 uploadToNet(fireLineBean, infoBean);
                 break;
 
         }
-
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         //todo  失败重试
         //uploadQueue.add(infoBean)
     }

@@ -2,12 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        key {
-            keyAlias 'lhzw'
-            keyPassword '123456'
-            storeFile file('D:/Android_HECUNCUN/app/keystore')
-            storePassword '123456'
-        }
 //        key {
 //            keyAlias 'lhzw'
 //            keyPassword '123456'
@@ -25,14 +19,14 @@ android {
         versionName "2.2.0e"
     }
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.key
-        }
-        debug {
-            signingConfig signingConfigs.key
-        }
+//        release {
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.key
+//        }
+//        debug {
+//            signingConfig signingConfigs.key
+//        }
     }
 
     sourceSets {

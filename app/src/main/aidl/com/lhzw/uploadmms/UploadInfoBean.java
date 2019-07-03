@@ -20,6 +20,7 @@ public class UploadInfoBean implements Parcelable{
 	private String num;        // 备注  可能为北斗号
 	private int comFont;          //北斗传输类型
 	private int sendID;           //有数据ID
+	private String bdNum;          //北斗号列表
 	public UploadInfoBean() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -27,7 +28,7 @@ public class UploadInfoBean implements Parcelable{
 
 	public UploadInfoBean(int tx_type, int data_type, long time, String body, String locTimes,  String offsets,
 						  String local_latlon, long local_time, int data_state, String num,
-						  int comFont, int sendID) {
+						  int comFont, int sendID, String bdNum) {
 		super();
 		this.tx_type = tx_type;
 		this.data_type = data_type;
@@ -41,6 +42,7 @@ public class UploadInfoBean implements Parcelable{
 		this.num = num;
 		this.comFont = comFont;
 		this.sendID = sendID;
+		this.bdNum = bdNum;
 	}
 
 
@@ -59,6 +61,7 @@ public class UploadInfoBean implements Parcelable{
 		num = parcel.readString();
 		comFont = parcel.readInt();
 		sendID = parcel.readInt();
+		bdNum = parcel.readString();
 	}
 
 
@@ -82,6 +85,7 @@ public class UploadInfoBean implements Parcelable{
 		parcel.writeString(num);
 		parcel.writeInt(comFont);
 		parcel.writeInt(sendID);
+		parcel.writeString(bdNum);
 	}
 
 	public static final android.os.Parcelable.Creator<UploadInfoBean> CREATOR = new Creator<UploadInfoBean>() {
@@ -98,6 +102,15 @@ public class UploadInfoBean implements Parcelable{
 			return new UploadInfoBean(parcel);
 		}
 	};
+
+	public String getBdNum() {
+		return bdNum;
+	}
+
+	public void setBdNum(String bdNum) {
+		this.bdNum = bdNum;
+	}
+
 	public int getTx_type() {
 		return tx_type;
 	}

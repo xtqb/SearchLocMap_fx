@@ -330,7 +330,7 @@ public class BaseUtils {
         String latLonStr = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + ","
                 + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
         UploadInfoBean bean = new UploadInfoBean(item.getTx_type(), item.getData_type(), item.getTime(), item.getPaths(), item.getTime() + "", "01",
-                latLonStr, SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 1, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, -1);
+                latLonStr, SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 1, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, -1, null);
         return bean;
     }
 
@@ -574,14 +574,14 @@ public class BaseUtils {
         return list;
     }
 
-    public static List<WatchLocBean> getWatchLocList(UploadInfoBean infoBean){
+    public static List<WatchLocBean> getWatchLocList(UploadInfoBean infoBean, String type){
         List<WatchLocBean> list = null;
         if(infoBean.getBody() == null){
             return list;
         }
         list = new ArrayList<>();
         String[] locTimes = infoBean.getLocTimes().split("-");
-        String[] idArr = infoBean.getOffsets().split("-");
+        String[] idArr = infoBean.getBdNum().split("-");
         String[] latLngArr = infoBean.getBody().split("-");
         for(int pos = 0; pos < latLngArr.length; pos ++) {
             String watchstatus = "offline";
@@ -590,12 +590,12 @@ public class BaseUtils {
             String time = "";
             String[] latLng = latLngArr[pos].split(",");
             if(latLng != null && latLng.length ==2 && !BaseUtils.isStringEmpty(latLng[0]) && !BaseUtils.isStringEmpty(latLng[1])){
-                watchstatus = "normal";
+                watchstatus = type;
                 lat = Double.valueOf(latLng[0]);
                 lng = Double.valueOf(latLng[1]);
                 time = sdf.format(Double.valueOf(locTimes[pos]));
             }
-            WatchLocBean bean = new WatchLocBean("watch", idArr[pos], "", watchstatus, "", "", lat, lng, time);
+            WatchLocBean bean = new WatchLocBean("watch", idArr[pos], "", "", watchstatus, "", lat, lng, time);
             list.add(bean);
         }
         return list;
