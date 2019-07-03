@@ -165,10 +165,10 @@ public class ComUtils {
                 LogUtil.e(bean.toString());
                 if("OK".equals(bean.getStatus())){
                     //请求成功
-                    ToastUtil.showToast("成功");
+                    ToastUtil.showToast("上传成功");
                 }else {
                     //请求成功
-                    ToastUtil.showToast("失败"+bean.getStatus());
+                    ToastUtil.showToast("上传失败"+bean.getStatus());
                     uploadQueue.add(infoBean);
                 }
             }
@@ -176,7 +176,7 @@ public class ComUtils {
             @Override
             protected void onFailed() {
                 //请求成功
-                ToastUtil.showToast("网络错误");
+                ToastUtil.showToast("网络错误,请检查网络是否打开");
                 uploadQueue.add(infoBean);
             }
         });
