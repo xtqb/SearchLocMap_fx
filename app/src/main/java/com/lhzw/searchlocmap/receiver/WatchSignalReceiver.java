@@ -23,7 +23,7 @@ import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 import com.lhzw.searchlocmap.event.EventBusBean;
 import com.lhzw.searchlocmap.ui.MainActivity;
-import com.lhzw.searchlocmap.utils.BDUtils;
+import com.lhzw.searchlocmap.utils.ComUtils;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.LogWrite;
 import com.lhzw.searchlocmap.utils.SpUtils;
@@ -49,7 +49,7 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 	private static boolean isRuning = false;
 	private static final int TOAST = 0x0001;
 	private static final int timeOut = 3 * 60 * 1000;
-	private BDUtils bdUtils  = BDUtils.getInstance();
+	private ComUtils mComUtils = ComUtils.getInstance();
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -171,7 +171,7 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 					bean.setNum(SpUtils.getString(Constants.UPLOAD_QZH_NUM, Constants.BD_NUM_DEF));
 					uploadList.add(bean);
 				}
-				bdUtils.uploadBena(uploadList);
+				mComUtils.uploadBena(uploadList);
 				mHnadler.sendEmptyMessage(TOAST);
 			}
 

@@ -31,7 +31,7 @@ import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 import com.lhzw.searchlocmap.event.EventBusBean;
-import com.lhzw.searchlocmap.utils.BDUtils;
+import com.lhzw.searchlocmap.utils.ComUtils;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.LogWrite;
 import com.lhzw.searchlocmap.utils.SpUtils;
@@ -60,7 +60,7 @@ public class ShortMessUploadActivity extends Activity implements
 	public static final int TX_MMS = 3;
 	private String dipper_num;
 	private TextView tv_mess_upload;
-	private BDUtils bdUtils;
+	private ComUtils mComUtils;
 	private boolean isCurrentActivity;
 	private int ID;
 	private String head;
@@ -93,7 +93,7 @@ public class ShortMessUploadActivity extends Activity implements
 		mBDManager.systemCheck(2+"");
 		helper = DatabaseHelper.getHelper(ShortMessUploadActivity.this);
 		mesDao = helper.getMesgInfoDao();
-		bdUtils = BDUtils.getInstance();
+		mComUtils = ComUtils.getInstance();
 
 		isCurrentActivity = true;
 		registerBroadcastReceiver();
@@ -173,20 +173,20 @@ public class ShortMessUploadActivity extends Activity implements
 		UploadInfoBean item1 = new UploadInfoBean(Constants.TX_JZH, TX_MMS,
 				System.currentTimeMillis(), body, System.currentTimeMillis()+"", 1 + "", latLon, SpUtils.getLong(
 						SPConstants.LOC_TIME, System.currentTimeMillis()), 1, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 2, -1);
-		bdUtils.uploadBena(item1);
+		mComUtils.uploadBena(item1);
 		item1 = null;
 		if(SpUtils.getInt(SPConstants.SP_BD_MODE, Constants.UOLOAD_STATE_0) == Constants.UOLOAD_STATE_1) {
 			UploadInfoBean item2 = new UploadInfoBean(Constants.TX_QZH, TX_MMS,
 					System.currentTimeMillis(), body, System.currentTimeMillis()+"", 1 + "", latLon, SpUtils.getLong(
 					SPConstants.LOC_TIME, System.currentTimeMillis()), 1, SpUtils.getString(Constants.UPLOAD_QZH_NUM, Constants.BD_NUM_DEF), 2, -1);
-			bdUtils.uploadBena(item2);
+			mComUtils.uploadBena(item2);
 			item2 = null;
 		}
 		if(bdNum != null) {
 			UploadInfoBean item3 = new UploadInfoBean(Constants.TX_BJ, TX_MMS,
 					System.currentTimeMillis(), body, System.currentTimeMillis()+"", 1 + "", latLon, SpUtils.getLong(
 					SPConstants.LOC_TIME, System.currentTimeMillis()), 1, bdNum, 2, -1);//接收者的北斗号
-			bdUtils.uploadBena(item3);
+			mComUtils.uploadBena(item3);
 			item3 = null;
 		}
 

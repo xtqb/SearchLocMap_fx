@@ -118,7 +118,7 @@ import com.lhzw.searchlocmap.ui.PerStateActivity;
 import com.lhzw.searchlocmap.ui.PlotItemListActivity;
 import com.lhzw.searchlocmap.ui.ShortMessUploadActivity;
 import com.lhzw.searchlocmap.ui.TreeStateListActivity;
-import com.lhzw.searchlocmap.utils.BDUtils;
+import com.lhzw.searchlocmap.utils.ComUtils;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.LogWrite;
@@ -239,7 +239,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private boolean isUploading;
     private ShowTimerCloseDialog timerCloseDialog;
     private TextView tv_signal_search_note;
-    private BDUtils bdUtils;
+    private ComUtils mComUtils;
     private BDManager mBDManager;
     private byte[] bdByteArr;
     private boolean isShowing;
@@ -1298,7 +1298,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         locTimeDao = helper.getLastLocTimeDao();
         plotItemDao = helper.getPlotItemDao();
         locTrackDao = helper.getLocTrackDao();
-        bdUtils = BDUtils.getInstance();
+        mComUtils = ComUtils.getInstance();
         map_sos = new HashMap<String, String>();
         firePlots = new ArrayList<>();
         newFirePlots = new ArrayList<>();
@@ -1398,7 +1398,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     private void uploadItem() {
         UploadInfoBean bean = BaseUtils.getUploadInfo(firePlots.get(selectID));
-        bdUtils.uploadBena(bean);
+        mComUtils.uploadBena(bean);
         firePlots.get(selectID).setUpload_state(Constants.UPLOAD_STATE_ON);
         CommonDBOperator.updateItem(plotDao, firePlots.get(selectID));
         portaitAdapter.notifyDataSetChanged();
@@ -1668,7 +1668,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                             uploadList.add(bean);
                         }
                         rxList.clear();
-                        bdUtils.uploadBena(uploadList);
+                        mComUtils.uploadBena(uploadList);
                         // 写入日志
                         try {
                             LogWrite writer = LogWrite.open();
@@ -1683,7 +1683,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), null, null, null, local_latlon,
                                 SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1);
                         uploadList.add(bean);
-                        bdUtils.uploadBena(uploadList);
+                        mComUtils.uploadBena(uploadList);
                     }
 
                     tv_search_state.setText(getString(R.string.upload_data));

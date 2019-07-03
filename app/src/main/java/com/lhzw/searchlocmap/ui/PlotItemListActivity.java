@@ -27,7 +27,7 @@ import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
-import com.lhzw.searchlocmap.utils.BDUtils;
+import com.lhzw.searchlocmap.utils.ComUtils;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.LogWrite;
 import com.lhzw.searchlocmap.utils.PlotCheckBox;
@@ -53,7 +53,7 @@ public class PlotItemListActivity extends PlotBaseActivity implements OnClickLis
     private ShowPlotDialog dialog;
     private int currentP = -1;
     private boolean isChange;
-    private BDUtils bdUtils;
+    private ComUtils mComUtils;
     private ImageView im_select;
     private boolean isAllSelected;
 
@@ -85,7 +85,7 @@ public class PlotItemListActivity extends PlotBaseActivity implements OnClickLis
         // TODO Auto-generated method stub
         DatabaseHelper<?> helper = DatabaseHelper.getHelper(PlotItemListActivity.this);
         dao = helper.getPlotItemDao();
-        bdUtils = BDUtils.getInstance();
+        mComUtils = ComUtils.getInstance();
         plotList = CommonDBOperator.getList(dao);
         adapter = new PlotItemAdapter(PlotItemListActivity.this, plotList, R.layout.item_plot_list);
         adapter.setOnItemSelectedPlotListener(this);
@@ -176,13 +176,13 @@ public class PlotItemListActivity extends PlotBaseActivity implements OnClickLis
                 } else {
                     List<UploadInfoBean> list = BaseUtils.getUploadInfoList(uploadList);
                     if (list != null && list.size() > 0) {
-                        bdUtils.uploadBena(list);
+                        mComUtils.uploadBena(list);
                         if (SpUtils.getInt(SPConstants.SP_BD_MODE, Constants.UOLOAD_STATE_0) == Constants.UOLOAD_STATE_1) {
                             for (int i = 0; i < list.size(); i++) {
                                 list.get(i).setTx_type(Constants.TX_QZH);
                                 list.get(i).setNum(SpUtils.getString(Constants.UPLOAD_QZH_NUM, Constants.BD_NUM_DEF));
                             }
-                            bdUtils.uploadBena(list);
+                            mComUtils.uploadBena(list);
                         }
                         for (PlotItemInfo item : uploadList) {
                             item.setUpload_state(Constants.UPLOAD_STATE_ON);

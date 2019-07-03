@@ -24,20 +24,20 @@ import io.reactivex.Observable;
 /**
  * Created by xtqb on 2019/3/27.
  */
-public class BDUtils {
+public class ComUtils {
     public static ConcurrentLinkedQueue<UploadInfoBean> uploadQueue = new ConcurrentLinkedQueue<UploadInfoBean>();
     private static boolean isRunnable = false;
-    private static BDUtils instance;
+    private static ComUtils instance;
     private final Handler threadHandlerer;
 
-    public static BDUtils getInstance() {
+    public static ComUtils getInstance() {
         if (instance == null) {
-            instance = new BDUtils();
+            instance = new ComUtils();
         }
         return instance;
     }
 
-    private BDUtils() {
+    private ComUtils() {
         HandlerThread thread = new HandlerThread("dataCommunication");
         thread.start();
         threadHandlerer = new Handler(thread.getLooper());
@@ -145,7 +145,7 @@ public class BDUtils {
             @Override
             protected void onSucceed(NetResponseBean bean) {
                 LogUtil.e(bean.toString());
-                if("ok".equals(bean.getStatus())){
+                if("OK".equals(bean.getStatus())){
                     //请求成功
                     ToastUtil.showToast("成功");
                 }else {
