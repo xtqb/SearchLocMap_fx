@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.gtmap.util.GeoPoint;
 import com.lhzw.searchlocmap.R;
+import com.lhzw.searchlocmap.bean.FirePoint;
 import com.lhzw.searchlocmap.bean.PlotItemInfo;
 import com.lhzw.searchlocmap.bean.WatchLocBean;
 import com.lhzw.searchlocmap.constants.Constants;
@@ -561,13 +562,34 @@ public class BaseUtils {
             double lng = 0.0;
             String time = "";
             String[] latLng = latLngArr[pos].split(",");
-            if(latLng != null && latLng.length ==2){
+            if(latLng != null && latLng.length ==2 && !BaseUtils.isStringEmpty(latLng[0]) && !BaseUtils.isStringEmpty(latLng[1])){
                 watchstatus = "normal";
                 lat = Double.valueOf(latLng[0]);
                 lng = Double.valueOf(latLng[1]);
                 time = sdf.format(Double.valueOf(locTimes[pos]));
             }
             WatchLocBean bean = new WatchLocBean("watch", idArr[pos], "", watchstatus, "", "", lat, lng, time);
+            list.add(bean);
+        }
+        return list;
+    }
+
+    public static List<FirePoint> getFirePoint(UploadInfoBean infoBean){
+        List<FirePoint> list = null;
+        if(infoBean.getBody() == null) {
+            return list;
+        }
+        list = new ArrayList<>();
+        String[] latLngArr = infoBean.getBody().split("-");
+        for(int pos = 0; pos < latLngArr.length; pos ++) {
+            String[] latLng = latLngArr[pos].split(",");
+            double lat = 0.0;
+            double lng = 0.0;
+            if(latLng != null && latLng.length ==2 && !BaseUtils.isStringEmpty(latLng[0]) && !BaseUtils.isStringEmpty(latLng[1])){
+                lat = Double.valueOf(latLng[0]);
+                lng = Double.valueOf(latLng[1]);
+            }
+            FirePoint bean = new FirePoint(pos+ 1, lat, lng);
             list.add(bean);
         }
         return list;

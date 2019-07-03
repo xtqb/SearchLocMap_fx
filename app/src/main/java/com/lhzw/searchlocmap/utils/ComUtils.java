@@ -7,6 +7,7 @@ import android.os.RemoteException;
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bean.NetResponseBean;
 import com.lhzw.searchlocmap.bean.RequestCommonBean;
+import com.lhzw.searchlocmap.bean.RequestFireLineBean;
 import com.lhzw.searchlocmap.bean.RequestMMSBean;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
@@ -127,6 +128,11 @@ public class ComUtils {
                 uploadToNet(request, infoBean);
                 break;
             case Constants.TX_FIRELINE:
+                RequestFireLineBean fireLineBean = new RequestFireLineBean(Constants.CMD_FIRELINE, "handsetsession", "HANDSET",
+                        BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
+                        SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
+                        System.currentTimeMillis())), BaseUtils.sdf.format(infoBean.getTime()), BaseUtils.getFirePoint(infoBean));
+                uploadToNet(fireLineBean, infoBean);
                 break;
 
         }
