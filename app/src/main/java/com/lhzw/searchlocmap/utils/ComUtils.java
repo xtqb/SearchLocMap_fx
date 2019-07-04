@@ -64,7 +64,7 @@ public class ComUtils {
         list.clear();
     }
 
-    public void doTask() {
+    private void doTask() {
         if (!isRunnable && !uploadQueue.isEmpty()) {
             isRunnable = true;
             threadHandlerer.post(new Action());
