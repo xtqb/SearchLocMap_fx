@@ -89,8 +89,8 @@ public class DragView extends AppCompatImageView implements View.OnTouchListener
                     top = 0;
                     bottom = top + v.getHeight();
                 }
-                if (bottom > screenHeight) {
-                    bottom = screenHeight;
+                if (bottom > screenHeight-dip2px(getContext(),51)) {
+                    bottom = screenHeight-dip2px(getContext(),51);
                     top = bottom - v.getHeight();
                 }
                 v.layout(left, top, right, bottom );
@@ -150,5 +150,14 @@ public class DragView extends AppCompatImageView implements View.OnTouchListener
             result = getResources().getDimensionPixelSize(resourceId);
         }
         return result;
+    }
+
+    /**
+     * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
+     */
+    public  int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+
     }
 }
