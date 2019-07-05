@@ -95,9 +95,11 @@ import com.lhzw.searchlocmap.bean.MessageInfoIBean;
 import com.lhzw.searchlocmap.bean.PersonalInfo;
 import com.lhzw.searchlocmap.bean.PlotItem;
 import com.lhzw.searchlocmap.bean.PlotItemInfo;
+import com.lhzw.searchlocmap.bean.RequestCommonBean;
 import com.lhzw.searchlocmap.bean.SectionChartPoint;
 import com.lhzw.searchlocmap.bean.TreeStateBean;
 import com.lhzw.searchlocmap.bean.WatchLastLocTime;
+import com.lhzw.searchlocmap.bean.WatchLocBean;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
@@ -955,6 +957,24 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             case R.id.pop_rescue_bt:
                 isSosFlash = false;
                 sendCMDSOSComplete(codeArr);
+                double latSos = 0.0;
+                double lngSos = 0.0;
+                if(!"".equals(tatolMap.get(icon_id).getLatitude()) && !"".equals(tatolMap.get(icon_id).getLongitude())){
+                    latSos = Double.valueOf(tatolMap.get(icon_id).getLatitude());
+                    lngSos = Double.valueOf(tatolMap.get(icon_id).getLongitude());
+                }
+
+                if(BaseUtils.isNetConnected(SearchLocMapApplication.getContext())) {
+                    WatchLocBean bean = new WatchLocBean("watch", tatolMap.get(icon_id).getOffset() + "", "", "", "sosfinished", "", latSos, lngSos, BaseUtils.sdf.format(tatolMap.get(icon_id).getLocTime()));
+                    List<WatchLocBean> sosListUpload = new ArrayList<>();
+                    sosListUpload.add(bean);
+                    RequestCommonBean sosBean = new RequestCommonBean(Constants.CMD_SOS, "handsetsession", "HANDSET",
+                            BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
+                            SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
+                            System.currentTimeMillis())), sosListUpload);
+                    ComUtils.getInstance().uploadToNet(sosBean, null);
+                }
+
                 updataState(icon_id);
                 mPopWindow.dismiss();
                 mPopWindow = null;

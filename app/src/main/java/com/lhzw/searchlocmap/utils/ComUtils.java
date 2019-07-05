@@ -86,7 +86,7 @@ public class ComUtils {
                     break;
             }
             try {
-                Thread.sleep(3000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -174,7 +174,7 @@ public class ComUtils {
         }
     }
 
-    private void uploadToNet(Object request, final UploadInfoBean infoBean){
+    public void uploadToNet(Object request, final UploadInfoBean infoBean){
         //短消息
         Observable<NetResponseBean> observable = SLMRetrofit.getInstance().getApi().uploadInfo(BaseUtils.getRequestBody(request));
         observable.compose(new ThreadSwitchTransformer<NetResponseBean>()).subscribe(new CallbackListObserver<NetResponseBean>() {

@@ -79,11 +79,14 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
                 Long locTime = locTimeMap.get(item.getNum());
                 if(locTime != null) {
                     bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > locTime);
-                    if(item.getLocTime() > locTimeMap.get(item .getNum())) {
+                    if(item.getLocTime() > locTime) {
                         update_num += 1;
                     }
                 } else {
                     bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > 0);
+                    if(item.getLocTime() > 0) {
+                        update_num += 1;
+                    }
                 }
             } else {
                 bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > 0);
@@ -108,11 +111,14 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
                 Long locTime = locTimeMap.get(item.getNum());
                 if(locTime != null) {
                     bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, item.getLocTime() > locTime);
-                    if(item.getLocTime() > locTimeMap.get(item.getNum())) {
+                    if(item.getLocTime() > locTime) {
                         update_num += 1;
                     }
                 } else {
                     bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, item.getLocTime() > 0);
+                    if(item.getLocTime() > 0) {
+                        update_num += 1;
+                    }
                 }
             } else {
                 bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, item.getLocTime() > 0);
