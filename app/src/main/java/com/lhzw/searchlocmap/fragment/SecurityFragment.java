@@ -2967,19 +2967,19 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String showContent = "";
+               // String showContent = "";
                 switch (v.getId()){
                     case R.id.iv_btn_1:
-                        showContent = "点击 Item菜单1";
+                       // showContent = "点击 Item菜单1";
                         startActivity(new Intent(getActivity(), CommunicationListActivity.class));
                         break;
                     case R.id.iv_btn_2:
-                        showContent = "点击 Item菜单2";
+                       // showContent = "点击 Item菜单2";
                         drawer.setScrimColor(Color.TRANSPARENT);
                         drawer.openDrawer(Gravity.RIGHT);
                         break;
                     case R.id.iv_btn_3:
-                        showContent = "点击 Item菜单3";
+                      //  showContent = "点击 Item菜单3";
                         if (isOpen) {
                             mScrollLayout.scrollToExit();
                         } else {
@@ -2988,7 +2988,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         }
                         break;
                     case R.id.iv_btn_4:
-                        showContent = "点击 Item菜单4";
+                      //  showContent = "点击 Item菜单4";
                         try {
                             //将镜头平移到当前手持机定位的中心
                             mapController = mMapView.getController();
@@ -2998,7 +2998,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         }
                         break;
                     case R.id.iv_btn_5:
-                        showContent = "点击 Item菜单5" ;
+                     //   showContent = "点击 Item菜单5" ;
                         try {
                             startActivity(new Intent("com.lhzw.intent.action_UPLOAD_SERVICE"));
                         } catch (Exception e) {
@@ -3006,7 +3006,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         }
                         break;
                 }
-               // Toast.makeText(getActivity(),showContent,Toast.LENGTH_SHORT).show();
                 if(mPopMemuWindow!=null){
                     mPopMemuWindow.dismiss();
                 }
