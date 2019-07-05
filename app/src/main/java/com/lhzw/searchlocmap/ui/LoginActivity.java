@@ -27,6 +27,7 @@ import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.HttpRequstInfo;
 import com.lhzw.searchlocmap.bean.LocPersonalInfo;
 import com.lhzw.searchlocmap.bean.LocalBDNum;
+import com.lhzw.searchlocmap.bean.PersonalInfo;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
@@ -243,8 +244,15 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                        BindingWatchBean.DataBean dataBean = bean.getData().get(i);
                        LocPersonalInfo perInfo = new LocPersonalInfo();
                        perInfo.setNum(dataBean.getDeviceNumber());
-                       perInfo.setName(dataBean.getDeviceName());
+                       perInfo.setName("");
                        CommonDBOperator.saveToDB(mLocPersonDao, perInfo);
+
+                       PersonalInfo personalInfo = new PersonalInfo();
+                       personalInfo.setName("");
+                       personalInfo.setSex("0");
+                       personalInfo.setState(Constants.PERSON_OFFLINE);
+                       CommonDBOperator.saveToDB(mPersonalInfoDao,perInfo);
+                       uploadOffset();
                    }
                }
             }else {
@@ -259,7 +267,16 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         });
 
     }
-
+    /**
+     * 重新设置ID值
+     */
+    private void uploadOffset() {
+        List<PersonalInfo> rxList = CommonDBOperator.queryByOrderKey(mPersonalInfoDao, "num");
+        for (int offset = 0; offset < rxList.size(); offset++) {
+            rxList.get(offset).setOffset(offset);
+            CommonDBOperator.updateItem(mPersonalInfoDao, rxList.get(offset));
+        }
+    }
 
     private List<LocalBDNum> mLocalBDNums = new ArrayList<>();
     private List<BDNum> mNumList =new ArrayList<>();//准备上传服务的北斗bean集合
