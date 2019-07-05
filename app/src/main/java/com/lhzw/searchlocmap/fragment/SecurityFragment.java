@@ -118,11 +118,12 @@ import com.lhzw.searchlocmap.ui.PerStateActivity;
 import com.lhzw.searchlocmap.ui.PlotItemListActivity;
 import com.lhzw.searchlocmap.ui.ShortMessUploadActivity;
 import com.lhzw.searchlocmap.ui.TreeStateListActivity;
-import com.lhzw.searchlocmap.utils.ComUtils;
 import com.lhzw.searchlocmap.utils.BaseUtils;
+import com.lhzw.searchlocmap.utils.ComUtils;
 import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.LogWrite;
 import com.lhzw.searchlocmap.utils.SpUtils;
+import com.lhzw.searchlocmap.view.DragView;
 import com.lhzw.searchlocmap.view.HistogramBar;
 import com.lhzw.searchlocmap.view.HorizontalListView;
 import com.lhzw.searchlocmap.view.LocationDialog;
@@ -1105,7 +1106,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         return R.layout.security_fg;
     }
     private boolean isShow;//是否显示radioGroup
-
+    private DragView mDragView;
     @SuppressLint("WrongConstant")
     @Override
     protected void initData() {
@@ -1119,7 +1120,17 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         drawer = (DrawerLayout) view.findViewById(R.id.drawer);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-
+        initPopWindow();
+        mDragView = (DragView)view.findViewById(R.id.drag_view );
+        final RelativeLayout relativeLayout = (RelativeLayout)view.findViewById(R.id.rl_container);
+        mDragView.setOnDragViewClickListener(new DragView.onDragViewClickListener() {
+            @Override
+            public void onDragViewClick() {
+                mPopMemuWindow.showAtLocation(relativeLayout, Gravity.CENTER,0,0);
+                mDragView.setVisibility(View.GONE);
+                //Toast.makeText(getActivity(),"点击按钮",Toast.LENGTH_SHORT).show();
+            }
+        });
         mIvSwitchRg = (ImageView) view.findViewById(R.id.iv_switch_rg);
         mIvSwitchRg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1230,7 +1241,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
         tv_location = (TextView) view.findViewById(R.id.tv_location);
 
-        tv_conmnication_num = (TextView) view.findViewById(R.id.tv_conmnication_num);
+        //tv_conmnication_num = (TextView) view.findViewById(R.id.tv_conmnication_num);
         tv_search_note = (TextView) view.findViewById(R.id.tv_search_note);
         tv_signal_search_note = (TextView) view.findViewById(R.id.tv_signal_search_note);
 
@@ -2929,6 +2940,87 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     @Override
     public void onChildScroll(int top) {
+
+    }
+
+    private PopupWindow mPopMemuWindow;
+    private void initPopWindow() {
+        View contentView = LayoutInflater.from(getContext()).inflate(R.layout.pop_menu,null);
+        //处理popWindow 显示内容
+        handleLogic(contentView);
+        mPopMemuWindow = new PopupWindow(contentView, RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT, true);
+        mPopMemuWindow.setWidth(RelativeLayout.LayoutParams.WRAP_CONTENT);
+        mPopMemuWindow.setHeight(RelativeLayout.LayoutParams.WRAP_CONTENT);
+        mPopMemuWindow.setContentView(contentView);
+        mPopMemuWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                mDragView.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+
+    }
+    private void handleLogic(View contentView){
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String showContent = "";
+                switch (v.getId()){
+                    case R.id.iv_btn_1:
+                        showContent = "点击 Item菜单1";
+                        startActivity(new Intent(getActivity(), CommunicationListActivity.class));
+                        break;
+                    case R.id.iv_btn_2:
+                        showContent = "点击 Item菜单2";
+                        drawer.setScrimColor(Color.TRANSPARENT);
+                        drawer.openDrawer(Gravity.RIGHT);
+                        break;
+                    case R.id.iv_btn_3:
+                        showContent = "点击 Item菜单3";
+                        if (isOpen) {
+                            mScrollLayout.scrollToExit();
+                        } else {
+                            mScrollLayout.setToOpen();
+                            scroll_cancel.setVisibility(View.VISIBLE);
+                        }
+                        break;
+                    case R.id.iv_btn_4:
+                        showContent = "点击 Item菜单4";
+                        try {
+                            //将镜头平移到当前手持机定位的中心
+                            mapController = mMapView.getController();
+                            mapController.setCenter(new GeoPoint(lat, lon));
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                        break;
+                    case R.id.iv_btn_5:
+                        showContent = "点击 Item菜单5" ;
+                        try {
+                            startActivity(new Intent("com.lhzw.intent.action_UPLOAD_SERVICE"));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                }
+               // Toast.makeText(getActivity(),showContent,Toast.LENGTH_SHORT).show();
+                if(mPopMemuWindow!=null){
+                    mPopMemuWindow.dismiss();
+                }
+
+            }
+
+        };
+        ImageView view1 = (ImageView) contentView.findViewById(R.id.iv_btn_1);
+        view1.setOnClickListener(listener);
+        contentView.findViewById(R.id.iv_btn_2).setOnClickListener(listener);
+        contentView.findViewById(R.id.iv_btn_3).setOnClickListener(listener);
+        contentView.findViewById(R.id.iv_btn_4).setOnClickListener(listener);
+        contentView.findViewById(R.id.iv_btn_5).setOnClickListener(listener);
+        tv_conmnication_num =(TextView)contentView.findViewById(R.id.tv_conmnication_num);
 
     }
 }

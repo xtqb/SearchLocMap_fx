@@ -189,6 +189,7 @@
         android:visibility="gone" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/communication_btn"
         android:layout_width="55dp"
         android:layout_height="40dp"
@@ -199,6 +200,7 @@
         android:gravity="right" />
 
     <TextView
+
         android:id="@+id/tv_communication_num"
         android:layout_width="17dp"
         android:layout_height="17dp"
@@ -210,9 +212,10 @@
         android:maxLength="3"
         android:textColor="@color/white"
         android:textSize="11sp"
-        android:visibility="invisible" />
+        android:visibility="gone" />
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/tv_communication_counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -239,6 +242,7 @@
         android:textSize="10sp" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/bt_plot_list"
         android:layout_width="55dp"
         android:layout_height="40dp"
@@ -249,6 +253,7 @@
         android:gravity="right" />
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/tv_plot_list_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -260,6 +265,7 @@
         android:textSize="13sp" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/total_search_btn"
         android:layout_width="55dp"
         android:layout_height="40dp"
@@ -270,6 +276,7 @@
         android:gravity="right" />
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/tv_total_search_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -281,6 +288,7 @@
         android:textSize="13sp" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/switch_location_btn"
         android:layout_width="55dp"
         android:layout_height="40dp"
@@ -292,6 +300,7 @@
         android:gravity="right" />
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/tv_person_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

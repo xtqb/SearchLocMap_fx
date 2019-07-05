@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:background="@drawable/shape_pop_circle"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:layout_marginBottom="10dp"
+        android:id="@+id/iv_btn_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/selector_sms_bg"/>
+    <TextView
+        android:gravity="center"
+        android:padding="2dp"
+        android:layout_marginLeft="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/tv_conmnication_num"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_round_rect"
+        android:textColor="@color/white"
+        android:textSize="10sp" />
+    <ImageView
+        android:layout_marginRight="5dp"
+        android:id="@+id/iv_btn_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/iv_btn_1"
+        app:layout_constraintEnd_toStartOf="@+id/iv_btn_5"
+        android:src="@drawable/selector_draw_bg"
+        />
+    <ImageView
+        android:layout_marginLeft="5dp"
+        android:id="@+id/iv_btn_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/iv_btn_5"
+        app:layout_constraintTop_toBottomOf="@+id/iv_btn_1"
+        android:src="@drawable/selector_search_bg"/>
+
+    <ImageView
+        android:layout_marginTop="5dp"
+        android:id="@+id/iv_btn_4"
+        app:layout_constraintTop_toBottomOf="@+id/iv_btn_2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/selector_location_bg"/>
+    <ImageView
+        android:id="@+id/iv_btn_5"
+        app:layout_constraintTop_toBottomOf="@+id/iv_btn_1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/selector_eye_bg"
+       />
+
+</android.support.constraint.ConstraintLayout>

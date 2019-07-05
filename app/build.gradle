@@ -2,6 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
+        key {
+            keyAlias 'lhzw'
+            keyPassword '123456'
+            storeFile file('D:/Android_HECUNCUN/app/keystore')
+            storePassword '123456'
+        }
 //        key {
 //            keyAlias 'lhzw'
 //            keyPassword '123456'
@@ -19,14 +25,14 @@ android {
         versionName "2.2.0e"
     }
     buildTypes {
-//        release {
-//            minifyEnabled false
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//            signingConfig signingConfigs.key
-//        }
-//        debug {
-//            signingConfig signingConfigs.key
-//        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.key
+        }
+        debug {
+            signingConfig signingConfigs.key
+        }
     }
 
     sourceSets {
@@ -45,6 +51,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.android.support:appcompat-v7:23.4.0'
     implementation 'com.android.support:recyclerview-v7:23.4.0'
     implementation files('libs/ormlite-android-4.48.jar')
