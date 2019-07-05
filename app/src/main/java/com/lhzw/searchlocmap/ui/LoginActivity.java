@@ -126,10 +126,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     private class AyncLoginTask extends AsyncTask<Object, Integer, Boolean> {
         private boolean isInitMax = false;
+        private String mDipperNum;
 
         @Override
         protected void onPreExecute() {
             ShowProgressDialog();
+            mDipperNum = BaseUtils.getDipperNum(LoginActivity.this);
         }
 
         @Override
@@ -145,7 +147,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
                         getAllBDInfoFromServer();//获取平台的北斗号
 
-                        if(BaseUtils.getDipperNum(LoginActivity.this) != null){
+                        if(mDipperNum != null){
                             getBindingWatchFromServer();//获取当前手持机绑定的手表
                         }
 
