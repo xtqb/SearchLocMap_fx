@@ -3014,8 +3014,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             }
 
         };
-        ImageView view1 = (ImageView) contentView.findViewById(R.id.iv_btn_1);
-        view1.setOnClickListener(listener);
+        contentView.findViewById(R.id.iv_btn_1).setOnClickListener(listener);
         contentView.findViewById(R.id.iv_btn_2).setOnClickListener(listener);
         contentView.findViewById(R.id.iv_btn_3).setOnClickListener(listener);
         contentView.findViewById(R.id.iv_btn_4).setOnClickListener(listener);
