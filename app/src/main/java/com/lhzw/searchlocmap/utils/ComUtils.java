@@ -110,6 +110,7 @@ public class ComUtils {
     public void netCom(UploadInfoBean infoBean) {
         if(!isNetConnection) {
             Toast.makeText(SearchLocMapApplication.getContext(), "当前网络已断开，请连接网络或者切换北斗模式传输", Toast.LENGTH_SHORT).show();
+            uploadQueue.add(infoBean);
             return;
         }
 //        public static final int TX_FIREPOIT = 0;

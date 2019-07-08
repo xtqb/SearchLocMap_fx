@@ -563,7 +563,7 @@ public class BaseUtils {
             double lng = 0.0;
             String time = "";
             String[] latLng = latLngArr[pos].split(",");
-            if(latLng != null && latLng.length ==2){
+            if(latLng != null && latLng.length ==2 && latLng[0] != null && latLng[1] != null &&  !"".equals(latLng[0]) && !"".equals(latLng[1]) && !"null".equals(latLng[0]) && !"null".equals(latLng[1])){
                 lat = Double.valueOf(latLng[0]);
                 lng = Double.valueOf(latLng[1]);
                 time = sdf.format(Double.valueOf(locTimes[pos]));
@@ -589,7 +589,7 @@ public class BaseUtils {
             double lng = 0.0;
             String time = "";
             String[] latLng = latLngArr[pos].split(",");
-            if(latLng != null && latLng.length ==2 && !BaseUtils.isStringEmpty(latLng[0]) && !BaseUtils.isStringEmpty(latLng[1])){
+            if(latLng != null && latLng.length ==2 && latLng[0] != null && latLng[1] != null &&  !"".equals(latLng[0]) && !"".equals(latLng[1]) && !"null".equals(latLng[0]) && !"null".equals(latLng[1])){
                 watchstatus = type;
                 lat = Double.valueOf(latLng[0]);
                 lng = Double.valueOf(latLng[1]);
