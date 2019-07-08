@@ -1200,8 +1200,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         e.printStackTrace();
                     }
                 }
-                //mRadioGroup.setVisibility(View.GONE);
-                //mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_open));
             }
         });
 

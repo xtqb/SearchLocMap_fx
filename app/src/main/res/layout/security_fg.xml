@@ -397,7 +397,6 @@
             android:textColor="@color/selector_radio_btn"/>
 
         <RadioButton
-            android:visibility="gone"
             android:id="@+id/rg_btn_auto"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

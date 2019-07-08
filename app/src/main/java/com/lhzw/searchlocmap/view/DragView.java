@@ -59,6 +59,8 @@ public class DragView extends AppCompatImageView implements View.OnTouchListener
             }
         });
     }
+
+    //onTouch()的优先级大于onTouchEvent()  onTouch()返回true就会拦截点击事件 不会执行onTouchEvent()
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         Log.e("Tag","ontouch");
