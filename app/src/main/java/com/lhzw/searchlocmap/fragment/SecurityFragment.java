@@ -1177,6 +1177,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         });
         //网络通信模式选择
         mRadioGroup = (RadioGroup) view.findViewById(R.id.radio_group);
+
+
         mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -1190,6 +1192,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     case R.id.rg_btn_auto:
                         SpUtils.putInt(SPConstants.COM_MODE,Constants.COM_MODE_AUTO);
                         break;
+                }
+                if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
+                    try {
+                        SearchLocMapApplication.getInstance().getUploadService().setCom(SpUtils.getInt(SPConstants.COM_MODE,Constants.COM_MODE_BD));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                 }
                 //mRadioGroup.setVisibility(View.GONE);
                 //mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_open));
