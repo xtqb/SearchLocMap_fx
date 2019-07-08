@@ -57,7 +57,7 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
     }
 
 
-    private void initData(){
+    private synchronized void initData(){
         if(list.size() > 0) {
             list.clear();
         }
@@ -143,7 +143,7 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
             if(item.getState1() != null) {
                 state =  item.getState1().equals(Constants.PERSON_SOS);
             }
-            bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, state);
+            bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), state, false);
             if(state) {
                 sos_num += 1;
             }

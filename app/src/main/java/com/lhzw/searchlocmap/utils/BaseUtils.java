@@ -595,7 +595,13 @@ public class BaseUtils {
                 lng = Double.valueOf(latLng[1]);
                 time = sdf.format(Double.valueOf(locTimes[pos]));
             }
-            WatchLocBean bean = new WatchLocBean("watch", idArr[pos], "", "", watchstatus, "", lat, lng, time);
+            WatchLocBean bean = null;
+            if(lat == 0.0) {
+                bean = new WatchLocBean("watch", idArr[pos], "", "", watchstatus, "", null, null, time);
+            } else {
+                bean = new WatchLocBean("watch", idArr[pos], "", "", watchstatus, "", lat + "", lng + "", time);
+            }
+
             list.add(bean);
         }
         return list;

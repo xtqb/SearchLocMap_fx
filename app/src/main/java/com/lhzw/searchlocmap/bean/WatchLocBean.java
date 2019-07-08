@@ -7,11 +7,11 @@ public class WatchLocBean {
     private String identitycardid;   // 身份证号
     private String watchstatus;      // 状态，normal正常，sosing求救，sosstarted开始救援，sosfinished救援完成，offline离线
     private String sostype;           // 搜救类型，包含主动求救seekhelp、落水overboard、摔倒falldown、体征异常abnormalsigns watchstatus为正常时sostype为”“
-    private double lat;               // 纬度
-    private double lng;                // 经度
+    private String lat;               // 纬度
+    private String lng;                // 经度
     private String time;                // 手表定位时间
 
-    public WatchLocBean(String watchtype, String watchid, String personname, String identitycardid, String watchstatus, String sostype, double lat, double lng, String time) {
+    public WatchLocBean(String watchtype, String watchid, String personname, String identitycardid, String watchstatus, String sostype, String lat, String lng, String time) {
         this.watchtype = watchtype;
         this.watchid = watchid;
         this.personname = personname;
@@ -47,11 +47,11 @@ public class WatchLocBean {
         this.sostype = sostype;
     }
 
-    public void setLat(double lat) {
+    public void setLat(String lat) {
         this.lat = lat;
     }
 
-    public void setLng(double lng) {
+    public void setLng(String lng) {
         this.lng = lng;
     }
 
@@ -83,11 +83,11 @@ public class WatchLocBean {
         return sostype;
     }
 
-    public double getLat() {
+    public String getLat() {
         return lat;
     }
 
-    public double getLng() {
+    public String getLng() {
         return lng;
     }
 
