@@ -16,4 +16,5 @@ interface BDUploadEvent {
 	void reuestData(in double lat, in double lon);
 	void setNum(in int tx_type, in String num);
 	void updateBDNum(in List<BDNum> list);
+	void setCom(in int comType);
 }

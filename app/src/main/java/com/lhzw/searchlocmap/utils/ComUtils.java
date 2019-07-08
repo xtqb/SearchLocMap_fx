@@ -74,19 +74,19 @@ public class ComUtils {
     private class Action implements Runnable {
         @Override
         public void run() {
-            switch (SpUtils.getInt(SPConstants.COM_MODE, Constants.COM_MODE_BD)) {
-                case Constants.COM_MODE_BD:
-                    bdCom();
-                    break;
-                case Constants.COM_MODE_NET:
-                    netCom();
-                    break;
-                case Constants.COM_MODE_AUTO:
-                    autoCom();
-                    break;
+            try {
+                List<UploadInfoBean> uploadList = new ArrayList<>();
+                do {
+                    uploadList.add(uploadQueue.poll());
+                }while(!uploadQueue.isEmpty());
+                if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
+                    SearchLocMapApplication.getInstance().getUploadService().doTask(uploadList);
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
             try {
-                Thread.sleep(5000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -107,7 +107,7 @@ public class ComUtils {
         }
     }
 
-    private void netCom() {
+    public void netCom(UploadInfoBean infoBean) {
         if(!isNetConnection) {
             Toast.makeText(SearchLocMapApplication.getContext(), "当前网络已断开，请连接网络或者切换北斗模式传输", Toast.LENGTH_SHORT).show();
             return;
@@ -117,7 +117,6 @@ public class ComUtils {
 //        public static final int TX_SOS = 2;
 //        public static final int TX_MMS = 3;
 //        public static final int TX_FIRELINE = 4;
-        UploadInfoBean infoBean = uploadQueue.poll();
         LogUtil.d("通信类型=="+infoBean.getData_type());
         switch (infoBean.getData_type()) {
 
@@ -168,7 +167,7 @@ public class ComUtils {
 
     private void autoCom() {
         if (BaseUtils.isNetConnected(SearchLocMapApplication.getContext())) {
-            netCom();
+//            netCom();
         } else {
             bdCom();
         }

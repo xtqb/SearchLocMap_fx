@@ -57,7 +57,7 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
     }
 
 
-    private synchronized void initData(){
+    private void initData(){
         if(list.size() > 0) {
             list.clear();
         }
@@ -148,10 +148,10 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
                 sos_num += 1;
             }
             bean.setState(Constants.PERSON_UNDETERMINED);
-            if(item.getState().equals(Constants.PERSON_OFFLINE)){
-                bean.setOnline(false);
-            } else {
+            if(Constants.PERSON_SOS.equals(item.getState1()) || Constants.PERSON_COMMON.equals(item.getState1())){
                 bean.setOnline(true);
+            } else {
+                bean.setOnline(false);
             }
             bean.setPos(pos);
             list.add(bean);

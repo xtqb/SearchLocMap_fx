@@ -153,6 +153,11 @@
                 <action android:name="android.intent.action.SOS_RECEIVE" /> <!-- 加密 -->
             </intent-filter>
         </receiver>
+        <receiver android:name="com.lhzw.searchlocmap.receiver.NetUploadReceiver">
+            <intent-filter>
+                <action android:name="com.lhzw.action.comnet" />
+            </intent-filter>
+        </receiver>
         <receiver android:name="com.lhzw.searchlocmap.receiver.BDUploadReceiver">
             <intent-filter>
                 <action android:name="com.lhzw.action.mms" />

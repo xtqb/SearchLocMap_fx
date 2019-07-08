@@ -135,7 +135,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
         public void onReceive(Context context, Intent intent) {
             // TODO Auto-generated method stub
             if (isVisible && intent.getAction().equals("com.lhzw.soildersos.change")) {
-                taskQueue.add(intent);
+                initSoilderInfoList();
             } else if (intent.getAction().equals(Constants.ACTION_SYNC_FIRELINE)) {
                 taskQueue.add(intent);
             } else if (isVisible && intent.getAction().equals(Constants.BD_Mms_ACTION)) {
@@ -164,17 +164,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
         public void run() {
             final Intent intent = taskQueue.get(0);
             taskQueue.remove(0);
-            if (intent.getAction().equals("com.lhzw.soildersos.change")) {
-//                isSosFlash = intent.getBooleanExtra("has_sos", false);
-                if(getActivity() != null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initSoilderInfoList();
-                        }
-                    });
-                }
-            } else if (intent.getAction().equals(Constants.ACTION_SYNC_FIRELINE)) {
+            if (intent.getAction().equals(Constants.ACTION_SYNC_FIRELINE)) {
                 String fireLine = intent.getStringExtra("fireLine");
                 long time = intent.getLongExtra("time", System.currentTimeMillis());
                 String num = intent.getStringExtra("num");
@@ -196,7 +186,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
             } else if (intent.getAction().equals(Constants.BD_Mms_ACTION)) {
                 initMessageNum();
             } else if (intent.getAction().equals(Constants.ACTION_FEEDBACK)) {
-                updateFeedback(intent.getIntExtra("sendID", -1));
+//                updateFeedback(intent.getIntExtra("sendID", -1));
             } else if (intent.getAction().equals(Constants.BD_SIGNAL_LIST)) {
                 if(getActivity() != null) {
                     getActivity().runOnUiThread(new Runnable() {
