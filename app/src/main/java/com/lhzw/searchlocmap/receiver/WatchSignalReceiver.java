@@ -197,7 +197,6 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 				break;
 			}
 		}
-//		}
 	}
 
 	public void showNotifcationInfo(Context context, String text, int id, String type, String subText) {
