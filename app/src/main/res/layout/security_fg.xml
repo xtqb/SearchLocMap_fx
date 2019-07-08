@@ -411,6 +411,7 @@
     </RadioGroup>
 
     <com.lhzw.searchlocmap.view.DragView
+        android:visibility="gone"
         android:id="@+id/drag_view"
         android:layout_width="50dp"
         android:layout_height="50dp"

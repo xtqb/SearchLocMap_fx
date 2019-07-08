@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -1146,6 +1147,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         mDragView.setOnDragViewClickListener(new DragView.onDragViewClickListener() {
             @Override
             public void onDragViewClick() {
+                mDragView.playSoundEffect(SoundEffectConstants.CLICK);
                 mPopMemuWindow.showAtLocation(relativeLayout, Gravity.CENTER,0,0);
                 mDragView.setVisibility(View.GONE);
                 //Toast.makeText(getActivity(),"点击按钮",Toast.LENGTH_SHORT).show();
