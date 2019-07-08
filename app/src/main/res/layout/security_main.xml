@@ -310,7 +310,17 @@
         android:text="@string/curr_location"
         android:textColor="@color/yellow"
         android:textSize="13sp" />
-
+    <Button
+        android:visibility="visible"
+        android:id="@+id/bd_service_btn"
+        android:layout_width="55dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="60dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/selector_btn_service"
+        android:gravity="right" />
     <com.lhzw.searchlocmap.scrolllayout.ScrollLayout
         android:id="@+id/scrolllayout"
         android:layout_width="match_parent"

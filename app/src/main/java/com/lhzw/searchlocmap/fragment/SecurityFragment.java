@@ -752,6 +752,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     e1.printStackTrace();
                 }
                 break;
+            case R.id.bd_service_btn:
+                try {
+                    startActivity(new Intent("com.lhzw.intent.action_UPLOAD_SERVICE"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
             case R.id.im_person_state:
                 startActivityForResult(new Intent(getActivity(), PerStateActivity.class), PERSTATE_REQCODE);
                 break;
@@ -1216,6 +1223,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
         Button switch_location_btn = (Button) view.findViewById(R.id.switch_location_btn);
         switch_location_btn.setOnClickListener(this);
+        //bd_service_btn
+        Button btnBdService = (Button) view.findViewById(R.id.bd_service_btn);
+        btnBdService.setOnClickListener(this);
 
         ImageView im_person_state = (ImageView) view.findViewById(R.id.im_person_state);
         im_person_state.setOnClickListener(this);
