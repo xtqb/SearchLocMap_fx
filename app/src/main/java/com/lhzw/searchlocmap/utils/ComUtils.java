@@ -86,7 +86,7 @@ public class ComUtils {
                 e.printStackTrace();
             }
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -111,6 +111,7 @@ public class ComUtils {
         if(!isNetConnection) {
             Toast.makeText(SearchLocMapApplication.getContext(), "当前网络已断开，请连接网络或者切换北斗模式传输", Toast.LENGTH_SHORT).show();
             uploadQueue.add(infoBean);
+            doTask();
             return;
         }
 //        public static final int TX_FIREPOIT = 0;
@@ -189,6 +190,7 @@ public class ComUtils {
                     ToastUtil.showToast("上传失败"+bean.getStatus());
                     if(infoBean != null) {
                         uploadQueue.add(infoBean);
+                        doTask();
                     }
                 }
             }
@@ -199,6 +201,7 @@ public class ComUtils {
                 ToastUtil.showToast("网络错误,请检查网络是否打开");
                 if(infoBean != null) {
                     uploadQueue.add(infoBean);
+                    doTask();
                 }
             }
         });
@@ -215,8 +218,21 @@ public class ComUtils {
         @Override
         public void onReceive(Context context, Intent intent) {
             isNetConnection = BaseUtils.isNetConnected(SearchLocMapApplication.getContext());
-            if(isNetConnection) {
-                doTask();
+            try {
+                switch (SpUtils.getInt(SPConstants.COM_MODE, Constants.COM_MODE_BD)) {
+                    case Constants.COM_MODE_BD:
+                        break;
+                    case Constants.COM_MODE_NET:
+                        if(isNetConnection) {
+                            SearchLocMapApplication.getInstance().getUploadService().setCom(Constants.COM_MODE_NET);
+                        }
+                        break;
+                    case Constants.COM_MODE_AUTO:
+                        SearchLocMapApplication.getInstance().getUploadService().setCom(Constants.COM_MODE_AUTO);
+                        break;
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
         }
     };

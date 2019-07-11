@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
+import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.fragment.PersManagerFragment;
 import com.lhzw.searchlocmap.fragment.SecurityFragment;

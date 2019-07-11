@@ -1215,6 +1215,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 break;
         }
 
+        if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
+            try {
+                SearchLocMapApplication.getInstance().getUploadService().setCom(SpUtils.getInt(SPConstants.COM_MODE, Constants.COM_MODE_BD));
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
         LogUtil.d("当前网络模式为"+SpUtils.getInt(SPConstants.COM_MODE,Constants.COM_MODE_BD));
 
         mScrollLayout = (ScrollLayout) view.findViewById(R.id.scrolllayout);
@@ -1280,7 +1288,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
         tv_location = (TextView) view.findViewById(R.id.tv_location);
 
-        //tv_conmnication_num = (TextView) view.findViewById(R.id.tv_conmnication_num);
+        tv_conmnication_num = (TextView) view.findViewById(R.id.tv_conmnication_num);
         tv_search_note = (TextView) view.findViewById(R.id.tv_search_note);
         tv_signal_search_note = (TextView) view.findViewById(R.id.tv_signal_search_note);
 
@@ -1708,7 +1716,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                             }
                             counter++;
                         }
-                        Log.e("Tag", "body : " + body + "  offset : " + offset + "  bdNum : " + register);
                         UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), body, locTime, offset, local_latlon,
                                 SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, register);
                         uploadList.add(bean);
@@ -3057,7 +3064,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         contentView.findViewById(R.id.iv_btn_3).setOnClickListener(listener);
         contentView.findViewById(R.id.iv_btn_4).setOnClickListener(listener);
         contentView.findViewById(R.id.iv_btn_5).setOnClickListener(listener);
-        tv_conmnication_num =(TextView)contentView.findViewById(R.id.tv_conmnication_num);
+//        tv_conmnication_num =(TextView)contentView.findViewById(R.id.tv_conmnication_num);
 
     }
 }
