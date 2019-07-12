@@ -189,7 +189,7 @@
         android:visibility="gone" />
 
     <Button
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/communication_btn"
         android:layout_width="55dp"
         android:layout_height="40dp"
@@ -200,7 +200,6 @@
         android:gravity="right" />
 
     <TextView
-
         android:id="@+id/tv_communication_num"
         android:layout_width="17dp"
         android:layout_height="17dp"
@@ -215,7 +214,7 @@
         android:visibility="gone" />
 
     <TextView
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/tv_communication_counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -226,23 +225,23 @@
         android:textColor="@color/yellow"
         android:textSize="13sp" />
 
-    <TextView
-        android:id="@+id/tv_conmnication_num"
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="2dp"
-        android:layout_marginTop="107dp"
-        android:background="@drawable/bg_round_rect"
-        android:gravity="center"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp"
-        android:textColor="@color/white"
-        android:textSize="10sp" />
+    <!--<TextView-->
+        <!--android:id="@+id/tv_conmnication_num"-->
+        <!--android:visibility="gone"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="16dp"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_marginRight="2dp"-->
+        <!--android:layout_marginTop="107dp"-->
+        <!--android:background="@drawable/bg_round_rect"-->
+        <!--android:gravity="center"-->
+        <!--android:paddingLeft="2dp"-->
+        <!--android:paddingRight="2dp"-->
+        <!--android:textColor="@color/white"-->
+        <!--android:textSize="10sp" />-->
 
     <Button
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/bt_plot_list"
         android:layout_width="55dp"
         android:layout_height="40dp"
@@ -253,7 +252,7 @@
         android:gravity="right" />
 
     <TextView
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/tv_plot_list_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -265,7 +264,7 @@
         android:textSize="13sp" />
 
     <Button
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/total_search_btn"
         android:layout_width="55dp"
         android:layout_height="40dp"
@@ -276,7 +275,7 @@
         android:gravity="right" />
 
     <TextView
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/tv_total_search_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -288,7 +287,7 @@
         android:textSize="13sp" />
 
     <Button
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/switch_location_btn"
         android:layout_width="55dp"
         android:layout_height="40dp"
@@ -300,7 +299,7 @@
         android:gravity="right" />
 
     <TextView
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/tv_person_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -311,7 +310,7 @@
         android:textColor="@color/yellow"
         android:textSize="13sp" />
     <Button
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/bd_service_btn"
         android:layout_width="55dp"
         android:layout_height="40dp"

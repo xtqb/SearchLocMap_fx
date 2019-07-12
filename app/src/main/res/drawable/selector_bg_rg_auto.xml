@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/icon_auto_normal" android:state_checked="false"/>
-    <item android:drawable="@drawable/icon_auto_selected" android:state_checked="true"/>
+    <item android:drawable="@drawable/icon_sf_auto_normal3" android:state_checked="false"/>
+    <item android:drawable="@drawable/icon_sf_auto_normal3_select" android:state_checked="true"/>
 
 </selector>

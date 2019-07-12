@@ -30,7 +30,6 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -291,7 +290,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private Map<String, String> mHashMap;
     private Dao<MessageInfoIBean, Integer> mMsgDao;
     private RadioGroup mRadioGroup;
-    private ImageView mIvSwitchRg;
+//    private ImageView mIvSwitchRg;
+    private FrameLayout mFlContainer;
+    private ImageView mIvOpen;
+
 
     private void initScrollView() {
         /**设置 setting*/
@@ -1147,34 +1149,55 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
         drawer = (DrawerLayout) view.findViewById(R.id.drawer);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
 
-        initPopWindow();
-        mDragView = (DragView)view.findViewById(R.id.drag_view );
-        final RelativeLayout relativeLayout = (RelativeLayout)view.findViewById(R.id.rl_container);
-        mDragView.setOnDragViewClickListener(new DragView.onDragViewClickListener() {
-            @Override
-            public void onDragViewClick() {
-                mDragView.playSoundEffect(SoundEffectConstants.CLICK);
-                mPopMemuWindow.showAtLocation(relativeLayout, Gravity.CENTER,0,0);
-                mDragView.setVisibility(View.GONE);
-                //Toast.makeText(getActivity(),"点击按钮",Toast.LENGTH_SHORT).show();
             }
-        });
-        mIvSwitchRg = (ImageView) view.findViewById(R.id.iv_switch_rg);
-        mIvSwitchRg.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View v) {
-                if(isShow){
-                   mRadioGroup.setVisibility(View.GONE);
-                   mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_open));
-                }else {
-                    mRadioGroup.setVisibility(View.VISIBLE);
-                    mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_close));
-                }
-                isShow=!isShow;
+            public void onDrawerOpened(View drawerView) {
+                mFlContainer.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                mFlContainer.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
 
             }
         });
+
+        //initPopWindow();
+//        mDragView = (DragView)view.findViewById(R.id.drag_view );
+//        final RelativeLayout relativeLayout = (RelativeLayout)view.findViewById(R.id.rl_container);
+//        mDragView.setOnDragViewClickListener(new DragView.onDragViewClickListener() {
+//            @Override
+//            public void onDragViewClick() {
+//                mDragView.playSoundEffect(SoundEffectConstants.CLICK);
+//                mPopMemuWindow.showAtLocation(relativeLayout, Gravity.CENTER,0,0);
+//                mDragView.setVisibility(View.GONE);
+//                //Toast.makeText(getActivity(),"点击按钮",Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//        mIvSwitchRg = (ImageView) view.findViewById(R.id.iv_switch_rg);
+//        mIvSwitchRg.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(isShow){
+//                   mRadioGroup.setVisibility(View.GONE);
+//                   mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_open));
+//                }else {
+//                    mRadioGroup.setVisibility(View.VISIBLE);
+//                    mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_close));
+//                }
+//                isShow=!isShow;
+//
+//            }
+//        });
         //网络通信模式选择
         mRadioGroup = (RadioGroup) view.findViewById(R.id.radio_group);
 
@@ -1348,6 +1371,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         scroll_listview.setOnItemClickListener(mScrollAdapter);
         mScrollAdapter.setOnClickScrollItemListener(this);
 
+        initMenuBtnListener();
+
 
         mHttpDao = helper.getHttpPerDao();
         persondao = helper.getPersonalInfoDao();
@@ -1452,6 +1477,68 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         //动态申请权限
         requestPermission();
         initDEMData();
+    }
+
+
+    /**
+     * 主页按钮监听器
+     */
+    private void initMenuBtnListener() {
+        mFlContainer = (FrameLayout) view.findViewById(R.id.fl_menu_container);
+        LinearLayout btnDraw = (LinearLayout) view.findViewById(R.id.ll_btn_draw);
+        LinearLayout btnSms= (LinearLayout) view.findViewById(R.id.ll_btn_sms);
+        LinearLayout btnSearch= (LinearLayout) view.findViewById(R.id.ll_btn_search);
+        LinearLayout btnBdService= (LinearLayout) view.findViewById(R.id.ll_btn_bd_service);
+        LinearLayout btnComMode= (LinearLayout) view.findViewById(R.id.ll_btn_communicate_mode);
+        mIvOpen = (ImageView) view.findViewById(R.id.iv_open);
+        btnDraw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFlContainer.setVisibility(View.GONE);
+                drawer.setScrimColor(Color.TRANSPARENT);
+                drawer.openDrawer(Gravity.RIGHT);
+            }
+        });
+        btnSms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), CommunicationListActivity.class));
+            }
+        });
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isOpen) {
+                    mScrollLayout.scrollToExit();
+                } else {
+                    mScrollLayout.setToOpen();
+                    scroll_cancel.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        btnBdService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    startActivity(new Intent("com.lhzw.intent.action_UPLOAD_SERVICE"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        btnComMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isShow){
+                    mRadioGroup.setVisibility(View.GONE);
+                    mIvOpen.setImageDrawable(getResources().getDrawable(R.drawable.icon_sf_close2));
+                }else {
+                    mRadioGroup.setVisibility(View.VISIBLE);
+                    mIvOpen.setImageDrawable(getResources().getDrawable(R.drawable.icon_sf_open2));
+                }
+                isShow=!isShow;
+            }
+        });
     }
 
     private void uploadItem() {
@@ -1962,7 +2049,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         if(isShow){
             mRadioGroup.setVisibility(View.GONE);
             isShow=!isShow;
-            mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_open));
+           // mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_open));
+            mIvOpen.setImageDrawable(getResources().getDrawable(R.drawable.icon_sf_close2));
+
         }
         for (Map.Entry<Integer, PersonalInfo> entry : tatolMap.entrySet()) {
             if (entry.getKey() == id) {
@@ -2974,12 +3063,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 mGraphicOverlay.SelectTool(-1, mMapView);
             }
             scroll_cancel.setVisibility(View.GONE);
+            mFlContainer.setVisibility(View.VISIBLE);
         } else {
             mScrollLayout.setBackgroundColor(getResources().getColor(R.color.tra_gray));
             isOpen = true;
             if (mGraphicOverlay != null && mMapView != null) {
                 mGraphicOverlay.SelectTool(GM_TypeDefines.GM_TOOL_EDIT_CREATE, mMapView); //禁止拖动  -1  可以拖动
             }
+            mFlContainer.setVisibility(View.GONE);
 
         }
     }
@@ -2989,82 +3080,82 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     }
 
-    private PopupWindow mPopMemuWindow;
-    private void initPopWindow() {
-        View contentView = LayoutInflater.from(getContext()).inflate(R.layout.pop_menu,null);
-        //处理popWindow 显示内容
-        handleLogic(contentView);
-        mPopMemuWindow = new PopupWindow(contentView, RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT, true);
-        mPopMemuWindow.setWidth(RelativeLayout.LayoutParams.WRAP_CONTENT);
-        mPopMemuWindow.setHeight(RelativeLayout.LayoutParams.WRAP_CONTENT);
-        mPopMemuWindow.setContentView(contentView);
-        mPopMemuWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                mDragView.setVisibility(View.VISIBLE);
-            }
-        });
-
-
-
-    }
-    private void handleLogic(View contentView){
-        View.OnClickListener listener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               // String showContent = "";
-                switch (v.getId()){
-                    case R.id.iv_btn_1:
-                       // showContent = "点击 Item菜单1";
-                        startActivity(new Intent(getActivity(), CommunicationListActivity.class));
-                        break;
-                    case R.id.iv_btn_2:
-                       // showContent = "点击 Item菜单2";
-                        drawer.setScrimColor(Color.TRANSPARENT);
-                        drawer.openDrawer(Gravity.RIGHT);
-                        break;
-                    case R.id.iv_btn_3:
-                      //  showContent = "点击 Item菜单3";
-                        if (isOpen) {
-                            mScrollLayout.scrollToExit();
-                        } else {
-                            mScrollLayout.setToOpen();
-                            scroll_cancel.setVisibility(View.VISIBLE);
-                        }
-                        break;
-                    case R.id.iv_btn_4:
-                      //  showContent = "点击 Item菜单4";
-                        try {
-                            //将镜头平移到当前手持机定位的中心
-                            mapController = mMapView.getController();
-                            mapController.setCenter(new GeoPoint(lat, lon));
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                        break;
-                    case R.id.iv_btn_5:
-                     //   showContent = "点击 Item菜单5" ;
-                        try {
-                            startActivity(new Intent("com.lhzw.intent.action_UPLOAD_SERVICE"));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                }
-                if(mPopMemuWindow!=null){
-                    mPopMemuWindow.dismiss();
-                }
-
-            }
-
-        };
-        contentView.findViewById(R.id.iv_btn_1).setOnClickListener(listener);
-        contentView.findViewById(R.id.iv_btn_2).setOnClickListener(listener);
-        contentView.findViewById(R.id.iv_btn_3).setOnClickListener(listener);
-        contentView.findViewById(R.id.iv_btn_4).setOnClickListener(listener);
-        contentView.findViewById(R.id.iv_btn_5).setOnClickListener(listener);
-//        tv_conmnication_num =(TextView)contentView.findViewById(R.id.tv_conmnication_num);
-
-    }
+   // private PopupWindow mPopMemuWindow;
+//    private void initPopWindow() {
+//        View contentView = LayoutInflater.from(getContext()).inflate(R.layout.pop_menu,null);
+//        //处理popWindow 显示内容
+//        handleLogic(contentView);
+//        mPopMemuWindow = new PopupWindow(contentView, RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                RelativeLayout.LayoutParams.WRAP_CONTENT, true);
+//        mPopMemuWindow.setWidth(RelativeLayout.LayoutParams.WRAP_CONTENT);
+//        mPopMemuWindow.setHeight(RelativeLayout.LayoutParams.WRAP_CONTENT);
+//        mPopMemuWindow.setContentView(contentView);
+//        mPopMemuWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+//            @Override
+//            public void onDismiss() {
+//                mDragView.setVisibility(View.VISIBLE);
+//            }
+//        });
+//
+//
+//
+//    }
+//    private void handleLogic(View contentView){
+//        View.OnClickListener listener = new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//               // String showContent = "";
+//                switch (v.getId()){
+//                    case R.id.iv_btn_1:
+//                       // showContent = "点击短消息菜单1";
+//                        startActivity(new Intent(getActivity(), CommunicationListActivity.class));
+//                        break;
+//                    case R.id.iv_btn_2:
+//                       // showContent = "点击 绘制菜单2";
+//                        drawer.setScrimColor(Color.TRANSPARENT);
+//                        drawer.openDrawer(Gravity.RIGHT);
+//                        break;
+//                    case R.id.iv_btn_3:
+//                      //  showContent = "点击 搜索菜单3";
+//                        if (isOpen) {
+//                            mScrollLayout.scrollToExit();
+//                        } else {
+//                            mScrollLayout.setToOpen();
+//                            scroll_cancel.setVisibility(View.VISIBLE);
+//                        }
+//                        break;
+//                    case R.id.iv_btn_4:
+//                      //  showContent = "点击 定位4";
+//                        try {
+//                            //将镜头平移到当前手持机定位的中心
+//                            mapController = mMapView.getController();
+//                            mapController.setCenter(new GeoPoint(lat, lon));
+//                        } catch (Exception e1) {
+//                            e1.printStackTrace();
+//                        }
+//                        break;
+//                    case R.id.iv_btn_5:
+//                     //   showContent = "点击服务菜单5" ;
+//                        try {
+//                            startActivity(new Intent("com.lhzw.intent.action_UPLOAD_SERVICE"));
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                        break;
+//                }
+//                if(mPopMemuWindow!=null){
+//                    mPopMemuWindow.dismiss();
+//                }
+//
+//            }
+//
+//        };
+//        contentView.findViewById(R.id.iv_btn_1).setOnClickListener(listener);
+//        contentView.findViewById(R.id.iv_btn_2).setOnClickListener(listener);
+//        contentView.findViewById(R.id.iv_btn_3).setOnClickListener(listener);
+//        contentView.findViewById(R.id.iv_btn_4).setOnClickListener(listener);
+//        contentView.findViewById(R.id.iv_btn_5).setOnClickListener(listener);
+//       // tv_conmnication_num =(TextView)contentView.findViewById(R.id.tv_conmnication_num);
+//
+//    }
 }

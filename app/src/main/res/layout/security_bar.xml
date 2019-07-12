@@ -33,13 +33,13 @@
         android:padding="2dp"
         android:visibility="gone" />
 
-    <ImageView
-        android:id="@+id/iv_switch_rg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
-        android:layout_toLeftOf="@+id/im_person_state"
-        android:src="@drawable/icon_open" />
+    <!--<ImageView-->
+        <!--android:id="@+id/iv_switch_rg"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginRight="10dp"-->
+        <!--android:layout_toLeftOf="@+id/im_person_state"-->
+        <!--android:src="@drawable/icon_open" />-->
 
     <ImageView
         android:id="@+id/im_person_state"
