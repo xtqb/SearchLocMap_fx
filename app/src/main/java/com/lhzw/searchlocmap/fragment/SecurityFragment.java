@@ -1487,6 +1487,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         mFlContainer = (FrameLayout) view.findViewById(R.id.fl_menu_container);
         LinearLayout btnDraw = (LinearLayout) view.findViewById(R.id.ll_btn_draw);
         LinearLayout btnSms= (LinearLayout) view.findViewById(R.id.ll_btn_sms);
+        LinearLayout btnLocation= (LinearLayout) view.findViewById(R.id.ll_btn_location);
         LinearLayout btnSearch= (LinearLayout) view.findViewById(R.id.ll_btn_search);
         LinearLayout btnBdService= (LinearLayout) view.findViewById(R.id.ll_btn_bd_service);
         LinearLayout btnComMode= (LinearLayout) view.findViewById(R.id.ll_btn_communicate_mode);
@@ -1537,6 +1538,18 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     mIvOpen.setImageDrawable(getResources().getDrawable(R.drawable.icon_sf_open2));
                 }
                 isShow=!isShow;
+            }
+        });
+        btnLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                            //将镜头平移到当前手持机定位的中心
+                            mapController = mMapView.getController();
+                            mapController.setCenter(new GeoPoint(lat, lon));
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
             }
         });
     }
