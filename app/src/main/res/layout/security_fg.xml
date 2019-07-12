@@ -791,11 +791,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginRight="60dp"
-            android:layout_marginTop="320dp"
+            android:layout_marginTop="383dp"
             android:background="@drawable/shape_black_circle_bg"
             android:gravity="center"
             android:orientation="horizontal"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <RadioButton
                 android:id="@+id/rg_btn_bd"
