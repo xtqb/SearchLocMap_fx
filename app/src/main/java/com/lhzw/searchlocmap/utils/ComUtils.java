@@ -187,7 +187,8 @@ public class ComUtils {
                     ToastUtil.showToast("上传成功");
                 }else {
                     //请求成功
-                    ToastUtil.showToast("上传失败"+bean.getStatus());
+                    ToastUtil.showToast("上传失败");
+
                     if(infoBean != null) {
                         uploadQueue.add(infoBean);
                         doTask();
