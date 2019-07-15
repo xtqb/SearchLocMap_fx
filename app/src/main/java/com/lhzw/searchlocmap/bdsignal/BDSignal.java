@@ -5,4 +5,6 @@ package com.lhzw.searchlocmap.bdsignal;
  */
 public class BDSignal {
     public static int value = 0;
+
+    public static int STANDARD_VALUE = 2;
 }

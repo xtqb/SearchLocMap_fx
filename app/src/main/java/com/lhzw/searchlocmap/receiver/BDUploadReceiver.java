@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
@@ -19,6 +20,7 @@ import com.lhzw.searchlocmap.bean.LocalBDNum;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.MessageInfoIBean;
 import com.lhzw.searchlocmap.constants.Constants;
+import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 import com.lhzw.searchlocmap.event.EventBusBean;
@@ -182,33 +184,50 @@ public class BDUploadReceiver extends BroadcastReceiver {
                 }
             }
             int total = maxArr[0] + maxArr[1] + maxArr[2];
-            if (total >= 9) {
-                strength = 4;
-            } else if (total == 8 || total == 7) {
-                strength = 3;
-            } else if (total == 6) {
-                if ((maxArr[0] == 4 && maxArr[1] == 1 && maxArr[2] == 1) ||
-                        (maxArr[0] == 1 && maxArr[1] == 4 && maxArr[2] == 1) || (
-                        maxArr[0] == 1 && maxArr[1] == 1 && maxArr[2] == 4)) {
-                    strength = 2;
-                } else {
+            if(Settings.Global.getInt(SearchLocMapApplication.getInstance().getContentResolver(), SPConstants.BD_OUTLINK_MODE) == Constants.BD_OUTLINK_ON) {
+                if(total >= 9) {
+                    strength = 4;
+                } else if(total< 9 && total >= 5){
                     strength = 3;
-                }
-            } else if (total == 5) {
-                if ((maxArr[0] == 3 && maxArr[1] == 2 && maxArr[2] == 0) ||
-                        (maxArr[0] == 3 && maxArr[1] == 0 && maxArr[2] == 2) ||
-                        (maxArr[0] == 2 && maxArr[1] == 3 && maxArr[2] == 0) ||
-                        (maxArr[0] == 2 && maxArr[1] == 0 && maxArr[2] == 3) ||
-                        (maxArr[0] == 0 && maxArr[1] == 2 && maxArr[2] == 3) ||
-                        (maxArr[0] == 0 && maxArr[1] == 3 && maxArr[2] == 2)) {
+                } else if(total< 5 && total >= 2) {
                     strength = 2;
                 } else {
                     strength = 1;
                 }
+                BDSignal.STANDARD_VALUE = 1;
             } else {
-                strength = 1;
+                if(total >= 9) {
+                    strength = 4;
+                } else if (total == 8 || total == 7) {
+                    strength = 3;
+                } else if(total == 6) {
+                    if((maxArr[0] == 4 && maxArr[1] == 1 && maxArr[2] == 1) ||
+                            (maxArr[0] == 1 && maxArr[1] == 4 && maxArr[2] == 1) || (
+                            maxArr[0] == 1 && maxArr[1] == 1 && maxArr[2] == 4)) {
+                        strength = 2;
+                    } else {
+                        strength = 3;
+                    }
+                } else if(total == 5) {
+                    if((maxArr[0] == 3 && maxArr[1] == 2 && maxArr[2] == 0) ||
+                            (maxArr[0] == 3 && maxArr[1] == 0 && maxArr[2] == 2) ||
+                            (maxArr[0] == 2 && maxArr[1] == 3 && maxArr[2] == 0) ||
+                            (maxArr[0] == 2 && maxArr[1] == 0 && maxArr[2] == 3) ||
+                            (maxArr[0] == 0 && maxArr[1] == 2 && maxArr[2] == 3) ||
+                            (maxArr[0] == 0 && maxArr[1] == 3 && maxArr[2] == 2)){
+                        strength = 2;
+                    } else {
+                        strength = 1;
+                    }
+                } else {
+                    strength = 1;
+                }
+                BDSignal.STANDARD_VALUE = 2;
             }
         } catch (NumberFormatException e) {
+            // TODO Auto-generated catch block
+            return strength;
+        }catch (Settings.SettingNotFoundException e) {
             // TODO Auto-generated catch block
             return strength;
         }

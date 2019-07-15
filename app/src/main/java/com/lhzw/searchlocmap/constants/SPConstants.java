@@ -27,4 +27,6 @@ public class SPConstants {
 	public static final String SEND_ID = "SEND_ID";
 
 	public static final String COM_MODE = "COM_MODE"; //通信模式
+
+	public static final String BD_OUTLINK_MODE = "bd_outlink_mode_on"; //外部北斗开关
 }

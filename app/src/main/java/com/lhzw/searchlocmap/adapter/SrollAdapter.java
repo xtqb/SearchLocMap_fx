@@ -19,6 +19,7 @@ import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 import com.lhzw.searchlocmap.utils.BaseUtils;
+import com.lhzw.searchlocmap.utils.LogUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -148,11 +149,12 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
                 sos_num += 1;
             }
             bean.setState(Constants.PERSON_UNDETERMINED);
-            if(Constants.PERSON_SOS.equals(item.getState1()) || Constants.PERSON_COMMON.equals(item.getState1())){
-                bean.setOnline(true);
-            } else {
+            if(item.getState().equals(Constants.PERSON_OFFLINE)){
                 bean.setOnline(false);
+            } else {
+                bean.setOnline(true);
             }
+            LogUtil.e(item.getState1() + ",  " + item.getState());
             bean.setPos(pos);
             list.add(bean);
             pos ++;
@@ -196,10 +198,10 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
             holder = (ViewHolder) convertView.getTag();
         }
         holder.tv_num.setText(position + 1 + "");
-        if(Constants.PERSON_UNDETERMINED.equals(list.get(position).getState())){
-            holder.tv_num.setBackgroundResource(R.drawable.bg_round_scrollview_rect_offline);
+        if(list.get(position).isOnline){
+             holder.tv_num.setBackgroundResource(R.drawable.bg_round_scrollview_rect);
         } else {
-            holder.tv_num.setBackgroundResource(R.drawable.bg_round_scrollview_rect);
+            holder.tv_num.setBackgroundResource(R.drawable.bg_round_scrollview_rect_offline);
         }
         if(position < 9) {
             holder.tv_num.setPadding(17,1,17,1);

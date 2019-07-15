@@ -117,6 +117,10 @@ public class Constants {
 	public static final int COM_MODE_BD = 0; //北斗
 	public static final int COM_MODE_NET = 1;//网络
 	public static final int COM_MODE_AUTO = 3;//自动
+
+    public static final int BD_OUTLINK_OFF = 0; // 关闭
+    public static final int BD_OUTLINK_ON = 1;  // 打开
+
 	//短消息的cmd
 	public static final String CMD_SMS="receivesmsindication";
 	public static final String CMD_COMMON = "locationindication";
