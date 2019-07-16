@@ -383,17 +383,6 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
                         return;
                     }
                     String register_num = BaseUtils.traslation(parser.getPersonNum()).substring(0, 10);//注册码
-
-                    //根据固话注册码  查此人的信息  显示在页面上
-                    List<HttpPersonInfo> personInfos = CommonDBOperator.queryByKeys(mHttpPerDao, "deviceNumbers", register_num);
-                    if (personInfos != null && personInfos.size() > 0) {
-                        //查到了此人的信息
-                        HttpPersonInfo httpPersonInfo = personInfos.get(0);
-                        //显示在页面上
-                        add_name_et.setText(httpPersonInfo.getRealName());//名字
-                        add_sex_et.check(httpPersonInfo.getGender() == 1 ? R.id.btn1 : R.id.btn2);//性别
-                    }
-
                     icon_watch.setVisibility(View.GONE);
                     add_num_et.setText(register_num);
 
@@ -403,7 +392,15 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
                         sndBytes[5 + j] = numByte1[j];
                     }
                     sendCMDSearch(sndBytes);
-
+                    //根据固话注册码  查此人的信息  显示在页面上
+                    List<HttpPersonInfo> personInfos = CommonDBOperator.queryByKeys(mHttpPerDao, "deviceNumbers", register_num);
+                    if (personInfos != null && personInfos.size() > 0) {
+                        //查到了此人的信息
+                        HttpPersonInfo httpPersonInfo = personInfos.get(0);
+                        //显示在页面上
+                        add_name_et.setText(httpPersonInfo.getRealName());//名字
+                        add_sex_et.check(httpPersonInfo.getGender() == 1 ? R.id.btn1 : R.id.btn2);//性别
+                    }
                     List<LocPersonalInfo> list = CommonDBOperator.queryByKeys(
                             perdao, "num", register_num);
                     if (list != null && list.size() > 0) {
