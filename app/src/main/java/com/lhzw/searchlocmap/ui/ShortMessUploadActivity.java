@@ -31,8 +31,9 @@ import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 import com.lhzw.searchlocmap.event.EventBusBean;
-import com.lhzw.searchlocmap.utils.ComUtils;
 import com.lhzw.searchlocmap.utils.BaseUtils;
+import com.lhzw.searchlocmap.utils.ComUtils;
+import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.LogWrite;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.uploadmms.UploadInfoBean;
@@ -416,9 +417,14 @@ public class ShortMessUploadActivity extends Activity implements
 					}
 					map.clear();
 				}
+
+
 				if(intent.getIntExtra("ID", -1) ==  ID) {
 					updataList();
 					showToast("接收成功");
+				}else {
+				//	showToast("接收短消息成功,ID不匹配");
+					LogUtil.e("收到短消息,但是页面未没刷新,原因为:ID=="+ID+"<====>收到的消息唯一标识ID=="+intent.getIntExtra("ID", -1));
 				}
 			}else if (intent.getAction().equals(Constants.BD_SIG_ACTION)) {
 				switch (BDSignal.value){

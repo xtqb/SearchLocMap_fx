@@ -16,7 +16,6 @@ import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bdsignal.BDSignal;
-import com.lhzw.searchlocmap.bean.LocalBDNum;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.MessageInfoIBean;
 import com.lhzw.searchlocmap.constants.Constants;
@@ -27,11 +26,9 @@ import com.lhzw.searchlocmap.event.EventBusBean;
 import com.lhzw.searchlocmap.ui.ShortMessUploadActivity;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.LogUtil;
-import com.lhzw.uploadmms.UploadInfoBean;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
