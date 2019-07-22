@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,7 +49,6 @@ import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.CheckBoxState;
 import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.SpUtils;
-import com.lhzw.searchlocmap.utils.ToastUtil;
 import com.lhzw.searchlocmap.view.LoadingView;
 
 import java.util.ArrayList;
@@ -57,6 +57,8 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
+
+import static com.lhzw.searchlocmap.utils.ToastUtil.showToast;
 
 public class PersManagerFragment extends Fragment implements
         OnClickListener, OnItemClickListener,
@@ -178,6 +180,10 @@ public class PersManagerFragment extends Fragment implements
      * @param deviceNums
      */
     private void AskServerToUnbind(String bdNum, String deviceNums) {
+        if(TextUtils.isEmpty(bdNum)){
+            showToast("北斗卡未安装,请安装北斗卡后重试");
+            return;
+        }
         final LoadingView loadingView = new LoadingView(getActivity());
         loadingView.setLoadingTitle("解绑中...");
         loadingView.show();
@@ -188,7 +194,7 @@ public class PersManagerFragment extends Fragment implements
                     protected void onSucceed(BaseBean bean) {
                         loadingView.dismiss();
                         if ("0".equals(bean.getCode())) {
-                            ToastUtil.showToast("解绑成功");
+                            showToast("解绑成功");
                             LogUtil.d("解绑成功");
 
                             int counter = 0;
@@ -228,14 +234,14 @@ public class PersManagerFragment extends Fragment implements
 
                         } else {
                             LogUtil.d("解绑失败");
-                            ToastUtil.showToast(bean.getMessage() + "");
+                            showToast(bean.getMessage() + "");
                         }
                     }
 
                     @Override
                     protected void onFailed() {
                         loadingView.dismiss();
-                        ToastUtil.showToast("网络错误");
+                        showToast("网络错误");
                     }
                 });
 

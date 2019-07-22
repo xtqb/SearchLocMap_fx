@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -233,7 +234,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
      * 查找已绑定的手表   解决清除本地数据后登陆  无法解除绑定的问题
      */
     private void getBindingWatchFromServer() {
-        Observable<BindingWatchBean> observable = SLMRetrofit.getInstance().getApi().getBindingWatch(BaseUtils.getDipperNum(LoginActivity.this));
+        String bdNum = BaseUtils.getDipperNum(LoginActivity.this);
+        if(TextUtils.isEmpty(bdNum)){
+            showToast("北斗卡未安装,请安装北斗卡");
+            return;
+        }
+        Observable<BindingWatchBean> observable = SLMRetrofit.getInstance().getApi().getBindingWatch(bdNum);
         observable.compose(new ThreadSwitchTransformer<BindingWatchBean>()).subscribe(new CallbackListObserver<BindingWatchBean>() {
             @Override
             protected void onSucceed(BindingWatchBean bean) {

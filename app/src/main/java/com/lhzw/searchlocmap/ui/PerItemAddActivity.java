@@ -10,6 +10,7 @@ import android.content.LoRaManager;
 import android.content.ProtocolParser;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -252,6 +253,10 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
 
     private void AskServerToBind(String bdNum, String deviceNum) {
         LogUtil.d("bdNum==" + bdNum + "<=====>deviceNum==" + deviceNum);
+        if(TextUtils.isEmpty(bdNum)){
+            showToast("北斗卡未安装,请安装北斗卡后重试");
+            return;
+        }
         final LoadingView loadingView = new LoadingView(this);
         loadingView.setLoadingTitle("绑定中...");
         loadingView.show();
