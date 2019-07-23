@@ -967,14 +967,15 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             case R.id.pop_rescue_bt:
                 isSosFlash = false;
                 sendCMDSOSComplete(codeArr);
-                double latSos = 0.0;
-                double lngSos = 0.0;
-                if(!"".equals(tatolMap.get(icon_id).getLatitude()) && !"".equals(tatolMap.get(icon_id).getLongitude())){
-                    latSos = Double.valueOf(tatolMap.get(icon_id).getLatitude());
-                    lngSos = Double.valueOf(tatolMap.get(icon_id).getLongitude());
-                }
 
                 if(BaseUtils.isNetConnected(SearchLocMapApplication.getContext())) {
+                    double latSos = 0.0;
+                    double lngSos = 0.0;
+                    if(!"".equals(tatolMap.get(icon_id).getLatitude()) && !"".equals(tatolMap.get(icon_id).getLongitude())
+                            && !"null".equals(tatolMap.get(icon_id).getLatitude()) && !"null".equals(tatolMap.get(icon_id).getLongitude())){
+                        latSos = Double.valueOf(tatolMap.get(icon_id).getLatitude());
+                        lngSos = Double.valueOf(tatolMap.get(icon_id).getLongitude());
+                    }
                     WatchLocBean bean = new WatchLocBean("watch", tatolMap.get(icon_id).getOffset() + "", "", "", "sosfinished", "", latSos + "", lngSos + "", BaseUtils.sdf.format(tatolMap.get(icon_id).getLocTime()));
                     List<WatchLocBean> sosListUpload = new ArrayList<>();
                     sosListUpload.add(bean);
