@@ -53,7 +53,6 @@ import com.lhzw.searchlocmap.view.LoadingView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
@@ -82,7 +81,7 @@ public class PersManagerFragment extends Fragment implements
     private CheckBox select;
     private RelativeLayout relativeLayout1;
     private boolean isOnClick = false;
-    private List<CheckBoxState> mList;
+    private ArrayList<CheckBoxState> mSelectedList = new ArrayList<>();//选中的人
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -151,14 +150,20 @@ public class PersManagerFragment extends Fragment implements
                 break;
 
             case R.id.delete:
-                mList = peradapter.getCheckStateList();
-                if(mList !=null && mList.size()>0){
+                 //将选择的加入list
+                for (int i = 0; i < peradapter.getCheckStateList().size(); i++) {
+                    if (peradapter.getCheckStateList().get(i).isCheck()) {
+                        mSelectedList.add(peradapter.getCheckStateList().get(i));
+                    }
+                }
+                //拼接参数
+                if (mSelectedList.size() > 0) {
                     StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < mList.size(); i++) {
-                        if(i== mList.size()-1){
-                            sb.append(mList.get(i).getNum());
-                        }else {
-                            sb.append(mList.get(i).getNum());
+                    for (int i = 0; i < mSelectedList.size(); i++) {
+                        if (i == mSelectedList.size() - 1) {
+                            sb.append(mSelectedList.get(i).getNum());
+                        } else {
+                            sb.append(mSelectedList.get(i).getNum());
                             sb.append(",");
                         }
                     }
@@ -166,6 +171,8 @@ public class PersManagerFragment extends Fragment implements
                     String deviceNums = sb.toString();
                     //todo 解绑前  先去请求服务器  服务器反馈后解绑
                     AskServerToUnbind(BaseUtils.getDipperNum(getActivity()), deviceNums);
+                } else {
+                    showToast("请选择删除的对象");
                 }
 
 
@@ -180,7 +187,7 @@ public class PersManagerFragment extends Fragment implements
      * @param deviceNums
      */
     private void AskServerToUnbind(String bdNum, String deviceNums) {
-        if(TextUtils.isEmpty(bdNum)){
+        if (TextUtils.isEmpty(bdNum)) {
             showToast("北斗卡未安装,请安装北斗卡后重试");
             return;
         }
@@ -197,17 +204,13 @@ public class PersManagerFragment extends Fragment implements
                             showToast("解绑成功");
                             LogUtil.d("解绑成功");
 
-                            int counter = 0;
-                            for (CheckBoxState item : mList) {
-                                if (item.isCheck()) {
-                                    counter++;
+                            for (CheckBoxState item : mSelectedList) {
                                     CommonDBOperator.deleteByKeys(persondao, "num",
                                             item.getNum());
                                     // 删除本地表
                                     CommonDBOperator.deleteByKeys(dao, "num", item.getNum());
-                                }
                             }
-                            if (counter > 0) {
+
                                 perList = (ArrayList<LocPersonalInfo>) CommonDBOperator
                                         .getList(persondao);
                                 peradapter.setList(perList);
@@ -224,18 +227,14 @@ public class PersManagerFragment extends Fragment implements
                                 Intent intent1 = new Intent("com.lhzw.soildersos.change");
                                 intent1.putExtra("has_new", false);
                                 getActivity().sendBroadcast(intent1);
-                            } else {
-                                Toast.makeText(getActivity(),
-                                        getString(R.string.person_manager_delete_note),
-                                        Toast.LENGTH_SHORT).show();
-                            }
 
-
+                            mSelectedList.clear();
 
                         } else {
                             LogUtil.d("解绑失败");
                             showToast(bean.getMessage() + "");
                         }
+
                     }
 
                     @Override
@@ -349,6 +348,7 @@ public class PersManagerFragment extends Fragment implements
             isAllCheck = isAllCheck && item.isCheck();
         }
         select.setChecked(isAllCheck);
+
     }
 
     @Override
