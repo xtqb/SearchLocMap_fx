@@ -209,6 +209,7 @@ public class PersManagerFragment extends Fragment implements
                                     CommonDBOperator.deleteByKeys(persondao, "num",
                                             item.getNum());
                                     // 删除本地表
+
                                     CommonDBOperator.deleteByKeys(dao, "num", item.getNum());
                             }
 
