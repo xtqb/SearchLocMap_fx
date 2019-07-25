@@ -156,6 +156,7 @@ public class PersManagerFragment extends Fragment implements
                         mSelectedList.add(peradapter.getCheckStateList().get(i));
                     }
                 }
+                LogUtil.e("选中的个数为"+mSelectedList.size());
                 //拼接参数
                 if (mSelectedList.size() > 0) {
                     StringBuilder sb = new StringBuilder();
@@ -231,6 +232,7 @@ public class PersManagerFragment extends Fragment implements
                             mSelectedList.clear();
 
                         } else {
+                            mSelectedList.clear();
                             LogUtil.d("解绑失败");
                             showToast(bean.getMessage() + "");
                         }
@@ -239,9 +241,11 @@ public class PersManagerFragment extends Fragment implements
 
                     @Override
                     protected void onFailed() {
+                        mSelectedList.clear();
                         loadingView.dismiss();
                         showToast("网络错误");
                     }
+
                 });
 
     }
@@ -342,7 +346,7 @@ public class PersManagerFragment extends Fragment implements
 
     @Override
     public void itemSelected(int pos) {
-        // TODO Auto-generated method stub
+        // 单项选
         boolean isAllCheck = true;
         for (CheckBoxState item : peradapter.getCheckStateList()) {
             isAllCheck = isAllCheck && item.isCheck();
