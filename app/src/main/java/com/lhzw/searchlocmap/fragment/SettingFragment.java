@@ -391,7 +391,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
                         mLocalBDNums.clear();
                      }
                 } else {
-                    isSuccess = true;
+                    isSuccess = false;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

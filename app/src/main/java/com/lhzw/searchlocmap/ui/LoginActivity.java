@@ -195,10 +195,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                 mLocalBDNums.clear();
 
                             }
+                        }else {
+                            isSuccess = false;
                         }
                     }
-                } else {
-                    isSuccess = true;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
