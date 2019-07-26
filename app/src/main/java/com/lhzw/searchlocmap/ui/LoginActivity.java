@@ -157,6 +157,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                         rev = NetUtils.doHttpGetClient(token, Constants.USER_PATH);
 
                         if (rev != null) {
+
                             CommonDBOperator.deleteAllItems(httpPerDao);
                             CommonDBOperator.deleteAllItems(mBdNumDao);
                             CommonDBOperator.deleteAllItems(mLocPersonDao);
