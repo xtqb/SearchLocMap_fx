@@ -10,6 +10,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
@@ -28,7 +29,7 @@ public class NetUtils {
             //第一步：创建HttpClient对象
             HttpClient httpCient = new DefaultHttpClient(httpParams);
             //第二步：创建代表请求的对象,参数是访问的服务器地址
-            String url = Constants.IP_ADD + "/security/login?loginName=" + name + "&password=" + password + "&savePassword=true";
+            String url = BaseUtils.getBaseIP() + "/security/login?loginName=" + name + "&password=" + password + "&savePassword=true";
             HttpGet httpGet = new HttpGet(url);
             //第三步：执行请求，获取服务器发还的相应对象
             HttpResponse httpResponse = httpCient.execute(httpGet);
@@ -53,7 +54,7 @@ public class NetUtils {
         //开始请求接口数据
         try {
             HttpClient httpclient = new DefaultHttpClient();
-            String uri = Constants.IP_ADD + subPath;
+            String uri = BaseUtils.getBaseIP() + subPath;
             HttpGet get = new HttpGet(uri);
             //添加http头信息
             get.addHeader(Constants.HTTP_TOOKEN, token);
@@ -78,7 +79,9 @@ public class NetUtils {
     public static String doHttpGetClient(String token, String subPath) {
         try {
             HttpClient httpclient = new DefaultHttpClient();
-            String uri = Constants.IP_ADD + subPath;
+            httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT,5000);//连接时间
+            httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,5000);//数据传输时间
+            String uri = BaseUtils.getBaseIP() + subPath;
             HttpGet get = new HttpGet(uri);
             //添加http头信息
             get.addHeader(Constants.HTTP_TOOKEN, token);

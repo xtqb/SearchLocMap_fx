@@ -126,11 +126,11 @@ public class UpdateAppListActivity extends Activity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.tv_map_update:
                 saveFileName = Constants.SAVEPATH + "app-debug.apk";
-                downloadApk(Constants.IP_ADD + dowloadApk.replace("@", attachments[0]+""));
+                downloadApk(BaseUtils.getBaseIP() + dowloadApk.replace("@", attachments[0]+""));
                 break;
             case R.id.tv_bd_update:
                 saveFileName = Constants.SAVEPATH + "UploadMMsService.apk";
-                downloadApk(Constants.IP_ADD + dowloadApk.replace("@", attachments[1]+""));
+                downloadApk(BaseUtils.getBaseIP() + dowloadApk.replace("@", attachments[1]+""));
                 break;
 
             case R.id.bt_update_back:

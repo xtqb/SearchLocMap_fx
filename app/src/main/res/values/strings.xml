@@ -375,4 +375,9 @@
     <string name="update_state_note">当前无状态</string>
     <string name="function_search_ennable_note">请先退出搜索功能</string>
     <string name="searching_note">正在进行@次搜索...</string>
+    <string name="net_setting">网络设置</string>
+    <string name="input_net_ip">请录入网络IP</string>
+    <string name="input_net_com">请录入端口号</string>
+    <string name="net_com">端口：</string>
+    <string name="net_ip">IP :</string>
 </resources>

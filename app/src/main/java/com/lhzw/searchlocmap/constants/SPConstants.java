@@ -29,4 +29,8 @@ public class SPConstants {
 	public static final String COM_MODE = "COM_MODE"; //通信模式
 
 	public static final String BD_OUTLINK_MODE = "bd_outlink_mode_on"; //外部北斗开关
+
+	public static final String NET_BASE_IP = "NET_BASE_IP"; // IP
+
+	public static final String NET_BASE_COM = "NET_BASE_COM"; // COM
 }

@@ -134,7 +134,7 @@ public class UpdateSearchMapActivity extends Activity implements View.OnClickLis
                     DipperInfoBean item = new DipperInfoBean("0337009", Constants.TX_JZH, "", "");
                     CommonDBOperator.saveToDB(dipDao, item);
                 }
-                downloadApk(Constants.IP_ADD + dowloadApk.replace("@", attachments + ""));
+                downloadApk(BaseUtils.getBaseIP() + dowloadApk.replace("@", attachments + ""));
                 break;
         }
     }

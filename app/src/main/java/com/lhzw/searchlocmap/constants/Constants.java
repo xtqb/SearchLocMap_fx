@@ -100,7 +100,7 @@ public class Constants {
 	public static final String APK_map = "map";
 	public static final int CHANNEL_DEF = 0;//默认信道
 	//public static final String IP_ADD = "http://47.104.109.138:8080";
-	public static final String IP_ADD = "http://192.168.1.119:8070/";
+//	public static final String IP_ADD = "http://192.168.1.119:8070/";
 	public static final int SEND_ID_DEF = 1;
 
 //对手表的指令接收状态
@@ -120,6 +120,9 @@ public class Constants {
 
     public static final int BD_OUTLINK_OFF = 0; // 关闭
     public static final int BD_OUTLINK_ON = 1;  // 打开
+
+	public static final String  BASE_IP_DEF = "http://192.168.1.119"; // 关闭
+	public static final String  BASE_COM_DEF = "8070";  // 打开
 
 	//短消息的cmd
 	public static final String CMD_SMS="receivesmsindication";

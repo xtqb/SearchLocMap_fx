@@ -628,5 +628,14 @@ public class BaseUtils {
         return list;
     }
 
+    public static String getBaseIP(){
+        StringBuilder builder = new StringBuilder();
+        builder.append(SpUtils.getString(SPConstants.NET_BASE_IP, Constants.BASE_IP_DEF));
+        builder.append(":");
+        builder.append(SpUtils.getString(SPConstants.NET_BASE_COM, Constants.BASE_COM_DEF));
+        builder.append("/");
+        return builder.toString();
+    }
+
 }
 

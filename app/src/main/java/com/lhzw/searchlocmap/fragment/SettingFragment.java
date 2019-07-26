@@ -36,6 +36,7 @@ import com.lhzw.searchlocmap.ui.CompassActivity;
 import com.lhzw.searchlocmap.ui.DipperNumSettingtActivity;
 import com.lhzw.searchlocmap.ui.LocInfoRegisterActivity;
 import com.lhzw.searchlocmap.ui.LocalInfoActivity;
+import com.lhzw.searchlocmap.ui.NetSettingActivity;
 import com.lhzw.searchlocmap.ui.OfflineMapManagerActivity;
 import com.lhzw.searchlocmap.ui.ReportSosActivity;
 import com.lhzw.searchlocmap.ui.RescueServerActivity;
@@ -83,6 +84,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private RelativeLayout rl_sync_data;
     private ShowProgressDialog progress;
     private Toast mGlobalToast;
+    private RelativeLayout rl_net_setting;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -117,6 +119,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
         rl_bd_num_setting = (RelativeLayout) view.findViewById(R.id.rl_bd_num_setting);
         rl_update = (RelativeLayout) view.findViewById(R.id.rl_update);
         rl_sync_data = (RelativeLayout) view.findViewById(R.id.rl_sync_data);
+        rl_net_setting = (RelativeLayout) view.findViewById(R.id.rl_net_setting);
     }
 
     private void initData() {
@@ -143,6 +146,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
         rl_bd_num_setting.setOnClickListener(this);
         rl_update.setOnClickListener(this);
         rl_sync_data.setOnClickListener(this);
+        rl_net_setting.setOnClickListener(this);
     }
 
     @Override
@@ -214,6 +218,9 @@ public class SettingFragment extends Fragment implements OnClickListener,
                     return;
                 }
                 new AyncLoginTask().execute();
+                break;
+            case R.id.rl_net_setting:
+                startActivity(new Intent(getActivity(), NetSettingActivity.class));
                 break;
         }
     }
@@ -357,7 +364,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
                         String data = obj.getString("data");
                         List<HttpRequstInfo> list = new Gson().fromJson(data, new TypeToken<List<HttpRequstInfo>>() {
                         }.getType());
-                        values[0] = list.size()+mLocalBDNums.size();
+                        values[0] = list.size() + mLocalBDNums.size();
                         LogUtil.d("size : " + list.size()+"mLocalBDNums:"+mLocalBDNums.size());
                         int delay = 40 * 100 / (list.size()+mLocalBDNums.size());
                         int counter = 0;

@@ -143,6 +143,11 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustResize"></activity>
+        <activity
+            android:name=".ui.NetSettingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Light.NoTitleBar"
+            android:windowSoftInputMode="stateHidden|adjustResize"></activity>
         <!--联系人页-->
         <activity android:name=".ui.CommunicationListActivity"/>
         <activity android:name=".ui.CommandStateActivity"/>
