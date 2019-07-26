@@ -145,10 +145,11 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 if ("".equals(SpUtils.getString(Constants.HTTP_TOOKEN, ""))) {
                     String token = NetUtils.doLoginClient(et_user_name.getText().toString().trim(), et_user_password.getText().toString().trim());
                     if (token != null) {
+                        CommonDBOperator.deleteAllItems(httpPerDao);
+                        CommonDBOperator.deleteAllItems(mBdNumDao);
+                        CommonDBOperator.deleteAllItems(mLocPersonDao);
                         SpUtils.putString(Constants.HTTP_TOOKEN, token);
-
                         getAllBDInfoFromServer();//获取平台的北斗号
-
                         if(mDipperNum != null){
                             getBindingWatchFromServer();//获取当前手持机绑定的手表
                         }
@@ -158,9 +159,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
                         if (rev != null) {
 
-                            CommonDBOperator.deleteAllItems(httpPerDao);
-                            CommonDBOperator.deleteAllItems(mBdNumDao);
-                            CommonDBOperator.deleteAllItems(mLocPersonDao);
+
 
                             JSONObject obj = new JSONObject(rev);
                             int code = obj.getInt("code");
