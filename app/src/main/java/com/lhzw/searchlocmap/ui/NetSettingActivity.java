@@ -51,6 +51,8 @@ public class NetSettingActivity extends Activity{
                     SpUtils.putString(SPConstants.NET_BASE_IP, ip);
                     SpUtils.putString(SPConstants.NET_BASE_COM, com);
                     SLMRetrofit.resetInstance();
+                    SpUtils.putString(Constants.HTTP_TOOKEN, "");
+                    setResult(0x001);
                     this.finish();
                 } else {
                     Toast.makeText(this, "请检查IP或者端口号是否录入", Toast.LENGTH_LONG).show();

@@ -121,7 +121,7 @@ public class Constants {
     public static final int BD_OUTLINK_OFF = 0; // 关闭
     public static final int BD_OUTLINK_ON = 1;  // 打开
 
-	public static final String  BASE_IP_DEF = "http://192.168.1.119"; // 关闭
+	public static final String  BASE_IP_DEF = "http://47.104.109.138"; // 关闭
 	public static final String  BASE_COM_DEF = "8070";  // 打开
 
 	//短消息的cmd
