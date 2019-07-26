@@ -145,6 +145,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 if ("".equals(SpUtils.getString(Constants.HTTP_TOOKEN, ""))) {
                     String token = NetUtils.doLoginClient(et_user_name.getText().toString().trim(), et_user_password.getText().toString().trim());
                     if (token != null) {
+
                         CommonDBOperator.deleteAllItems(httpPerDao);
                         CommonDBOperator.deleteAllItems(mBdNumDao);
                         CommonDBOperator.deleteAllItems(mLocPersonDao);
