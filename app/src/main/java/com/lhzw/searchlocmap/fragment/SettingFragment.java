@@ -220,7 +220,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
                 new AyncLoginTask().execute();
                 break;
             case R.id.rl_net_setting:
-                startActivity(new Intent(getActivity(), NetSettingActivity.class));
+                startActivityForResult(new Intent(getActivity(), NetSettingActivity.class), 0x0002);
                 break;
         }
     }
@@ -427,6 +427,11 @@ public class SettingFragment extends Fragment implements OnClickListener,
             }
             cancelProgressDialog();
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            getActivity().finish();
     }
 
     private HttpPersonInfo translationItem(HttpRequstInfo item) {
