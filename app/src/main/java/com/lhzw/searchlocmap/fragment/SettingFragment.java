@@ -272,7 +272,6 @@ public class SettingFragment extends Fragment implements OnClickListener,
             tv_cancel.setOnClickListener(listener);
             tv_sure.setOnClickListener(listener);
         }
-
         public void setContent(String content) {
             tv_content.setText(content);
         }

@@ -188,7 +188,7 @@ public class ComUtils {
                 }else {
                     //请求成功
                     ToastUtil.showToast("上传失败");
-
+                    LogUtil.e("uplpad fail ：" + bean.getStatus() + " , " + bean.getReason());
                     if(infoBean != null) {
                         uploadQueue.add(infoBean);
                         doTask();

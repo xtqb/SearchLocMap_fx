@@ -121,8 +121,8 @@ public class Constants {
     public static final int BD_OUTLINK_OFF = 0; // 关闭
     public static final int BD_OUTLINK_ON = 1;  // 打开
 
-	public static final String  BASE_IP_DEF = "http://47.104.109.138"; // 关闭
-	public static final String  BASE_COM_DEF = "8070";  // 打开
+	public static final String  BASE_IP_DEF = "http://47.104.109.138"; // 默认IP
+	public static final String  BASE_COM_DEF = "8080";  // 默认端口号
 
 	//短消息的cmd
 	public static final String CMD_SMS="receivesmsindication";

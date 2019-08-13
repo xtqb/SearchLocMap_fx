@@ -23,6 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="16dp"
@@ -32,7 +33,8 @@
                 android:id="@+id/rl_net_setting"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="@drawable/rl_background">
+                android:background="@drawable/rl_background"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/im_net_setting"
@@ -149,11 +151,11 @@
                 android:background="#cccccc" />
 
             <RelativeLayout
-                android:visibility="gone"
                 android:id="@+id/rl_bd_service"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="@drawable/rl_background">
+                android:background="@drawable/rl_background"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/im_bg_service"
@@ -185,10 +187,10 @@
             </RelativeLayout>
 
             <View
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#cccccc" />
+                android:background="#cccccc"
+                android:visibility="gone" />
 
             <RelativeLayout
                 android:id="@+id/rl_sos_upload"
