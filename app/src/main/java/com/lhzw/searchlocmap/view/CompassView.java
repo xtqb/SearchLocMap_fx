@@ -16,12 +16,14 @@
 
 package com.lhzw.searchlocmap.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+@SuppressLint("AppCompatCustomView")
 public class CompassView extends ImageView {
 	private float mDirection;
 	private Drawable compass;

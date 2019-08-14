@@ -583,7 +583,7 @@ public class BaseUtils {
         String[] locTimes = infoBean.getLocTimes().split("-");
         String[] idArr = infoBean.getBdNum().split("-");
         String[] latLngArr = infoBean.getBody().split("-");
-        for(int pos = 0; pos < latLngArr.length; pos ++) {
+        for(int pos = 0; pos < idArr.length; pos ++) {
             String watchstatus = "offline";
             double lat = 0.0;
             double lng = 0.0;

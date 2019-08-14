@@ -241,7 +241,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     private void getBindingWatchFromServer() {
         String bdNum = BaseUtils.getDipperNum(LoginActivity.this);
         if(TextUtils.isEmpty(bdNum)){
-            showToast("北斗卡未安装,请安装北斗卡");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    showToast("北斗卡未安装,请安装北斗卡");
+                }
+            });
             return;
         }
         Observable<BindingWatchBean> observable = SLMRetrofit.getInstance().getApi().getBindingWatch(bdNum);
