@@ -16,7 +16,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Toast;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.dao.Dao;
@@ -41,13 +40,10 @@ import com.lhzw.searchlocmap.utils.NetUtils;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.searchlocmap.view.ShowProgressDialog;
 import com.lhzw.uploadmms.BDNum;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import io.reactivex.Observable;
 
 /**
@@ -155,13 +151,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                             getBindingWatchFromServer();//获取当前手持机绑定的手表
                         }
 
-
                         rev = NetUtils.doHttpGetClient(token, Constants.USER_PATH);
-
                         if (rev != null) {
-
-
-
                             JSONObject obj = new JSONObject(rev);
                             int code = obj.getInt("code");
                             if (code == 0) {
@@ -326,9 +317,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                 //添加到本地数据库
                                 LocalBDNum localBDNum = new LocalBDNum(dataBean.getBdNumber(), dataBean.getSend(),dataBean.getReceive());
                                 mLocalBDNums.add(localBDNum);
-
                             }
-
                         }
                     }else {
                         showToast(bean.getMessage()+"");
@@ -342,8 +331,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             protected void onFailed() {
 
             }
-
-    });
+         });
     }
 
     private HttpPersonInfo translationItem(HttpRequstInfo item) {
