@@ -14,12 +14,14 @@ import android.widget.Toast;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.interfaces.OnDipperCancelListener;
+import com.lhzw.searchlocmap.utils.LogCatStrategy;
 import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.searchlocmap.view.ShowAlertDialog;
 import com.lhzw.uploadmms.BDUploadEvent;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
+import com.orhanobut.logger.PrettyFormatStrategy;
 
 import java.lang.ref.WeakReference;
 
@@ -37,7 +39,14 @@ public class SearchLocMapApplication extends Application implements View.OnClick
         instance = SearchLocMapApplication.this;
 
         mContextWeakReference = new WeakReference<>(getApplicationContext());
-        Logger.addLogAdapter(new AndroidLogAdapter());//添加日志库
+
+        //Logger初始化的时候，将LogCatStrategy实例化，并设置到Logger中
+        PrettyFormatStrategy strategy = PrettyFormatStrategy.newBuilder()
+                .logStrategy(new LogCatStrategy())
+                .tag("MY-TAG")//（可选）这里也可以设置全局TAG
+                .build();
+        Logger.addLogAdapter(new AndroidLogAdapter(strategy));
+
         bindService();
     }
 

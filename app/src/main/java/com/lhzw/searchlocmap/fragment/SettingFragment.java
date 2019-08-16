@@ -288,7 +288,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
         Observable<AllBDInfosBean> observable = SLMRetrofit.getInstance().getApi().getAllBDInfos();
         observable.compose(new ThreadSwitchTransformer<AllBDInfosBean>()).subscribe(new CallbackListObserver<AllBDInfosBean>() {
             @Override
-            protected void onSucceed(AllBDInfosBean bean) {
+            protected void onSucceed(final AllBDInfosBean bean) {
                 if(bean!=null){
                     if(bean.getCode()==0){
                         //请求成功
@@ -320,6 +320,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
                 }else {
                     showToast("服务器未能获取北斗平台的信息");
                 }
+
             }
 
             @Override
