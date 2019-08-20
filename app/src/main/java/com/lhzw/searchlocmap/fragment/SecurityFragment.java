@@ -867,11 +867,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 isSyncState = true;
                 mHandler.sendEmptyMessageDelayed(SYNC_DELAY_SIGNAL, SYNC_DELAY);
                 try {
-                    SearchLocMapApplication.getInstance().getUploadService().reuestData(lat, lon);
-                    // 写入日志
-                    LogWrite writer = LogWrite.open();
-                    String log = LogWrite.df.format(System.currentTimeMillis()) + " \t data_type = " + Constants.TX_COMMAND + "\t lat = " + lat + "\t lon = " + lon;
-                    writer.writeLog(log);
+                    if(SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
+                        SearchLocMapApplication.getInstance().getUploadService().reuestData(lat, lon);
+                        // 写入日志
+                        LogWrite writer = LogWrite.open();
+                        String log = LogWrite.df.format(System.currentTimeMillis()) + " \t data_type = " + Constants.TX_COMMAND + "\t lat = " + lat + "\t lon = " + lon;
+                        writer.writeLog(log);
+                    }
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
