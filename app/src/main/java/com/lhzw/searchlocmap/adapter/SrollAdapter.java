@@ -1,6 +1,8 @@
 package com.lhzw.searchlocmap.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.LoRaManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
@@ -29,7 +32,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
+public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private Context mContext;
     private List<PersonalInfo> sosList;
     private List<PersonalInfo> commonList;
@@ -224,6 +227,14 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
         }
     }
 
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        LogUtil.e("search watch ...");
+        sendCMDSearch(BaseUtils.stringtoByteArr(list.get(position).getNum()));
+        Toast.makeText(mContext, "发送成功", Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
     protected static class ViewHolder{
         private ViewHolder(View view){
             ButterKnife.bind(this, view);
@@ -325,6 +336,18 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
 
     public void setOnClickScrollItemListener(OnClickScrollItemListener listener){
         this.listener = listener;
+    }
+
+    private boolean sendCMDSearch(final byte[] num) {
+        @SuppressLint("WrongConstant") final LoRaManager loRaManager = (LoRaManager) mContext.getSystemService(Context.LORA_SERVICE);
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                loRaManager.searchCard(num);
+            }
+        }).start();
+        return true;
     }
 
 }

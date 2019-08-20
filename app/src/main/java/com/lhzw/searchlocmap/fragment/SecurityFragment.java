@@ -306,7 +306,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         mScrollLayout.setOnScrollChangedListener(this);
         mScrollLayout.setToExit();
         mScrollLayout.getBackground().setAlpha(0);
-
     }
 
     private void initDEMData() {
@@ -1370,6 +1369,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         mScrollAdapter = new SrollAdapter(getActivity(), sosList, commonList, undetermined_List, tv_per_num, tv_update_num, tv_sos_num);
         scroll_listview.setAdapter(mScrollAdapter);
         scroll_listview.setOnItemClickListener(mScrollAdapter);
+        scroll_listview.setOnItemLongClickListener(mScrollAdapter);
         mScrollAdapter.setOnClickScrollItemListener(this);
 
         initMenuBtnListener();
