@@ -2412,16 +2412,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         } else {
             NS = "N";
         }
-//        if(Analyse.registerAnalyserComponent()) {
-//            pd.setX(lat);
-//            pd.setY(lon);
-//            double heght = Analyse.getPointHeight(pd , false);
-//            if(heght == 0 || heght == 10000) {
-//                tv_location.setText(getString(R.string.location_lon) + BaseUtils.doubleToDegree(Math.abs(lon)) + EW + ", " + getString(R.string.location_lat) + BaseUtils.doubleToDegree(Math.abs(lat)) + NS);
-//            } else {
-//                tv_location.setText(getString(R.string.location_lon) + BaseUtils.doubleToDegree(Math.abs(lon)) + EW + ", " + getString(R.string.location_lat) + BaseUtils.doubleToDegree(Math.abs(lat)) + NS + heght + getString(R.string.unit_distance));
-//            }
-//        }
         tv_location.setText(getString(R.string.location_lon) + BaseUtils.doubleToDegree(Math.abs(lon)) + EW + ", " + getString(R.string.location_lat) + BaseUtils.doubleToDegree(Math.abs(lat)) + NS);
         return false;
     }

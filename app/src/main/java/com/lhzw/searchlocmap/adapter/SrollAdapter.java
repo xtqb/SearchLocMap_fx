@@ -3,8 +3,6 @@ package com.lhzw.searchlocmap.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.LoRaManager;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +46,7 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
     protected ViewHolder holder;
     private OnClickScrollItemListener listener;
 
-    public SrollAdapter(Context mContext, List<PersonalInfo> sosList, List<PersonalInfo> commonList, List<PersonalInfo> undetermined_List, TextView tv_per_num, TextView tv_update_num, TextView tv_sos_num){
+    public SrollAdapter(Context mContext, List<PersonalInfo> sosList, List<PersonalInfo> commonList, List<PersonalInfo> undetermined_List, TextView tv_per_num, TextView tv_update_num, TextView tv_sos_num) {
         this.mContext = mContext;
         this.sosList = sosList;
         this.commonList = commonList;
@@ -61,8 +59,8 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
     }
 
 
-    private void initData(){
-        if(list.size() > 0) {
+    private void initData() {
+        if (list.size() > 0) {
             list.clear();
         }
         per_num = sosList.size() + commonList.size() + undetermined_List.size();
@@ -70,89 +68,89 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
         update_num = 0;
         List<WatchLastLocTime> locTimelist = CommonDBOperator.getList(locTimeDao);
         Map<String, Long> locTimeMap = null;
-        if(locTimelist != null && locTimelist.size() > 0) {
+        if (locTimelist != null && locTimelist.size() > 0) {
             locTimeMap = new HashMap<>();
-            for(WatchLastLocTime bean : locTimelist) {
+            for (WatchLastLocTime bean : locTimelist) {
                 locTimeMap.put(bean.getNum(), bean.getLocTime());
             }
         }
         int pos = 0;
-        for(PersonalInfo item : sosList) {
+        for (PersonalInfo item : sosList) {
             Bean bean = null;
-            if(locTimeMap != null) {
+            if (locTimeMap != null) {
                 Long locTime = locTimeMap.get(item.getNum());
-                if(locTime != null) {
+                if (locTime != null) {
                     bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > locTime);
-                    if(item.getLocTime() > locTime) {
+                    if (item.getLocTime() > locTime) {
                         update_num += 1;
                     }
                 } else {
                     bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > 0);
-                    if(item.getLocTime() > 0) {
+                    if (item.getLocTime() > 0) {
                         update_num += 1;
                     }
                 }
             } else {
                 bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), true, item.getLocTime() > 0);
-                if(item.getLocTime() > 0) {
+                if (item.getLocTime() > 0) {
                     update_num += 1;
                 }
             }
             bean.setState(Constants.PERSON_SOS);
-            if(item.getState().equals(Constants.PERSON_OFFLINE)){
+            if (item.getState().equals(Constants.PERSON_OFFLINE)) {
                 bean.setOnline(false);
             } else {
                 bean.setOnline(true);
             }
             bean.setPos(pos);
             list.add(bean);
-            pos ++;
+            pos++;
         }
         pos = 0;
-        for(PersonalInfo item : commonList) {
+        for (PersonalInfo item : commonList) {
             Bean bean = null;
-            if(locTimeMap != null) {
+            if (locTimeMap != null) {
                 Long locTime = locTimeMap.get(item.getNum());
-                if(locTime != null) {
+                if (locTime != null) {
                     bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, item.getLocTime() > locTime);
-                    if(item.getLocTime() > locTime) {
+                    if (item.getLocTime() > locTime) {
                         update_num += 1;
                     }
                 } else {
                     bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, item.getLocTime() > 0);
-                    if(item.getLocTime() > 0) {
+                    if (item.getLocTime() > 0) {
                         update_num += 1;
                     }
                 }
             } else {
                 bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), false, item.getLocTime() > 0);
-                if(item.getLocTime() > 0) {
+                if (item.getLocTime() > 0) {
                     update_num += 1;
                 }
             }
             bean.setState(Constants.PERSON_COMMON);
-            if(item.getState().equals(Constants.PERSON_OFFLINE)){
+            if (item.getState().equals(Constants.PERSON_OFFLINE)) {
                 bean.setOnline(false);
             } else {
                 bean.setOnline(true);
             }
             bean.setPos(pos);
             list.add(bean);
-            pos ++;
+            pos++;
         }
         pos = 0;
-        for(PersonalInfo item : undetermined_List) {
+        for (PersonalInfo item : undetermined_List) {
             Bean bean = null;
             boolean state = false;
-            if(item.getState1() != null) {
-                state =  item.getState1().equals(Constants.PERSON_SOS);
+            if (item.getState1() != null) {
+                state = item.getState1().equals(Constants.PERSON_SOS);
             }
             bean = new Bean(item.getName(), item.getNum(), BaseUtils.formatTime(item.getLocTime()), state, false);
-            if(state) {
+            if (state) {
                 sos_num += 1;
             }
             bean.setState(Constants.PERSON_UNDETERMINED);
-            if(item.getState().equals(Constants.PERSON_OFFLINE)){
+            if (item.getState().equals(Constants.PERSON_OFFLINE)) {
                 bean.setOnline(false);
             } else {
                 bean.setOnline(true);
@@ -160,9 +158,9 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
             LogUtil.e(item.getState1() + ",  " + item.getState());
             bean.setPos(pos);
             list.add(bean);
-            pos ++;
+            pos++;
         }
-        if(locTimelist != null && locTimelist.size() > 0) {
+        if (locTimelist != null && locTimelist.size() > 0) {
             locTimelist.clear();
             locTimeMap.clear();
         }
@@ -171,7 +169,7 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
         tv_update_num.setText(update_num + "");
     }
 
-    public void refleshView(){
+    public void refleshView() {
         initData();
         notifyDataSetChanged();
     }
@@ -193,7 +191,7 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if(convertView == null) {
+        if (convertView == null) {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.item_srollview, null);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
@@ -201,28 +199,28 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
             holder = (ViewHolder) convertView.getTag();
         }
         holder.tv_num.setText(position + 1 + "");
-        if(list.get(position).isOnline){
-             holder.tv_num.setBackgroundResource(R.drawable.bg_round_scrollview_rect);
+        if (list.get(position).isOnline) {
+            holder.tv_num.setBackgroundResource(R.drawable.bg_round_scrollview_rect);
         } else {
             holder.tv_num.setBackgroundResource(R.drawable.bg_round_scrollview_rect_offline);
         }
-        if(position < 9) {
-            holder.tv_num.setPadding(17,1,17,1);
+        if (position < 9) {
+            holder.tv_num.setPadding(17, 1, 17, 1);
         } else {
-            holder.tv_num.setPadding(6,1,6,1);
+            holder.tv_num.setPadding(6, 1, 6, 1);
 
         }
         holder.tv_name.setText(list.get(position).getName());
         holder.tv_bdnum.setText(list.get(position).getNum());
         holder.tv_time.setText(list.get(position).getTime());
-        holder.im_sos.setVisibility(list.get(position).isSos() ? View.VISIBLE: View.INVISIBLE);
-        holder.im_update.setBackgroundResource(list.get(position).isUpdate() ? R.drawable.icon_update_yes : R.drawable.icon_update_no) ;
+        holder.im_sos.setVisibility(list.get(position).isSos() ? View.VISIBLE : View.INVISIBLE);
+        holder.im_update.setBackgroundResource(list.get(position).isUpdate() ? R.drawable.icon_update_yes : R.drawable.icon_update_no);
         return convertView;
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if(listener != null) {
+        if (listener != null) {
             listener.onSrollItemClick(list.get(position).getState(), list.get(position).getPos());
         }
     }
@@ -235,19 +233,26 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
         return true;
     }
 
-    protected static class ViewHolder{
-        private ViewHolder(View view){
+    protected static class ViewHolder {
+        private ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
-        @BindView(R.id.tv_num) TextView tv_num;
-        @BindView(R.id.tv_name) TextView tv_name;
-        @BindView(R.id.tv_bdnum) TextView tv_bdnum;
-        @BindView(R.id.tv_time)  TextView tv_time;
-        @BindView(R.id.im_sos) ImageView im_sos;
-        @BindView(R.id.im_update) ImageView im_update;
+
+        @BindView(R.id.tv_num)
+        TextView tv_num;
+        @BindView(R.id.tv_name)
+        TextView tv_name;
+        @BindView(R.id.tv_bdnum)
+        TextView tv_bdnum;
+        @BindView(R.id.tv_time)
+        TextView tv_time;
+        @BindView(R.id.im_sos)
+        ImageView im_sos;
+        @BindView(R.id.im_update)
+        ImageView im_update;
     }
 
-    private class Bean{
+    private class Bean {
         private String name;
         private String num;
         private String time;
@@ -330,11 +335,11 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
         }
     }
 
-    public interface OnClickScrollItemListener{
+    public interface OnClickScrollItemListener {
         public void onSrollItemClick(String state, int pos);
     }
 
-    public void setOnClickScrollItemListener(OnClickScrollItemListener listener){
+    public void setOnClickScrollItemListener(OnClickScrollItemListener listener) {
         this.listener = listener;
     }
 
