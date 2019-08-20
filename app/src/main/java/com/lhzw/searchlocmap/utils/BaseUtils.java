@@ -11,7 +11,9 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 
 import com.gtmap.util.GeoPoint;
 import com.lhzw.searchlocmap.R;
+import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bean.FirePoint;
 import com.lhzw.searchlocmap.bean.PlotItemInfo;
 import com.lhzw.searchlocmap.bean.RequestFirePointBean;
@@ -31,9 +34,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.net.NetworkInterface;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -636,6 +641,56 @@ public class BaseUtils {
         builder.append("/");
         return builder.toString();
     }
+
+    /**
+     * 获取手持机的Mac地址
+     * @return
+     */
+
+    public static String getMacFromHardware() {
+        if(!TextUtils.isEmpty(SpUtils.getString("MAC",""))){
+            return SpUtils.getString("MAC","");
+        }
+
+        try {
+            WifiManager manager = (WifiManager) SearchLocMapApplication.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            if (!manager.isWifiEnabled()) {
+                // 设置为开启状态
+                manager.setWifiEnabled(true);
+            }
+            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface nif : all) {
+                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
+
+                byte[] macBytes = nif.getHardwareAddress();
+                if (macBytes == null) {
+                    return "";
+                }
+
+                StringBuilder res1 = new StringBuilder();
+                for (byte b : macBytes) {
+                    res1.append(String.format("%02X:", b));
+                }
+
+                if (res1.length() > 0) {
+                    res1.deleteCharAt(res1.length() - 1);
+                }
+                //取消：
+                String[] mac = res1.toString().split(":");
+                StringBuilder builder = new StringBuilder();
+                for(String str : mac) {
+                    builder.append(str);
+                }
+                all.clear();
+                SpUtils.putString("MAC",builder.toString());
+                return builder.toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return getMacFromHardware();
+    }
+
 
 }
 
