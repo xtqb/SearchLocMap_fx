@@ -302,6 +302,20 @@ public class SettingFragment extends Fragment implements OnClickListener,
                                     mNumList.add(num);//上传到服务接口的BdNum
                                 }else if("0".equals(dataBean.getReceive())){
                                     SpUtils.putString(Constants.UPLOAD_JZH_NUM, dataBean.getBdNumber());
+                                    try {
+                                        if(SearchLocMapApplication.getInstance().getUploadService()!=null){
+                                            SearchLocMapApplication.getInstance().getUploadService().setNum(Constants.TX_JZH,dataBean.getBdNumber());
+                                        }else {
+                                            SpUtils.putString(Constants.HTTP_TOOKEN,"");
+                                            return;
+                                        }
+
+                                    } catch (RemoteException e) {
+                                        e.printStackTrace();
+                                        SpUtils.putString(Constants.HTTP_TOOKEN,"");
+                                        return;
+                                    }
+
                                 }
 
 

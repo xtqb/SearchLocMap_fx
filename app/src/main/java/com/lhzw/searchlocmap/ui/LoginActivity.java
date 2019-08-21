@@ -310,6 +310,30 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                             //有数据
                             for (int i = 0; i <bean.getData().size() ; i++) {
                                 AllBDInfosBean.DataBean dataBean = bean.getData().get(i);
+
+                                if("1".equals(dataBean.getReceive())){
+                                    BDNum num = new BDNum(dataBean.getBdNumber(), Constants.TX_JZH);
+                                    mNumList.add(num);//上传到服务接口的BdNum
+                                }else if("0".equals(dataBean.getReceive())){
+                                    SpUtils.putString(Constants.UPLOAD_JZH_NUM, dataBean.getBdNumber());
+                                    try {
+                                        if(SearchLocMapApplication.getInstance().getUploadService()!=null){
+                                            SearchLocMapApplication.getInstance().getUploadService().setNum(Constants.TX_JZH,dataBean.getBdNumber());
+                                        }else {
+                                            SpUtils.putString(Constants.HTTP_TOOKEN,"");
+                                            return;
+                                        }
+
+                                    } catch (RemoteException e) {
+                                        e.printStackTrace();
+                                        SpUtils.putString(Constants.HTTP_TOOKEN,"");
+                                        return;
+                                    }
+
+                                }
+
+
+
                                 if ("1".equals(dataBean.getSend())){
                                     BDNum num = new BDNum(dataBean.getBdNumber(), Constants.TX_JZH);
                                     mNumList.add(num);//上传到服务接口的BdNum
