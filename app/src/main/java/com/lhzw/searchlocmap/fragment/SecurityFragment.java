@@ -2485,15 +2485,15 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         public void run() {
             if (isTimerRuning) {
                 List<PersonalInfo> list = null;
-                boolean isUpload = false;
                 byte[] numByte = obtainBDNum();
                 for (int counter = 0; counter < 3; counter++) {
+                    if(!isTimerRuning) return;
                     list = CommonDBOperator.queryByKeys(persondao, "state", Constants.PERSON_OFFLINE + "");
                     Message msg = mHandler.obtainMessage(REFLESH_TV);
                     msg.obj = counter + 1;
                     mHandler.sendMessage(msg);
                     if (counter == 0) {
-                        isUpload = list.size() > 0 ? true : false;
+                        isTimerRuning = list.size() > 0 ? true : false;
                     }
                     for (PersonalInfo item : list) {
                         if (!isTimerRuning) {
