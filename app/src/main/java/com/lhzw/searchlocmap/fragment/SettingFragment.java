@@ -296,6 +296,15 @@ public class SettingFragment extends Fragment implements OnClickListener,
                             //有数据
                             for (int i = 0; i <bean.getData().size() ; i++) {
                                 AllBDInfosBean.DataBean dataBean = bean.getData().get(i);
+
+                                if("1".equals(dataBean.getReceive())){
+                                    BDNum num = new BDNum(dataBean.getBdNumber(), Constants.TX_JZH);
+                                    mNumList.add(num);//上传到服务接口的BdNum
+                                }else if("0".equals(dataBean.getReceive())){
+                                    SpUtils.putString(Constants.UPLOAD_JZH_NUM, dataBean.getBdNumber());
+                                }
+
+
                                 if ("1".equals(dataBean.getSend())){
                                     BDNum num = new BDNum(dataBean.getBdNumber(), Constants.TX_JZH);
                                     mNumList.add(num);//上传到服务接口的BdNum
