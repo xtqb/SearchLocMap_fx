@@ -213,7 +213,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
                 startActivity(new Intent(getActivity(), UpdateAppListActivity.class));
                 break;
             case R.id.rl_sync_data:
-                if(!BaseUtils.isNetConnected(getActivity())) {
+                if (!BaseUtils.isNetConnected(getActivity())) {
                     showToast(getString(R.string.net_net_connect_fail));
                     return;
                 }
@@ -272,6 +272,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
             tv_cancel.setOnClickListener(listener);
             tv_sure.setOnClickListener(listener);
         }
+
         public void setContent(String content) {
             tv_content.setText(content);
         }
@@ -279,7 +280,8 @@ public class SettingFragment extends Fragment implements OnClickListener,
 
 
     private List<LocalBDNum> mLocalBDNums = new ArrayList<>();
-    private List<BDNum> mNumList =new ArrayList<>();
+    private List<BDNum> mNumList = new ArrayList<>();
+
     /**
      * 获取北斗号信息  send =1 传服务 send=0 设置sp
      */
@@ -289,45 +291,45 @@ public class SettingFragment extends Fragment implements OnClickListener,
         observable.compose(new ThreadSwitchTransformer<AllBDInfosBean>()).subscribe(new CallbackListObserver<AllBDInfosBean>() {
             @Override
             protected void onSucceed(final AllBDInfosBean bean) {
-                if(bean!=null){
-                    if(bean.getCode()==0){
+                if (bean != null) {
+                    if (bean.getCode() == 0) {
                         //请求成功
-                        if(bean.getData()!=null && bean.getData().size()>0){
+                        if (bean.getData() != null && bean.getData().size() > 0) {
                             //有数据
-                            for (int i = 0; i <bean.getData().size() ; i++) {
+                            for (int i = 0; i < bean.getData().size(); i++) {
 
                                 AllBDInfosBean.DataBean dataBean = bean.getData().get(i);
-
-                                if ("1".equals(dataBean.getSend())||"1".equals(dataBean.getReceive())){
+                                if ("1".equals(dataBean.getSend())) {
                                     BDNum num = new BDNum(dataBean.getBdNumber(), Constants.TX_JZH);
                                     mNumList.add(num);//上传到服务接口的BdNum
-                                }else if("0".equals(dataBean.getSend())||"0".equals(dataBean.getReceive())) {
+                                }
+                                if ("1".equals(dataBean.getReceive())) {
                                     SpUtils.putString(Constants.UPLOAD_JZH_NUM, dataBean.getBdNumber());
                                     try {
-                                        if(SearchLocMapApplication.getInstance().getUploadService()!=null){
-                                            SearchLocMapApplication.getInstance().getUploadService().setNum(Constants.TX_JZH,dataBean.getBdNumber());
-                                        }else {
-                                            SpUtils.putString(Constants.HTTP_TOOKEN,"");
+                                        if (SearchLocMapApplication.getInstance().getUploadService() != null) {
+                                            SearchLocMapApplication.getInstance().getUploadService().setNum(Constants.TX_JZH, dataBean.getBdNumber());
+                                        } else {
+                                            SpUtils.putString(Constants.HTTP_TOOKEN, "");
                                             return;
                                         }
 
                                     } catch (RemoteException e) {
                                         e.printStackTrace();
-                                        SpUtils.putString(Constants.HTTP_TOOKEN,"");
+                                        SpUtils.putString(Constants.HTTP_TOOKEN, "");
                                         return;
                                     }
                                 }
                                 //添加到本地数据库
-                                LocalBDNum localBDNum = new LocalBDNum(dataBean.getBdNumber(), dataBean.getSend(),dataBean.getReceive());
+                                LocalBDNum localBDNum = new LocalBDNum(dataBean.getBdNumber(), dataBean.getSend(), dataBean.getReceive());
                                 mLocalBDNums.add(localBDNum);
 
                             }
 
                         }
-                    }else {
-                        showToast(bean.getMessage()+"");
+                    } else {
+                        showToast(bean.getMessage() + "");
                     }
-                }else {
+                } else {
                     showToast("服务器未能获取北斗平台的信息");
                 }
 
@@ -340,7 +342,6 @@ public class SettingFragment extends Fragment implements OnClickListener,
 
         });
     }
-
 
 
     private class AyncLoginTask extends AsyncTask<Object, Integer, Boolean> {
@@ -375,8 +376,8 @@ public class SettingFragment extends Fragment implements OnClickListener,
                         List<HttpRequstInfo> list = new Gson().fromJson(data, new TypeToken<List<HttpRequstInfo>>() {
                         }.getType());
                         values[0] = list.size() + mLocalBDNums.size();
-                        LogUtil.d("size : " + list.size()+"mLocalBDNums:"+mLocalBDNums.size());
-                        int delay = 40 * 100 / (list.size()+mLocalBDNums.size());
+                        LogUtil.d("size : " + list.size() + "mLocalBDNums:" + mLocalBDNums.size());
+                        int delay = 40 * 100 / (list.size() + mLocalBDNums.size());
                         int counter = 0;
                         for (HttpRequstInfo info : list) {
                             counter++;
@@ -386,9 +387,9 @@ public class SettingFragment extends Fragment implements OnClickListener,
                             Thread.sleep(delay);
                         }
 
-                        for (LocalBDNum localBDNum :mLocalBDNums){
+                        for (LocalBDNum localBDNum : mLocalBDNums) {
                             counter++;
-                            values[1]=counter;
+                            values[1] = counter;
                             publishProgress(values);
                             CommonDBOperator.saveToDB(mBdNumDao, localBDNum);
                             //上传到服务
@@ -397,19 +398,19 @@ public class SettingFragment extends Fragment implements OnClickListener,
                         try {//上传到服务接口
                             if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
                                 SearchLocMapApplication.getInstance().getUploadService().updateBDNum(mNumList);
-                            }else {
-                                SpUtils.putString(Constants.HTTP_TOOKEN,"");
+                            } else {
+                                SpUtils.putString(Constants.HTTP_TOOKEN, "");
                                 return false;
                             }
                         } catch (RemoteException e) {
                             e.printStackTrace();
-                            SpUtils.putString(Constants.HTTP_TOOKEN,"");
+                            SpUtils.putString(Constants.HTTP_TOOKEN, "");
                         }
 
                         isSuccess = true;
                         list.clear();
                         mLocalBDNums.clear();
-                     }
+                    }
                 } else {
                     isSuccess = false;
                 }
@@ -444,15 +445,15 @@ public class SettingFragment extends Fragment implements OnClickListener,
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            getActivity().finish();
+        getActivity().finish();
     }
 
     private HttpPersonInfo translationItem(HttpRequstInfo item) {
         HttpPersonInfo bean = null;
-        if(item != null){
+        if (item != null) {
             bean = new HttpPersonInfo();
             bean.setDeviceNumbers(item.getDeviceNumbers());
-            if(item.getDevice() != null) {
+            if (item.getDevice() != null) {
                 bean.setDeviceType(item.getDevice().getDeviceType());
             } else {
                 bean.setDeviceType(0);
@@ -478,6 +479,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
             progress.dismiss();
         }
     }
+
     public void showToast(String text) {
         if (mGlobalToast == null) {
             mGlobalToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
