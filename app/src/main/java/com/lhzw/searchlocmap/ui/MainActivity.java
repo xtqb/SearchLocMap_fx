@@ -89,7 +89,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         LogUtil.e("初始化本机北斗号=="+bdNum);
         //本机北斗号为空  不处理
         if(TextUtils.isEmpty(bdNum)){
-            ToastUtil.showToast("北斗号为空,请安装北斗卡");
+            ToastUtil.showToast("北斗号为空,请安装北斗卡,并打开北斗开关");
             return;
         }
         //不为空  检测是否变更
