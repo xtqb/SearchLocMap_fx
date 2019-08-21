@@ -325,7 +325,7 @@ public class BaseUtils {
         }
         List<UploadInfoBean> list = new ArrayList<UploadInfoBean>();
         for (PlotItemInfo item : infoList) {
-            list.add(getUploadInfo(item));
+                list.add(getUploadInfo(item));
         }
         return list;
     }

@@ -70,6 +70,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        SearchLocMapApplication.getInstance().bindService();
         if (!"".equals(SpUtils.getString(Constants.HTTP_TOOKEN, ""))) {
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             this.finish();
@@ -124,12 +125,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     private class AyncLoginTask extends AsyncTask<Object, Integer, Boolean> {
         private boolean isInitMax = false;
-        private String mDipperNum;
+//        private String mDipperNum;
 
         @Override
         protected void onPreExecute() {
             ShowProgressDialog();
-            mDipperNum = BaseUtils.getDipperNum(LoginActivity.this);
+//            mDipperNum = BaseUtils.getDipperNum(LoginActivity.this);
         }
 
         @Override
@@ -139,19 +140,18 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 String rev = null;
                 Integer[] values = new Integer[2];
                 if ("".equals(SpUtils.getString(Constants.HTTP_TOOKEN, ""))) {
+                   // LogUtil.e("准备登录");
                     String token = NetUtils.doLoginClient(et_user_name.getText().toString().trim(), et_user_password.getText().toString().trim());
                     if (token != null) {
-
+                        //LogUtil.e("登录成功Token不为空");
                         CommonDBOperator.deleteAllItems(httpPerDao);
                         CommonDBOperator.deleteAllItems(mBdNumDao);
                         CommonDBOperator.deleteAllItems(mLocPersonDao);
                         SpUtils.putString(Constants.HTTP_TOOKEN, token);
                         getAllBDInfoFromServer();//获取平台的北斗号
-                        if(mDipperNum != null){
-                            getBindingWatchFromServer();//获取当前手持机绑定的手表
-                        }
-
+                        getBindingWatchFromServer();//获取当前手持机绑定的手表
                         rev = NetUtils.doHttpGetClient(token, Constants.USER_PATH);
+                        //LogUtil.e("登录成功rev=="+rev);
                         if (rev != null) {
                             JSONObject obj = new JSONObject(rev);
                             int code = obj.getInt("code");
@@ -182,6 +182,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                 try {//上传到服务接口
                                     if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
                                         SearchLocMapApplication.getInstance().getUploadService().updateBDNum(mNumList);
+                                    }else {
+                                        SpUtils.putString(Constants.HTTP_TOOKEN, "");
+                                        return false;
+
                                     }
                                 } catch (RemoteException e) {
                                     e.printStackTrace();
@@ -219,6 +223,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             if (result) {
                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 LoginActivity.this.finish();
+                //记录初始的本机北斗号
+                SpUtils.putString(Constants.BD_NUM_lOC_DEF, BaseUtils.getDipperNum(LoginActivity.this));
             } else {
                 showToast(getString(R.string.net_request_fail));
             }
@@ -230,17 +236,18 @@ public class LoginActivity extends Activity implements View.OnClickListener {
      * 查找已绑定的手表   解决清除本地数据后登陆  无法解除绑定的问题
      */
     private void getBindingWatchFromServer() {
-        String bdNum = BaseUtils.getDipperNum(LoginActivity.this);
-        if(TextUtils.isEmpty(bdNum)){
+       // String bdNum = BaseUtils.getDipperNum(LoginActivity.this);
+        String mac = BaseUtils.getMacFromHardware();
+        if(TextUtils.isEmpty(mac)){
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    showToast("北斗卡未安装,请安装北斗卡");
+                    showToast("mac为空");
                 }
             });
             return;
         }
-        Observable<BindingWatchBean> observable = SLMRetrofit.getInstance().getApi().getBindingWatch(bdNum);
+        Observable<BindingWatchBean> observable = SLMRetrofit.getInstance().getApi().getBindingWatch(mac);
         observable.compose(new ThreadSwitchTransformer<BindingWatchBean>()).subscribe(new CallbackListObserver<BindingWatchBean>() {
             @Override
             protected void onSucceed(BindingWatchBean bean) {
@@ -309,9 +316,17 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                 }else if("0".equals(dataBean.getSend())) {
                                     SpUtils.putString(Constants.UPLOAD_JZH_NUM, dataBean.getBdNumber());
                                     try {
-                                        SearchLocMapApplication.getInstance().getUploadService().setNum(Constants.TX_JZH,dataBean.getBdNumber());
+                                        if(SearchLocMapApplication.getInstance().getUploadService()!=null){
+                                            SearchLocMapApplication.getInstance().getUploadService().setNum(Constants.TX_JZH,dataBean.getBdNumber());
+                                        }else {
+                                            SpUtils.putString(Constants.HTTP_TOOKEN, "");
+                                            return;
+                                        }
+
                                     } catch (RemoteException e) {
                                         e.printStackTrace();
+                                        SpUtils.putString(Constants.HTTP_TOOKEN, "");
+                                        return;
                                     }
                                 }
                                 //添加到本地数据库

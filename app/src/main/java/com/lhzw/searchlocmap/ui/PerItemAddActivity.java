@@ -199,7 +199,8 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
                     return;
                 }
 
-                AskServerToBind(BaseUtils.getDipperNum(this), person_code);
+                //AskServerToBind(BaseUtils.getDipperNum(this), person_code);
+                AskServerToBind(BaseUtils.getMacFromHardware(), person_code);
 
                 break;
 
@@ -247,20 +248,20 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
     /**
      * 向服务器请求是否可以绑定
      *
-     * @param bdNum     本机北斗号
+     * @param mac     本机mac号
      * @param deviceNum 手表的固话注册码
      */
 
-    private void AskServerToBind(String bdNum, String deviceNum) {
-        LogUtil.d("bdNum==" + bdNum + "<=====>deviceNum==" + deviceNum);
-        if(TextUtils.isEmpty(bdNum)){
-            showToast("北斗卡未安装,请安装北斗卡后重试");
+    private void AskServerToBind(String mac, String deviceNum) {
+        LogUtil.d("mac==" + mac + "<=====>deviceNum==" + deviceNum);
+        if(TextUtils.isEmpty(mac)){
+            showToast("mac为空");
             return;
         }
         final LoadingView loadingView = new LoadingView(this);
         loadingView.setLoadingTitle("绑定中...");
         loadingView.show();
-        Observable<BaseBean> observable = SLMRetrofit.getInstance().getApi().canBinding(bdNum, deviceNum);
+        Observable<BaseBean> observable = SLMRetrofit.getInstance().getApi().canBinding(mac, deviceNum);
         observable.compose(new ThreadSwitchTransformer<BaseBean>())
                 .subscribe(new CallbackListObserver<BaseBean>() {
                     @Override

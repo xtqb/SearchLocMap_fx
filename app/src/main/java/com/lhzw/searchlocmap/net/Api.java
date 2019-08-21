@@ -11,6 +11,7 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
@@ -29,25 +30,26 @@ public interface Api {
     /**
      * 手持机与手表绑定接口
      *
-     * @param handsetNumber 手持机北斗号
-     * @param childNumber   手表的固话注册码
+     * @param mac         手持机mac号
+     * @param childNumber 手表的固话注册码
      * @return
      */
     @POST("handsets/binding/{handsetNumber}-{childNumber}")
-    Observable<BaseBean> canBinding(@Path("handsetNumber") String handsetNumber, @Path("childNumber") String childNumber);
+    Observable<BaseBean> canBinding(@Path("handsetNumber") String mac, @Path("childNumber") String childNumber);
 
     /**
      * 手持机与手表解绑接口
      *
-     * @param handsetNumber 手持机的北斗号
-     * @param childNumber   手表的固话注册码   如果是多个之间用,隔开
+     * @param mac         手持机的北斗号
+     * @param childNumber 手表的固话注册码   如果是多个之间用,隔开
      * @return
      */
     @DELETE("handsets/binding/{handsetNumber}-{childNumber}")
-    Observable<BaseBean> deleteBinding(@Path("handsetNumber") String handsetNumber, @Path("childNumber") String childNumber);
+    Observable<BaseBean> deleteBinding(@Path("handsetNumber") String mac, @Path("childNumber") String childNumber);
 
     /**
      * 获取所有的北斗信息
+     *
      * @return
      */
     @GET("bds")
@@ -61,8 +63,15 @@ public interface Api {
     Observable<NetResponseBean> uploadInfo(@Body RequestBody requestBody);
 
     /**
-     * 根据手持机的北斗号  查询绑定的手表
+     * 根据手持机的mac号  查询绑定的手表
      */
     @GET("handsets/binding/{handsetNumber}/watch")
-    Observable<BindingWatchBean> getBindingWatch(@Path("handsetNumber") String handsetNumber);
+    Observable<BindingWatchBean> getBindingWatch(@Path("handsetNumber") String mac);
+
+    /**
+     * handsetNumber长度必须是12位数字或者字母组成的mac地址 bdNumber长度必须是7位数字组成的北斗号
+     */
+
+    @PUT("handsets/binding/bd/{handsetNumber}-{bdNumber}")
+    Observable<BaseBean> uploadMacAndBdNum(@Path("handsetNumber") String mac, @Path("bdNumber") String bdNumber);
 }

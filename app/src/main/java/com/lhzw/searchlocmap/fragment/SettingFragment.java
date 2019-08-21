@@ -302,9 +302,17 @@ public class SettingFragment extends Fragment implements OnClickListener,
                                 }else if("0".equals(dataBean.getSend())) {
                                     SpUtils.putString(Constants.UPLOAD_JZH_NUM, dataBean.getBdNumber());
                                     try {
-                                        SearchLocMapApplication.getInstance().getUploadService().setNum(Constants.TX_JZH,dataBean.getBdNumber());
+                                        if(SearchLocMapApplication.getInstance().getUploadService()!=null){
+                                            SearchLocMapApplication.getInstance().getUploadService().setNum(Constants.TX_JZH,dataBean.getBdNumber());
+                                        }else {
+                                            SpUtils.putString(Constants.HTTP_TOOKEN,"");
+                                            return;
+                                        }
+
                                     } catch (RemoteException e) {
                                         e.printStackTrace();
+                                        SpUtils.putString(Constants.HTTP_TOOKEN,"");
+                                        return;
                                     }
                                 }
                                 //添加到本地数据库
@@ -386,11 +394,14 @@ public class SettingFragment extends Fragment implements OnClickListener,
                         }
                         try {//上传到服务接口
                             if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
-
                                 SearchLocMapApplication.getInstance().getUploadService().updateBDNum(mNumList);
+                            }else {
+                                SpUtils.putString(Constants.HTTP_TOOKEN,"");
+                                return false;
                             }
                         } catch (RemoteException e) {
                             e.printStackTrace();
+                            SpUtils.putString(Constants.HTTP_TOOKEN,"");
                         }
 
                         isSuccess = true;

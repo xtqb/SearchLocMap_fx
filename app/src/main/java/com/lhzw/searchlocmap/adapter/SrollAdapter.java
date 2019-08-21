@@ -155,7 +155,7 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
             } else {
                 bean.setOnline(true);
             }
-            LogUtil.e(item.getState1() + ",  " + item.getState());
+           // LogUtil.e(item.getState1() + ",  " + item.getState());
             bean.setPos(pos);
             list.add(bean);
             pos++;

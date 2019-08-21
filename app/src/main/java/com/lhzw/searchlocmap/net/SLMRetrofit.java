@@ -3,7 +3,6 @@ package com.lhzw.searchlocmap.net;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.lhzw.searchlocmap.constants.Constants;
-import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.SpUtils;
 
 import java.io.IOException;
@@ -30,7 +29,8 @@ public class SLMRetrofit {
     private SLMRetrofit() {
         Gson gson = new GsonBuilder().create();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BaseUtils.getBaseIP())
+                //.baseUrl(BaseUtils.getBaseIP())
+                .baseUrl(Constants.IP_ADD)
                 .client(genericClient())
                 .addConverterFactory(GsonConverterFactory.create(gson))  //数据的处理时，只有请求成功后，才能需要解析data的数据,其他时候我们直接抛异常处理 json解析
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())//支持RxJava

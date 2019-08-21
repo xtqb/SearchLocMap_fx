@@ -7,14 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.RemoteException;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,19 +26,27 @@ import android.widget.Toast;
 
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
+import com.lhzw.searchlocmap.bean.BaseBean;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.fragment.PersManagerFragment;
 import com.lhzw.searchlocmap.fragment.SecurityFragment;
 import com.lhzw.searchlocmap.fragment.SettingFragment;
+import com.lhzw.searchlocmap.net.CallbackListObserver;
+import com.lhzw.searchlocmap.net.SLMRetrofit;
+import com.lhzw.searchlocmap.net.ThreadSwitchTransformer;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.ComUtils;
+import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.SpUtils;
+import com.lhzw.searchlocmap.utils.ToastUtil;
 import com.lhzw.searchlocmap.view.PageViewChange;
 import com.lhzw.searchlocmap.view.ShowAlertDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observable;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
     private PageViewChange viewPager;
@@ -70,6 +78,64 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         initView();
         initData();
         setListener();
+        initBDChangeCheck();
+    }
+
+    /**
+     * 每次打开APP就判定北斗号是否发生了改变   改变就通知后台
+     */
+    private void initBDChangeCheck() {
+        String bdNum = BaseUtils.getDipperNum(this);
+        LogUtil.e("初始化本机北斗号=="+bdNum);
+        //本机北斗号为空  不处理
+        if(TextUtils.isEmpty(bdNum)){
+            ToastUtil.showToast("北斗号为空,请安装北斗卡");
+            return;
+        }
+        //不为空  检测是否变更
+        if(!SpUtils.getString(Constants.BD_NUM_lOC_DEF,"").equals(bdNum)){
+            LogUtil.e("检测到北斗号发生改变了,原北斗号=="+SpUtils.getString(Constants.BD_NUM_lOC_DEF,"")+",新北斗号=="+bdNum);
+            //发生了改变     更新本地的储存     通知后台和北斗
+            SpUtils.putString(Constants.BD_NUM_lOC_DEF,bdNum);
+            //判断有无网络
+            if(BaseUtils.isNetConnected(this)) {
+                //有网络  通知服务器北斗号
+                Observable<BaseBean> observable = SLMRetrofit.getInstance().getApi().uploadMacAndBdNum(BaseUtils.getMacFromHardware(), bdNum);
+                observable.compose(new ThreadSwitchTransformer<BaseBean>())
+                        .subscribe(new CallbackListObserver<BaseBean>() {
+                            @Override
+                            protected void onSucceed(BaseBean bean) {
+                                if("0".equals(bean.getCode())){
+                                    //上传成功
+                                    ToastUtil.showToast("mac与北斗绑定关系上传成功");
+                                }else {
+                                    ToastUtil.showToast("mac与北斗绑定关系上传失败");
+                                }
+                            }
+
+                            @Override
+                            protected void onFailed() {
+                                ToastUtil.showToast("上传失败");
+                            }
+                        });
+            }else {
+                //无网络  上传 北斗服务
+                LogUtil.e("打开北斗服务");
+                Handler handler = new Handler();
+                //延时5s 打开服务
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent1 = new Intent("com.lhzw.intent.action_UPLOAD_SERVICE");
+                        intent1.putExtra("state", 1);
+                        MainActivity.this.startActivity(intent1);
+                    }
+                },5000);
+
+            }
+        }else {
+            ToastUtil.showToast("检测到本机北斗号未改变");
+        }
     }
 
     @Override
@@ -89,6 +155,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
 //        mBDManager.systemCheck(6 + "");
         mBDManager.queryBDPower("6");
+       // LogUtil.e("mac = "+BaseUtils.getMacFromHardware());
     }
 
     private void initTabLine() {

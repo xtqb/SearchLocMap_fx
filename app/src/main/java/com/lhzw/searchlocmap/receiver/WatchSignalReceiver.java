@@ -112,7 +112,7 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 				}
 				showNotifcationInfo(mContext, register_num, R.drawable.icon_sos2, "SOS");
 				break;
-                case (byte) 0x19://TODO 指令反馈,刷新列表
+                case (byte) 0x19:// 指令反馈,刷新列表
                     //先更新数据库的数据
 					list.get(0).setFeedback(Constants.COMMAND_CONFIRMED);
                     CommonDBOperator.updateItem(persondao,list.get(0));//首先更新数据库数据
@@ -125,16 +125,19 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 			}
 			//比较数据大小
 			double distance = 0;
+			//类型为sos,并可以上报,定位成功且距离有变动
 			if(data_type == Constants.TX_SOS && isUpload && !"".equals(list.get(0).getLatitude()) && !"".equals(list.get(0).getLongitude()) && list.get(0).getLatitude() != null && Math.abs(Double.valueOf(list.get(0).getLatitude())) > 0.0001
 					&& list.get(0).getLongitude() != null && Math.abs(Double.valueOf(list.get(0).getLongitude())) > 0.0001) {
 				distance = GT_GeoArithmetic.ComputeDistanceOfTwoPoints(new GeoPoint(Double.valueOf(list.get(0).getLatitude()),Double.valueOf(list.get(0).getLongitude())),
 						new GeoPoint(lat,lon));
-				if(distance > DistanRANGE) {
+				if(distance > DistanRANGE) {//距离大于15m
 					isUpload = true;
 				} else {
 					isUpload = false;
 				}
 			}
+
+			//类型是sos就写入日志
 			if(data_type == Constants.TX_SOS) {
 				//写入日志
 				try {
@@ -146,17 +149,19 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 					e.printStackTrace();
 				}
 			}
+			//间隔时间大于三分钟,换为可上传状态
 			if(System.currentTimeMillis() - list.get(0).getTime() > timeOut) {
 				isUpload = true;
 				list.get(0).setTime(System.currentTimeMillis());
 			}
+			//指令时间大于1天,把当前时间变成指令时间
 			if(Math.abs(locTime - System.currentTimeMillis()) > 24 * 60 * 60 * 1000) {
 				locTime = System.currentTimeMillis();
 			}
 			list.get(0).setLatitude(lat + "");
 			list.get(0).setLongitude(lon + "");
 			list.get(0).setLocTime(locTime);
-
+             //sos ,可上传状态,自动上报打开
 			if(data_type == Constants.TX_SOS && isUpload && SpUtils.getBoolean(SPConstants.AUTO_REPORT, true)) {
 				Log.e("Tag", "doTask  insert databases");
 				uploadList.clear();
@@ -171,8 +176,8 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 					bean.setNum(SpUtils.getString(Constants.UPLOAD_QZH_NUM, Constants.BD_NUM_DEF));
 					uploadList.add(bean);
 				}
-				mComUtils.uploadBena(uploadList);
-				mHnadler.sendEmptyMessage(TOAST);
+				mComUtils.uploadBena(uploadList);  //上传到北斗服务
+				mHnadler.sendEmptyMessage(TOAST);  //显示上报数据弹窗
 			}
 
 			CommonDBOperator.updateItem(persondao, list.get(0));

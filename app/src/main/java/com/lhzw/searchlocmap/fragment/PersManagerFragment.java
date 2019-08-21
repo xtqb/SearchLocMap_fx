@@ -171,7 +171,8 @@ public class PersManagerFragment extends Fragment implements
 
                     String deviceNums = sb.toString();
                     //todo 解绑前  先去请求服务器  服务器反馈后解绑
-                    AskServerToUnbind(BaseUtils.getDipperNum(getActivity()), deviceNums);
+                    //AskServerToUnbind(BaseUtils.getDipperNum(getActivity()), deviceNums);
+                    AskServerToUnbind(BaseUtils.getMacFromHardware(), deviceNums);
                 } else {
                     showToast("请选择删除的对象");
                 }
@@ -184,18 +185,18 @@ public class PersManagerFragment extends Fragment implements
     /**
      * 手持机解绑手表
      *
-     * @param bdNum
+     * @param mac
      * @param deviceNums
      */
-    private void AskServerToUnbind(String bdNum, String deviceNums) {
-        if (TextUtils.isEmpty(bdNum)) {
-            showToast("北斗卡未安装,请安装北斗卡后重试");
+    private void AskServerToUnbind(String mac, String deviceNums) {
+        if (TextUtils.isEmpty(mac)) {
+            showToast("mac为空");
             return;
         }
         final LoadingView loadingView = new LoadingView(getActivity());
         loadingView.setLoadingTitle("解绑中...");
         loadingView.show();
-        Observable<BaseBean> observable = SLMRetrofit.getInstance().getApi().deleteBinding(bdNum, deviceNums);
+        Observable<BaseBean> observable = SLMRetrofit.getInstance().getApi().deleteBinding(mac, deviceNums);
         observable.compose(new ThreadSwitchTransformer<BaseBean>()) //从数据流中得到原始Observable<T>的操作符
                 .subscribe(new CallbackListObserver<BaseBean>() {
                     @Override
