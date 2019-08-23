@@ -77,19 +77,9 @@ public class BDNumChangeReceiver extends BroadcastReceiver {
                     });
         } else {
                 //无网络  上传 北斗服务
-                LogUtil.e("打开北斗服务");
-//                Handler handler = new Handler();
-//                //延时5s 打开服务
-//                handler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Intent intent1 = new Intent("com.lhzw.intent.action_UPLOAD_SERVICE");
-//                        intent1.putExtra("state", 1);
-//                        mContext.startActivity(intent1);
-//                    }
-//                },5000);
+             LogUtil.e("打开北斗服务");
               mIntent.putExtra("state",1);
-              mContext.sendBroadcast(intent);
+              mContext.sendBroadcast(mIntent);
 
         }
 
