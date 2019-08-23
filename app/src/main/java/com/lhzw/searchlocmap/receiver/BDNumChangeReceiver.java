@@ -3,7 +3,6 @@ package com.lhzw.searchlocmap.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.text.TextUtils;
 
 import com.lhzw.searchlocmap.bean.BaseBean;
@@ -25,6 +24,7 @@ import io.reactivex.Observable;
 public class BDNumChangeReceiver extends BroadcastReceiver {
 
     private Context mContext;
+    private Intent mIntent;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -44,6 +44,7 @@ public class BDNumChangeReceiver extends BroadcastReceiver {
             ToastUtil.showToast("北斗卡号未改变");
             return;
         }
+        mIntent = new Intent(Constants.BD_NUM_ISCHANGING);
         //改变了就保存新的北斗
         SpUtils.putString(Constants.BD_NUM_lOC_DEF, bdNum);
         //上传    判断有无网络
@@ -57,29 +58,38 @@ public class BDNumChangeReceiver extends BroadcastReceiver {
                             if ("0".equals(bean.getCode())) {
                                 //上传成功
                                 ToastUtil.showToast("mac与北斗绑定关系上传成功");
+                                mIntent.putExtra("state",0);
+                                mContext.sendBroadcast(mIntent);
                             } else {
                                 ToastUtil.showToast("mac与北斗绑定关系上传失败");
+                                mIntent.putExtra("state",1);
+                                mContext.sendBroadcast(mIntent);
                             }
                         }
 
                         @Override
                         protected void onFailed() {
                             ToastUtil.showToast("上传失败");
+                            mIntent = new Intent(Constants.BD_NUM_ISCHANGING);
+                            mIntent.putExtra("state",1);
+                            mContext.sendBroadcast(mIntent);
                         }
                     });
         } else {
                 //无网络  上传 北斗服务
                 LogUtil.e("打开北斗服务");
-                Handler handler = new Handler();
-                //延时5s 打开服务
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent intent1 = new Intent("com.lhzw.intent.action_UPLOAD_SERVICE");
-                        intent1.putExtra("state", 1);
-                        mContext.startActivity(intent1);
-                    }
-                },5000);
+//                Handler handler = new Handler();
+//                //延时5s 打开服务
+//                handler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Intent intent1 = new Intent("com.lhzw.intent.action_UPLOAD_SERVICE");
+//                        intent1.putExtra("state", 1);
+//                        mContext.startActivity(intent1);
+//                    }
+//                },5000);
+              mIntent.putExtra("state",1);
+              mContext.sendBroadcast(intent);
 
         }
 

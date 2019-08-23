@@ -131,6 +131,6 @@ public class Constants {
 	public static final String CMD_FIRELINE = "receivefirelineindication";
 	public static final String CMD_SOS = "soslocationindication";
 	public static final String CMD_FIRE_POINT = "receivefirepointindication";
-
-
+   //北斗改变
+	public static final String BD_NUM_ISCHANGING = "android.intent.action.BD_NUM_CHANGE";
 }

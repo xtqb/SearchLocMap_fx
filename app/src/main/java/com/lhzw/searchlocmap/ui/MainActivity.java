@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -84,6 +83,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     /**
      * 每次打开APP就判定北斗号是否发生了改变   改变就通知后台
      */
+    private Intent mIntent;
+
     private void initBDChangeCheck() {
         String bdNum = BaseUtils.getDipperNum(this);
         LogUtil.e("初始化本机北斗号=="+bdNum);
@@ -93,10 +94,12 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             return;
         }
         //不为空  检测是否变更
+
         if(!SpUtils.getString(Constants.BD_NUM_lOC_DEF,"").equals(bdNum)){
             LogUtil.e("检测到北斗号发生改变了,原北斗号=="+SpUtils.getString(Constants.BD_NUM_lOC_DEF,"")+",新北斗号=="+bdNum);
             //发生了改变     更新本地的储存     通知后台和北斗
             SpUtils.putString(Constants.BD_NUM_lOC_DEF,bdNum);
+            mIntent = new Intent(Constants.BD_NUM_ISCHANGING);
             //判断有无网络
             if(BaseUtils.isNetConnected(this)) {
                 //有网络  通知服务器北斗号
@@ -108,29 +111,37 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                                 if("0".equals(bean.getCode())){
                                     //上传成功
                                     ToastUtil.showToast("mac与北斗绑定关系上传成功");
+                                    mIntent.putExtra("state",0);
+                                    sendBroadcast(mIntent);
                                 }else {
                                     ToastUtil.showToast("mac与北斗绑定关系上传失败");
+                                    mIntent.putExtra("state",1);
+                                    sendBroadcast(mIntent);
                                 }
                             }
 
                             @Override
                             protected void onFailed() {
                                 ToastUtil.showToast("上传失败");
+                                mIntent.putExtra("state",1);
+                                sendBroadcast(mIntent);
                             }
                         });
             }else {
                 //无网络  上传 北斗服务
                 LogUtil.e("打开北斗服务");
-                Handler handler = new Handler();
-                //延时5s 打开服务
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent intent1 = new Intent("com.lhzw.intent.action_UPLOAD_SERVICE");
-                        intent1.putExtra("state", 1);
-                        MainActivity.this.startActivity(intent1);
-                    }
-                },5000);
+//                Handler handler = new Handler();
+//                //延时5s 打开服务
+//                handler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Intent intent1 = new Intent("com.lhzw.intent.action_UPLOAD_SERVICE");
+//                        intent1.putExtra("state", 1);
+//                        MainActivity.this.startActivity(intent1);
+//                    }
+//                },5000);
+                mIntent.putExtra("state",1);
+                sendBroadcast(mIntent);
 
             }
         }else {
