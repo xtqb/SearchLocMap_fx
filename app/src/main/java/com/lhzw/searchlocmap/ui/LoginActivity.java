@@ -4,82 +4,83 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.os.RemoteException;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.Toast;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bean.AllBDInfosBean;
+import com.lhzw.searchlocmap.bean.AllPersonInfoBean;
+import com.lhzw.searchlocmap.bean.BaseBean;
 import com.lhzw.searchlocmap.bean.BindingWatchBean;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.HttpRequstInfo;
 import com.lhzw.searchlocmap.bean.LocPersonalInfo;
 import com.lhzw.searchlocmap.bean.LocalBDNum;
 import com.lhzw.searchlocmap.bean.PersonalInfo;
+import com.lhzw.searchlocmap.bean.UserInfo;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 import com.lhzw.searchlocmap.net.CallbackListObserver;
+import com.lhzw.searchlocmap.net.CallbackObserver;
 import com.lhzw.searchlocmap.net.SLMRetrofit;
 import com.lhzw.searchlocmap.net.ThreadSwitchTransformer;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.LogUtil;
-import com.lhzw.searchlocmap.utils.NetUtils;
 import com.lhzw.searchlocmap.utils.SpUtils;
+import com.lhzw.searchlocmap.utils.ToastUtil;
 import com.lhzw.searchlocmap.view.ShowProgressDialog;
 import com.lhzw.uploadmms.BDNum;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import io.reactivex.Observable;
 
 /**
  * Created by xtqb on 2019/3/29.
  */
 public class LoginActivity extends Activity implements View.OnClickListener {
-
     private EditText et_user_name;
     private EditText et_user_password;
     private Button bt_login;
-    private View decorView;
     private Toast mGlobalToast;
     private DatabaseHelper helper;
     private Dao<HttpPersonInfo, Integer> httpPerDao;
     private ShowProgressDialog progress;
-    private final int CANCEL_DIALOG = 0x0021;
-    private ScrollView loginBinding;
     private ImageView im_name_del;
     private Dao mBdNumDao;
     private Dao mLocPersonDao;
     private Dao mPersonalInfoDao;
+    private String mLoginName;
+    private String mPassword;
+    private List<HttpRequstInfo> mHttpRequstInfos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         SearchLocMapApplication.getInstance().bindService();
+        //记录初始的本机北斗号
+        SpUtils.putString(Constants.BD_NUM_lOC_DEF, BaseUtils.getDipperNum(LoginActivity.this));
         if (!"".equals(SpUtils.getString(Constants.HTTP_TOOKEN, ""))) {
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            this.finish();
+            finish();
         } else {
             initView();
             initData();
             setListener();
         }
     }
+
 
     private void setListener() {
         bt_login.setOnClickListener(this);
@@ -105,16 +106,18 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bt_login:
-                Log.e("Tag", "123");
-                if (BaseUtils.isStringEmpty(et_user_name.getText().toString()) || BaseUtils.isStringEmpty(et_user_password.getText().toString())) {
-                    showToast(getString(R.string.login_note));
-                } else {
-                    if (!BaseUtils.isNetConnected(this)) {
-                        showToast(getString(R.string.net_net_connect_fail));
-                        return;
-                    }
-                    new AyncLoginTask().execute();
+                mLoginName = et_user_name.getText().toString();
+                mPassword = et_user_password.getText().toString();
+                if (!BaseUtils.isNetConnected(this)) {
+                    showToast(getString(R.string.net_net_connect_fail));
+                    return;
                 }
+                if (BaseUtils.isStringEmpty(mLoginName) || BaseUtils.isStringEmpty(mPassword)) {
+                    showToast(getString(R.string.login_note));
+                    return;
+                }
+                // new AyncLoginTask().execute();
+                doLoginTask();//执行登录操作
                 break;
             case R.id.im_name_del:
                 et_user_name.setText("");
@@ -122,89 +125,111 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    private void doLoginTask() {
+        Observable<BaseBean<UserInfo>> observable = SLMRetrofit.getInstance().getApi().loginCall(mLoginName, mPassword);
+        observable.compose(new ThreadSwitchTransformer<BaseBean<UserInfo>>()).subscribe(new CallbackObserver<UserInfo>() {
+            @Override
+            protected void onSucceed(UserInfo info, String desc) {
+                String token = info.getToken();//登录成功得到token
+                LogUtil.e("获取Token成功,Token==" + token);
+                if (!TextUtils.isEmpty(token)) {
+                    CommonDBOperator.deleteAllItems(httpPerDao);
+                    CommonDBOperator.deleteAllItems(mBdNumDao);
+                    CommonDBOperator.deleteAllItems(mLocPersonDao);
+                    SpUtils.putString(Constants.HTTP_TOOKEN, token);
+                    getAllBDInfoFromServer();//获取平台的北斗号
+                    getBindingWatchFromServer();//获取当前手持机绑定的手表
+                    getAllPersonInfoBean();
+                } else {
+                    showToast("Token获取失败");
+                }
 
-    private class AyncLoginTask extends AsyncTask<Object, Integer, Boolean> {
+            }
+
+            @Override
+            protected void onFailed() {
+                showToast(getString(R.string.net_request_fail));
+            }
+        });
+    }
+
+    /**
+     * 获取全员信息
+     */
+
+    private void getAllPersonInfoBean() {
+        Observable<AllPersonInfoBean> allPersonCall = SLMRetrofit.getInstance().getApi().getAllPersonCall();
+        allPersonCall.compose(new ThreadSwitchTransformer<AllPersonInfoBean>()).subscribe(new CallbackListObserver<AllPersonInfoBean>() {
+            @Override
+            protected void onSucceed(AllPersonInfoBean bean) {
+                if (bean.getCode() == 0) {
+                    //全员信息的集合
+                    mHttpRequstInfos = bean.getData();
+                    if (mHttpRequstInfos != null && mHttpRequstInfos.size() > 0) {
+                        // 执行数据库写入操作
+                        new ProgressTask().execute();
+                    }else {
+                        showToast("获取人员数据为空");
+                    }
+                } else {
+                    LogUtil.e(bean.getMessage());
+                    showToast("获取全员信息失败,message==" + bean.getMessage());
+                }
+            }
+
+            @Override
+            protected void onFailed() {
+                cancelProgressDialog();
+                showToast(getString(R.string.net_request_fail));
+            }
+        });
+    }
+
+    private class ProgressTask extends AsyncTask<Object, Integer, Boolean> {
         private boolean isInitMax = false;
-//        private String mDipperNum;
 
         @Override
         protected void onPreExecute() {
             ShowProgressDialog();
-//            mDipperNum = BaseUtils.getDipperNum(LoginActivity.this);
         }
 
         @Override
         protected Boolean doInBackground(Object[] params) {
             boolean isSuccess = false;
-            try {
-                String rev = null;
-                Integer[] values = new Integer[2];
-                if ("".equals(SpUtils.getString(Constants.HTTP_TOOKEN, ""))) {
-                   // LogUtil.e("准备登录");
-                    String token = NetUtils.doLoginClient(et_user_name.getText().toString().trim(), et_user_password.getText().toString().trim());
-                    if (token != null) {
-                        //LogUtil.e("登录成功Token不为空");
-                        CommonDBOperator.deleteAllItems(httpPerDao);
-                        CommonDBOperator.deleteAllItems(mBdNumDao);
-                        CommonDBOperator.deleteAllItems(mLocPersonDao);
-                        SpUtils.putString(Constants.HTTP_TOOKEN, token);
-                        getAllBDInfoFromServer();//获取平台的北斗号
-                        getBindingWatchFromServer();//获取当前手持机绑定的手表
-                        rev = NetUtils.doHttpGetClient(token, Constants.USER_PATH);
-                        //LogUtil.e("登录成功rev=="+rev);
-                        if (rev != null) {
-                            JSONObject obj = new JSONObject(rev);
-                            int code = obj.getInt("code");
-                            if (code == 0) {
-                                String data = obj.getString("data");
-                                List<HttpRequstInfo> list = new Gson().fromJson(data, new TypeToken<List<HttpRequstInfo>>() {
-                                }.getType());
-                                values[0] = list.size() + mLocalBDNums.size();//总进度
-                                LogUtil.d("size : " + list.size()+"mLocalBDNums:"+ mLocalBDNums.size());
-                                int delay = 40 * 100 / (list.size()+ mLocalBDNums.size());
-                                int counter = 0;
-                                for (HttpRequstInfo info : list) {
-                                    counter++;
-                                    values[1] = counter;
-                                    publishProgress(values);
-                                    CommonDBOperator.saveToDB(httpPerDao, translationItem(info));
-                                    Thread.sleep(delay);
-                                }
-
-                                for (LocalBDNum localBDNum : mLocalBDNums){
-                                    counter++;
-                                    values[1]=counter;
-                                    publishProgress(values);
-                                    CommonDBOperator.saveToDB(mBdNumDao, localBDNum);
-                                    //上传到服务
-                                    Thread.sleep(delay);
-                                }
-                                try {//上传到服务接口
-                                    if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
-                                        SearchLocMapApplication.getInstance().getUploadService().updateBDNum(mNumList);
-                                    }else {
-                                        SpUtils.putString(Constants.HTTP_TOOKEN, "");
-                                        return false;
-
-                                    }
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
-                                }
-                                isSuccess = true;
-                                list.clear();
-                                mLocalBDNums.clear();
-
-                            }
-                        }else {
-                            isSuccess = false;
-                        }
-                    }
+            Integer[] values = new Integer[2];
+            values[0] = mHttpRequstInfos.size() + mLocalBDNums.size();
+            publishProgress(values[0]);
+            int delay = 4000 / values[0];
+            int counter = 0;
+            for (HttpRequstInfo info : mHttpRequstInfos) {
+                counter++;
+                values[1] = counter;
+                publishProgress(values);
+                CommonDBOperator.saveToDB(httpPerDao, translationItem(info));
+                try {
+                    Thread.sleep(delay);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
+
+            for (LocalBDNum localBDNum : mLocalBDNums) {
+                counter++;
+                values[1] = counter;
+                publishProgress(values);
+                CommonDBOperator.saveToDB(mBdNumDao, localBDNum);
+                try {
+                    Thread.sleep(delay);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (counter == values[0]) {
+                isSuccess = true;
+            }
+            mHttpRequstInfos.clear();
+            mLocalBDNums.clear();
             return isSuccess;
         }
 
@@ -219,12 +244,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {
-            if (result) {
+        protected void onPostExecute(Boolean isSuccess) {
+            if (isSuccess) {
                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 LoginActivity.this.finish();
-                //记录初始的本机北斗号
-                SpUtils.putString(Constants.BD_NUM_lOC_DEF, BaseUtils.getDipperNum(LoginActivity.this));
             } else {
                 showToast(getString(R.string.net_request_fail));
             }
@@ -232,13 +255,119 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         }
     }
 
+//    private class AyncLoginTask extends AsyncTask<Object, Integer, Boolean> {
+//        private boolean isInitMax = false;
+////        private String mDipperNum;
+//
+//        @Override
+//        protected void onPreExecute() {
+//            ShowProgressDialog();
+////            mDipperNum = BaseUtils.getDipperNum(LoginActivity.this);
+//        }
+//
+//        @Override
+//        protected Boolean doInBackground(Object[] params) {
+//            boolean isSuccess = false;
+//            try {
+//                String rev = null;
+//                Integer[] values = new Integer[2];
+//                if ("".equals(SpUtils.getString(Constants.HTTP_TOOKEN, ""))) {
+//                    // LogUtil.e("准备登录");
+//                    String token = NetUtils.doLoginClient(et_user_name.getText().toString().trim(), et_user_password.getText().toString().trim());
+//                    if (token != null) {
+//                        //LogUtil.e("登录成功Token不为空");
+//                        CommonDBOperator.deleteAllItems(httpPerDao);
+//                        CommonDBOperator.deleteAllItems(mBdNumDao);
+//                        CommonDBOperator.deleteAllItems(mLocPersonDao);
+//                        SpUtils.putString(Constants.HTTP_TOOKEN, token);
+//                        getAllBDInfoFromServer();//获取平台的北斗号
+//                        getBindingWatchFromServer();//获取当前手持机绑定的手表
+//                        rev = NetUtils.doHttpGetClient(token, Constants.USER_PATH);
+//                        //LogUtil.e("登录成功rev=="+rev);
+//                        if (rev != null) {
+//                            JSONObject obj = new JSONObject(rev);
+//                            int code = obj.getInt("code");
+//                            if (code == 0) {
+//                                String data = obj.getString("data");
+//                                List<com.lhzw.searchlocmap.bean.HttpRequstInfo> list = new Gson().fromJson(data, new TypeToken<List<com.lhzw.searchlocmap.bean.HttpRequstInfo>>() {
+//                                }.getType());
+//                                values[0] = list.size() + mLocalBDNums.size();//总进度
+//                                LogUtil.d("size : " + list.size() + "mLocalBDNums:" + mLocalBDNums.size());
+//                                int delay = 40 * 100 / (list.size() + mLocalBDNums.size());
+//                                int counter = 0;
+//                                for (HttpRequstInfo info : list) {
+//                                    counter++;
+//                                    values[1] = counter;
+//                                    publishProgress(values);
+//                                    CommonDBOperator.saveToDB(httpPerDao, translationItem(info));
+//                                    Thread.sleep(delay);
+//                                }
+//
+//                                for (LocalBDNum localBDNum : mLocalBDNums) {
+//                                    counter++;
+//                                    values[1] = counter;
+//                                    publishProgress(values);
+//                                    CommonDBOperator.saveToDB(mBdNumDao, localBDNum);
+//                                    //上传到服务
+//                                    Thread.sleep(delay);
+//                                }
+//                                try {//上传到服务接口
+//                                    if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
+//                                        SearchLocMapApplication.getInstance().getUploadService().updateBDNum(mNumList);
+//                                    } else {
+//                                        SpUtils.putString(Constants.HTTP_TOOKEN, "");
+//                                        return false;
+//
+//                                    }
+//                                } catch (RemoteException e) {
+//                                    e.printStackTrace();
+//                                }
+//                                isSuccess = true;
+//                                list.clear();
+//                                mLocalBDNums.clear();
+//
+//                            }
+//                        } else {
+//                            isSuccess = false;
+//                        }
+//                    }
+//                }
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            return isSuccess;
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(Integer[] values) {
+//            if (!isInitMax) {
+//                progress.setMaxSeekBar(values[0]);
+//                isInitMax = true;
+//            } else {
+//                progress.setSeekBar(values[1], values[1] * 100 / values[0]);
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Boolean result) {
+//            if (result) {
+//                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+//                LoginActivity.this.finish();
+//            } else {
+//                showToast(getString(R.string.net_request_fail));
+//            }
+//            cancelProgressDialog();
+//        }
+//    }
+
     /**
      * 查找已绑定的手表   解决清除本地数据后登陆  无法解除绑定的问题
      */
     private void getBindingWatchFromServer() {
-       // String bdNum = BaseUtils.getDipperNum(LoginActivity.this);
         String mac = BaseUtils.getMacFromHardware();
-        if(TextUtils.isEmpty(mac)){
+        if (TextUtils.isEmpty(mac)) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -251,27 +380,27 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         observable.compose(new ThreadSwitchTransformer<BindingWatchBean>()).subscribe(new CallbackListObserver<BindingWatchBean>() {
             @Override
             protected void onSucceed(BindingWatchBean bean) {
-           if(bean.getCode() == 0){
-               if(bean.getData() != null && bean.getData().size()>0){
-                   //有绑定数据   插入表中
-                   for (int i = 0; i < bean.getData().size(); i++) {
-                       BindingWatchBean.DataBean dataBean = bean.getData().get(i);
-                       LocPersonalInfo perInfo = new LocPersonalInfo();
-                       perInfo.setNum(dataBean.getDeviceNumber());
-                       perInfo.setName("");
-                       CommonDBOperator.saveToDB(mLocPersonDao, perInfo);
+                if (bean.getCode() == 0) {
+                    if (bean.getData() != null && bean.getData().size() > 0) {
+                        //有绑定数据   插入表中
+                        for (int i = 0; i < bean.getData().size(); i++) {
+                            BindingWatchBean.DataBean dataBean = bean.getData().get(i);
+                            LocPersonalInfo perInfo = new LocPersonalInfo();
+                            perInfo.setNum(dataBean.getDeviceNumber());
+                            perInfo.setName("");
+                            CommonDBOperator.saveToDB(mLocPersonDao, perInfo);
 
-                       PersonalInfo personalInfo = new PersonalInfo();
-                       personalInfo.setName("");
-                       personalInfo.setSex("0");
-                       personalInfo.setState(Constants.PERSON_OFFLINE);
-                       CommonDBOperator.saveToDB(mPersonalInfoDao,perInfo);
-                       uploadOffset();
-                   }
-               }
-            }else {
-             showToast("请求失败=="+bean.getCode());
-           }
+                            PersonalInfo personalInfo = new PersonalInfo();
+                            personalInfo.setName("");
+                            personalInfo.setSex("0");
+                            personalInfo.setState(Constants.PERSON_OFFLINE);
+                            CommonDBOperator.saveToDB(mPersonalInfoDao, perInfo);
+                            uploadOffset();
+                        }
+                    }
+                } else {
+                    showToast("请求失败==" + bean.getCode());
+                }
             }
 
             @Override
@@ -281,6 +410,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         });
 
     }
+
     /**
      * 重新设置ID值
      */
@@ -293,7 +423,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
     private List<LocalBDNum> mLocalBDNums = new ArrayList<>();
-    private List<BDNum> mNumList =new ArrayList<>();//准备上传服务的北斗bean集合
+    private List<BDNum> mNumList = new ArrayList<>();//准备上传服务的北斗bean集合
+
     /**
      * 获取北斗号信息  send =1 传服务 send=0 设置sp
      */
@@ -303,51 +434,69 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         observable.compose(new ThreadSwitchTransformer<AllBDInfosBean>()).subscribe(new CallbackListObserver<AllBDInfosBean>() {
             @Override
             protected void onSucceed(AllBDInfosBean bean) {
-                if(bean!=null){
-                    if(bean.getCode()==0){
+                if (bean != null) {
+                    if (bean.getCode() == 0) {
                         //请求成功
-                        if(bean.getData()!=null && bean.getData().size()>0){
+                        if (bean.getData() != null && bean.getData().size() > 0) {
                             //有数据
-                            for (int i = 0; i <bean.getData().size() ; i++) {
+                            for (int i = 0; i < bean.getData().size(); i++) {
                                 AllBDInfosBean.DataBean dataBean = bean.getData().get(i);
 
-                                if ("1".equals(dataBean.getSend())||"1".equals(dataBean.getReceive())){
+                                if ("1".equals(dataBean.getSend())) {
                                     BDNum num = new BDNum(dataBean.getBdNumber(), Constants.TX_JZH);
                                     mNumList.add(num);//上传到服务接口的BdNum
-                                }else if("0".equals(dataBean.getSend())||"0".equals(dataBean.getReceive())) {
+                                }
+                                if ("1".equals(dataBean.getReceive())) {
                                     SpUtils.putString(Constants.UPLOAD_JZH_NUM, dataBean.getBdNumber());
                                     try {
-                                        if(SearchLocMapApplication.getInstance().getUploadService()!=null){
-                                            SearchLocMapApplication.getInstance().getUploadService().setNum(Constants.TX_JZH,dataBean.getBdNumber());
-                                        }else {
+                                        if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
+                                            SearchLocMapApplication.getInstance().getUploadService().setNum(Constants.TX_JZH, dataBean.getBdNumber());
+                                        } else {
                                             SpUtils.putString(Constants.HTTP_TOOKEN, "");
-                                            return;
+                                            ToastUtil.showToast("应急通信服务连接失败,退出APP");
+                                            finish();
                                         }
 
                                     } catch (RemoteException e) {
                                         e.printStackTrace();
                                         SpUtils.putString(Constants.HTTP_TOOKEN, "");
-                                        return;
+                                        ToastUtil.showToast("北斗服务连接失败,退出APP");
+                                        finish();
                                     }
                                 }
                                 //添加到本地数据库
-                                LocalBDNum localBDNum = new LocalBDNum(dataBean.getBdNumber(), dataBean.getSend(),dataBean.getReceive());
+                                LocalBDNum localBDNum = new LocalBDNum(dataBean.getBdNumber(), dataBean.getSend(), dataBean.getReceive());
                                 mLocalBDNums.add(localBDNum);
                             }
+                            try {//上传到服务接口
+                                if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
+                                    SearchLocMapApplication.getInstance().getUploadService().updateBDNum(mNumList);
+                                } else {
+                                    SpUtils.putString(Constants.HTTP_TOOKEN, "");
+                                    ToastUtil.showToast("北斗服务连接失败,退出APP");
+                                    finish();
+                                }
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                                SpUtils.putString(Constants.HTTP_TOOKEN, "");
+                                ToastUtil.showToast("北斗服务连接失败,退出APP");
+                                finish();
+                            }
+
                         }
-                    }else {
-                        showToast(bean.getMessage()+"");
+                    } else {
+                        showToast(bean.getMessage() + "");
                     }
-                }else {
+                } else {
                     showToast("服务器未能获取北斗平台的信息");
                 }
             }
 
             @Override
             protected void onFailed() {
-
+                showToast(getString(R.string.net_request_fail));
             }
-         });
+        });
     }
 
     private HttpPersonInfo translationItem(HttpRequstInfo item) {
@@ -393,16 +542,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case CANCEL_DIALOG:
-                    cancelProgressDialog();
-                    break;
-            }
-        }
-    };
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

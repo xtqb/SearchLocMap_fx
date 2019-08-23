@@ -1,9 +1,11 @@
 package com.lhzw.searchlocmap.net;
 
 import com.lhzw.searchlocmap.bean.AllBDInfosBean;
+import com.lhzw.searchlocmap.bean.AllPersonInfoBean;
 import com.lhzw.searchlocmap.bean.BaseBean;
 import com.lhzw.searchlocmap.bean.BindingWatchBean;
 import com.lhzw.searchlocmap.bean.NetResponseBean;
+import com.lhzw.searchlocmap.bean.UserInfo;
 
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
@@ -13,19 +15,27 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Created by hecuncun on 2019/5/13
  */
 public interface Api {
-//    /**
-//     * 测试登陆接口
-//     * @param loginName
-//     * @param password
-//     * @return
-//     */
-//    @GET("security/login")
-//    Observable<BaseBean<UserInfo>> loginCall(@Query("loginName") String loginName, @Query("password") String password);
+    /**
+     * 登录接口
+     * @param loginName
+     * @param password
+     * @return
+     */
+    @GET("security/login")
+    Observable<BaseBean<UserInfo>> loginCall(@Query("loginName") String loginName, @Query("password") String password);
+
+    /**
+     * 获取全员信息
+     * @return
+     */
+    @GET("security/user")
+    Observable<AllPersonInfoBean> getAllPersonCall();
 
     /**
      * 手持机与手表绑定接口

@@ -112,7 +112,7 @@ public class SearchLocMapApplication extends Application implements View.OnClick
         public void onServiceDisconnected(ComponentName arg0) {
             // TODO Auto-generated method stub
             //断开时  重新绑定
-            Toast.makeText(getApplicationContext(), "北斗服务连接失败", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "应急指挥通信服务连接失败", Toast.LENGTH_LONG).show();
            // getApplicationContext().bindService(mIntent, serviceConnect, Context.BIND_AUTO_CREATE);
             Intent intent = new Intent();
             intent.setAction("com.lhzw.uploadmms.service.UPLOADMMS");
@@ -123,7 +123,7 @@ public class SearchLocMapApplication extends Application implements View.OnClick
         @Override
         public void onServiceConnected(ComponentName arg0, IBinder ibinder) {
             LogUtil.e("北斗服务成功连接");
-            Toast.makeText(getApplicationContext(), "北斗服务成功连接", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "应急指挥通信服务成功连接", Toast.LENGTH_LONG).show();
             uploadEvent = BDUploadEvent.Stub.asInterface(ibinder);
             if(uploadEvent == null) {
                 Log.e("Tag", "null point");
