@@ -198,7 +198,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             boolean isSuccess = false;
             Integer[] values = new Integer[2];
             values[0] = mHttpRequstInfos.size() + mLocalBDNums.size();
-            publishProgress(values[0]);
+            publishProgress(values);
             int delay = 4000 / values[0];
             int counter = 0;
             for (HttpRequstInfo info : mHttpRequstInfos) {

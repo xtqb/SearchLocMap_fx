@@ -498,7 +498,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
                     e.printStackTrace();
                 }
             }
-  LogUtil.e("counter="+counter+"values[0]="+values[0]);
+            LogUtil.e("counter=" + counter + "values[0]=" + values[0]);
             if (counter == values[0]) {
                 isSuccess = true;
             }
