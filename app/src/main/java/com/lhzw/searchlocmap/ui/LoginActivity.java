@@ -69,8 +69,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         SearchLocMapApplication.getInstance().bindService();
-        //记录初始的本机北斗号
-        SpUtils.putString(Constants.BD_NUM_lOC_DEF, BaseUtils.getDipperNum(LoginActivity.this));
         if (!"".equals(SpUtils.getString(Constants.HTTP_TOOKEN, ""))) {
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
