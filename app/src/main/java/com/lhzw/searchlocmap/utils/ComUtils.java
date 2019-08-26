@@ -124,7 +124,7 @@ public class ComUtils {
 
             case Constants.TX_FIREPOIT:
                 RequestFirePointBean firePointBean = new RequestFirePointBean(Constants.CMD_FIRE_POINT, "handsetsession", "HANDSET",
-                        BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
+                        BaseUtils.getMacFromHardware(), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
                         SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
                         System.currentTimeMillis())), BaseUtils.getFirePointList(infoBean));
                 LogUtil.e("TX_FIREPOIT   " + new Gson().toJson(firePointBean));
@@ -133,7 +133,7 @@ public class ComUtils {
                 break;
             case Constants.TX_COMMON:
                 RequestCommonBean commonBean = new RequestCommonBean(Constants.CMD_COMMON, "handsetsession", "HANDSET",
-                        BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
+                        BaseUtils.getMacFromHardware(), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
                         SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
                         System.currentTimeMillis())), BaseUtils.getWatchLocList(infoBean, "normal"));
                 LogUtil.e("TX_COMMON   " + new Gson().toJson(commonBean));
@@ -141,7 +141,7 @@ public class ComUtils {
                 break;
             case Constants.TX_SOS:
                 RequestCommonBean sosBean = new RequestCommonBean(Constants.CMD_SOS, "handsetsession", "HANDSET",
-                        BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
+                        BaseUtils.getMacFromHardware(), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
                         SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
                         System.currentTimeMillis())), BaseUtils.getWatchLocList(infoBean, "sosing"));
                 LogUtil.e("TX_SOS   " + new Gson().toJson(sosBean));
@@ -149,13 +149,13 @@ public class ComUtils {
                 break;
             case Constants.TX_MMS:
                 RequestMMSBean request = new RequestMMSBean(Constants.CMD_SMS, "handsetsession", "HANDSET", String.valueOf(infoBean.getTime()),
-                        BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), infoBean.getBody());
+                        BaseUtils.getMacFromHardware(), infoBean.getBody());
                 LogUtil.e("TX_MMS   " + new Gson().toJson(request));
                 uploadToNet(request, infoBean);
                 break;
             case Constants.TX_FIRELINE:
                 RequestFireLineBean fireLineBean = new RequestFireLineBean(Constants.CMD_FIRELINE, "handsetsession", "HANDSET",
-                        BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
+                        BaseUtils.getMacFromHardware(), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
                         SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
                         System.currentTimeMillis())), BaseUtils.sdf.format(infoBean.getTime()), BaseUtils.getFirePoint(infoBean));
                 LogUtil.e("TX_FIRELINE   " + new Gson().toJson(fireLineBean));

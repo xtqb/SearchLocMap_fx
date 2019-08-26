@@ -110,11 +110,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                             protected void onSucceed(BaseBean bean) {
                                 if("0".equals(bean.getCode())){
                                     //上传成功
-                                    ToastUtil.showToast("mac与北斗绑定关系上传成功");
+                                    ToastUtil.showToast("北斗卡切换成功");
                                     mIntent.putExtra("state",0);
                                     sendBroadcast(mIntent);
                                 }else {
-                                    ToastUtil.showToast("mac与北斗绑定关系上传失败");
+                                    ToastUtil.showToast("北斗卡切换失败,正在尝试使用北斗通信服务上传");
                                     mIntent.putExtra("state",1);
                                     sendBroadcast(mIntent);
                                 }
@@ -122,7 +122,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
                             @Override
                             protected void onFailed() {
-                                ToastUtil.showToast("上传失败");
+                                ToastUtil.showToast("北斗卡切换失败,正在尝试使用北斗通信服务上传");
                                 mIntent.putExtra("state",1);
                                 sendBroadcast(mIntent);
                             }
@@ -145,7 +145,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
             }
         }else {
-            ToastUtil.showToast("检测到本机北斗号未改变");
+            //ToastUtil.showToast("检测到本机北斗号未改变");
+            LogUtil.e("检测到本机北斗号未改变");
         }
     }
 

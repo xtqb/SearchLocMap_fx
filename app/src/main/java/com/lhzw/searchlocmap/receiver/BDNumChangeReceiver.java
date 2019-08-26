@@ -29,11 +29,9 @@ public class BDNumChangeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         mContext = context;
-        LogUtil.e("收到北斗内外置切换广播");
-
         //收到广播后去拿到北斗号
         String bdNum = BaseUtils.getDipperNum(mContext);
-        LogUtil.e("切换后本机北斗号=="+bdNum);
+        LogUtil.e("收到了北斗内外置切换广播,切换后本机北斗号=="+bdNum);
         //本地北斗为空 不处理
         if (TextUtils.isEmpty(bdNum)) {
             ToastUtil.showToast("北斗卡号为空,请先安装北斗卡,并打开北斗开关");
@@ -57,11 +55,11 @@ public class BDNumChangeReceiver extends BroadcastReceiver {
                         protected void onSucceed(BaseBean bean) {
                             if ("0".equals(bean.getCode())) {
                                 //上传成功
-                                ToastUtil.showToast("mac与北斗绑定关系上传成功");
+                                ToastUtil.showToast("北斗卡切换成功");
                                 mIntent.putExtra("state",0);
                                 mContext.sendBroadcast(mIntent);
                             } else {
-                                ToastUtil.showToast("mac与北斗绑定关系上传失败");
+                                ToastUtil.showToast("北斗卡切换失败,正在尝试使用北斗通信服务上传");
                                 mIntent.putExtra("state",1);
                                 mContext.sendBroadcast(mIntent);
                             }
@@ -69,7 +67,7 @@ public class BDNumChangeReceiver extends BroadcastReceiver {
 
                         @Override
                         protected void onFailed() {
-                            ToastUtil.showToast("上传失败");
+                            ToastUtil.showToast("北斗卡切换失败,正在尝试使用北斗通信服务上传");
                             mIntent = new Intent(Constants.BD_NUM_ISCHANGING);
                             mIntent.putExtra("state",1);
                             mContext.sendBroadcast(mIntent);
@@ -77,7 +75,7 @@ public class BDNumChangeReceiver extends BroadcastReceiver {
                     });
         } else {
                 //无网络  上传 北斗服务
-             LogUtil.e("打开北斗服务");
+              LogUtil.e("使用北斗通信服务上传");
               mIntent.putExtra("state",1);
               mContext.sendBroadcast(mIntent);
 
