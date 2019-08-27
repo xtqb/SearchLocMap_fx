@@ -228,7 +228,7 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         LogUtil.e("search watch ...");
-        sendCMDSearch(BaseUtils.stringtoByteArr(list.get(position).getNum()));
+        sendCMDSearch(BaseUtils.getPerRegisterByteArr(list.get(position).getNum()));
         Toast.makeText(mContext, "发送成功", Toast.LENGTH_SHORT).show();
         return true;
     }
