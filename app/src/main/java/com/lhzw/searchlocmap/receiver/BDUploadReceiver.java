@@ -146,6 +146,8 @@ public class BDUploadReceiver extends BroadcastReceiver {
                             Intent sinalIntent = new Intent(Constants.BD_SIG_ACTION);
                             SearchLocMapApplication.getContext().sendBroadcast(sinalIntent);
                             Log.e("Tag", "value = " + tmp);
+                            mHandler.removeMessages(0x0001);
+                            mHandler.sendEmptyMessageDelayed(0x0001, 8 * 1000);
                         }
                     }
                 }
@@ -159,6 +161,25 @@ public class BDUploadReceiver extends BroadcastReceiver {
             doTask();
         }
     }
+
+    private static final Handler mHandler = new Handler(){
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case 0x0001:
+                    for(int pos = 0; pos < values.length; pos ++){
+                        values[pos] = 0f;
+                    }
+                    Intent bgsinal_list = new Intent(Constants.BD_SIGNAL_LIST);
+                    bgsinal_list.putExtra("values", values);
+                    SearchLocMapApplication.getContext().sendBroadcast(bgsinal_list);
+                    BDSignal.value = 0;
+                    Intent sinalIntent = new Intent(Constants.BD_SIG_ACTION);
+                    SearchLocMapApplication.getContext().sendBroadcast(sinalIntent);
+                    Log.e("Tag", "value = " + 0);
+                    break;
+            }
+        };
+    };
 
     private static int obtainMaxValue(Bundle bundle) {
         int[] maxArr = new int[3];
