@@ -34,12 +34,12 @@ public class BDNumChangeReceiver extends BroadcastReceiver {
         LogUtil.e("收到了北斗内外置切换广播,切换后本机北斗号=="+bdNum);
         //本地北斗为空 不处理
         if (TextUtils.isEmpty(bdNum)) {
-            ToastUtil.showToast("北斗卡号为空,请先安装北斗卡,并打开北斗开关");
+            //ToastUtil.showToast("北斗卡号为空,请先安装北斗卡,并打开北斗开关");
             return;
         }
         //本地北斗未改变  不处理
         if (bdNum.equals(SpUtils.getString(Constants.BD_NUM_lOC_DEF, ""))) {
-            ToastUtil.showToast("北斗卡号未改变");
+          //  ToastUtil.showToast("北斗卡号未改变");
             return;
         }
         mIntent = new Intent(Constants.BD_NUM_ISCHANGING);
