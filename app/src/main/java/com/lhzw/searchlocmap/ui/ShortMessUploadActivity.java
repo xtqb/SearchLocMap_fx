@@ -437,6 +437,7 @@ public class ShortMessUploadActivity extends Activity implements
 					case 2:
 						im_bd_signal.setImageLevel(2);
 						break;
+					case 0:
 					case 1:
 						im_bd_signal.setImageLevel(0);
 						break;

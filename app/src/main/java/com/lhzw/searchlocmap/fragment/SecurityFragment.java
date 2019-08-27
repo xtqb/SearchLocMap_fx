@@ -2982,6 +2982,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             float[] values = intent.getFloatArrayExtra("values");
             his_bar.refleshView(values);
             switch (BDSignal.value) {
+                case 0:
                 case 1:
                     tv_signal_level.setText(getString(R.string.bd_signal_level_bad));
                     tv_signal_level.setBackgroundColor(getActivity().getResources().getColor(R.color.red));
