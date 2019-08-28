@@ -91,11 +91,11 @@ public class BDUploadReceiver extends BroadcastReceiver {
                         String num = intent.getStringExtra("bdNum");//发送者的北斗号
                         int msg_Id = intent.getIntExtra("msg_Id", -1);//平台的人的ID
                         String str = intent.getStringExtra("result");//内容
-                        int platform = intent.getIntExtra("platform",Constants.TX_BJ);//信息来源
+                        int platform = intent.getIntExtra("platform", Constants.TX_BJ);//信息来源
 
-                        LogUtil.e("收到短消息,发送者的北斗号num=="+num+"<===>msg_Id=="+msg_Id+"<==>isPlatform=="+platform);
+                        LogUtil.e("收到短消息,发送者的北斗号num==" + num + "<===>msg_Id==" + msg_Id + "<==>isPlatform==" + platform);
                         //消息来源于平台
-                        if (platform==Constants.TX_JZH) {
+                        if (platform == Constants.TX_JZH) {
                             List<HttpPersonInfo> dipList = CommonDBOperator.queryByKeys(httpDao, "id", msg_Id + "");//这个查到的是平台发的消息
                             if (dipList != null && dipList.size() > 0) {
                                 Log.e("Tag", "searchLocMap receive message  type 2  " + num);
@@ -162,11 +162,11 @@ public class BDUploadReceiver extends BroadcastReceiver {
         }
     }
 
-    private static final Handler mHandler = new Handler(){
+    private static final Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
                 case 0x0001:
-                    for(int pos = 0; pos < values.length; pos ++){
+                    for (int pos = 0; pos < values.length; pos++) {
                         values[pos] = 0f;
                     }
                     Intent bgsinal_list = new Intent(Constants.BD_SIGNAL_LIST);
@@ -178,7 +178,9 @@ public class BDUploadReceiver extends BroadcastReceiver {
                     Log.e("Tag", "value = " + 0);
                     break;
             }
-        };
+        }
+
+        ;
     };
 
     private static int obtainMaxValue(Bundle bundle) {
@@ -202,37 +204,37 @@ public class BDUploadReceiver extends BroadcastReceiver {
                 }
             }
             int total = maxArr[0] + maxArr[1] + maxArr[2];
-            if(Settings.Global.getInt(SearchLocMapApplication.getInstance().getContentResolver(), SPConstants.BD_OUTLINK_MODE) == Constants.BD_OUTLINK_ON) {
-                if(total >= 9) {
+            if (Settings.Global.getInt(SearchLocMapApplication.getInstance().getContentResolver(), SPConstants.BD_OUTLINK_MODE) == Constants.BD_OUTLINK_ON) {
+                if (total >= 9) {
                     strength = 4;
-                } else if(total< 9 && total >= 5){
+                } else if (total < 9 && total >= 5) {
                     strength = 3;
-                } else if(total< 5 && total >= 2) {
+                } else if (total < 5 && total >= 2) {
                     strength = 2;
                 } else {
                     strength = 1;
                 }
                 BDSignal.STANDARD_VALUE = 1;
             } else {
-                if(total >= 9) {
+                if (total >= 9) {
                     strength = 4;
                 } else if (total == 8 || total == 7) {
                     strength = 3;
-                } else if(total == 6) {
-                    if((maxArr[0] == 4 && maxArr[1] == 1 && maxArr[2] == 1) ||
+                } else if (total == 6) {
+                    if ((maxArr[0] == 4 && maxArr[1] == 1 && maxArr[2] == 1) ||
                             (maxArr[0] == 1 && maxArr[1] == 4 && maxArr[2] == 1) || (
                             maxArr[0] == 1 && maxArr[1] == 1 && maxArr[2] == 4)) {
                         strength = 2;
                     } else {
                         strength = 3;
                     }
-                } else if(total == 5) {
-                    if((maxArr[0] == 3 && maxArr[1] == 2 && maxArr[2] == 0) ||
+                } else if (total == 5) {
+                    if ((maxArr[0] == 3 && maxArr[1] == 2 && maxArr[2] == 0) ||
                             (maxArr[0] == 3 && maxArr[1] == 0 && maxArr[2] == 2) ||
                             (maxArr[0] == 2 && maxArr[1] == 3 && maxArr[2] == 0) ||
                             (maxArr[0] == 2 && maxArr[1] == 0 && maxArr[2] == 3) ||
                             (maxArr[0] == 0 && maxArr[1] == 2 && maxArr[2] == 3) ||
-                            (maxArr[0] == 0 && maxArr[1] == 3 && maxArr[2] == 2)){
+                            (maxArr[0] == 0 && maxArr[1] == 3 && maxArr[2] == 2)) {
                         strength = 2;
                     } else {
                         strength = 1;
@@ -245,7 +247,7 @@ public class BDUploadReceiver extends BroadcastReceiver {
         } catch (NumberFormatException e) {
             // TODO Auto-generated catch block
             return strength;
-        }catch (Settings.SettingNotFoundException e) {
+        } catch (Settings.SettingNotFoundException e) {
             // TODO Auto-generated catch block
             return strength;
         }

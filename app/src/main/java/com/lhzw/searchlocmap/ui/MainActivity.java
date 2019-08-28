@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -68,6 +69,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private ShowAlertDialog alertdialog;
     private AlerDialogshow dialog;
     private BDManager mBDManager;
+    private PowerManager.WakeLock wakeLock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +80,13 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         initData();
         setListener();
         initBDChangeCheck();
+        initWakeLock();
+    }
+
+    private void initWakeLock(){
+        PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyTAG");
+        wakeLock.acquire();
     }
 
     /**
@@ -397,5 +406,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     protected void onDestroy() {
         super.onDestroy();
         ComUtils.getInstance().unRegisterBroadcastReceiver();
+        if(wakeLock != null) {
+            wakeLock.release();
+        }
+
     }
 }

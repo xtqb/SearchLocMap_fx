@@ -145,21 +145,21 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
             } else if (isVisible && !isRunning && intent.getAction().equals(Constants.BD_SIGNAL_LIST)) {
                 taskQueue.add(intent);
             }
-            if(!isRunning) {
+            if (!isRunning) {
                 doTask();
             }
         }
     }
 
-    private void doTask(){
-        if(!isRunning && !taskQueue.isEmpty()) {
+    private void doTask() {
+        if (!isRunning && !taskQueue.isEmpty()) {
             isRunning = true;
             taskHandler.post(new Action());
         }
     }
 
 
-    private class Action implements Runnable{
+    private class Action implements Runnable {
         @Override
         public void run() {
             final Intent intent = taskQueue.get(0);
@@ -175,7 +175,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
                 PlotItemInfo plot = new PlotItemInfo("", -1, time, fireLine, Constants.TX_SYNCFL, 0, Constants.TX_JZH, Constants.UPLOAD_STATE_ON);
                 CommonDBOperator.saveToDB(syncDao, plot);
                 //绘制下发火线
-                if(isVisible && getActivity() != null) {
+                if (isVisible && getActivity() != null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -188,7 +188,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
             } else if (intent.getAction().equals(Constants.ACTION_FEEDBACK)) {
 //                updateFeedback(intent.getIntExtra("sendID", -1));
             } else if (intent.getAction().equals(Constants.BD_SIGNAL_LIST)) {
-                if(getActivity() != null) {
+                if (getActivity() != null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
