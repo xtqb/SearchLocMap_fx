@@ -183,13 +183,13 @@ public class ShortMessUploadActivity extends Activity implements
 			mComUtils.uploadBena(item2);
 			item2 = null;
 		}
-		if(bdNum != null) {
-			UploadInfoBean item3 = new UploadInfoBean(Constants.TX_BJ, TX_MMS,
-					System.currentTimeMillis(), body, System.currentTimeMillis()+"", 1 + "", latLon, SpUtils.getLong(
-					SPConstants.LOC_TIME, System.currentTimeMillis()), 1, bdNum, 2, -1, null);//接收者的北斗号
-			mComUtils.uploadBena(item3);
-			item3 = null;
-		}
+//		if(bdNum != null) {
+//			UploadInfoBean item3 = new UploadInfoBean(Constants.TX_BJ, TX_MMS,
+//					System.currentTimeMillis(), body, System.currentTimeMillis()+"", 1 + "", latLon, SpUtils.getLong(
+//					SPConstants.LOC_TIME, System.currentTimeMillis()), 1, bdNum, 2, -1, null);//接收者的北斗号
+//			mComUtils.uploadBena(item3);
+//			item3 = null;
+//		}
 
 		//showToast(getString(R.string.mms_send_data));
 		try {

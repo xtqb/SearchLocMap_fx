@@ -95,17 +95,17 @@ public class ComUtils {
         }
     }
 
-    private void bdCom() {
-        try {
-            List<UploadInfoBean> uploadList = new ArrayList<>();
-            uploadList.add(uploadQueue.poll());
-            if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
-                SearchLocMapApplication.getInstance().getUploadService().doTask(uploadList);
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void bdCom() {
+//        try {
+//            List<UploadInfoBean> uploadList = new ArrayList<>();
+//            uploadList.add(uploadQueue.poll());
+//            if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
+//                SearchLocMapApplication.getInstance().getUploadService().doTask(uploadList);
+//            }
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public void netCom(UploadInfoBean infoBean) {
         if(!isNetConnection) {
@@ -167,13 +167,13 @@ public class ComUtils {
         //uploadQueue.add(infoBean)
     }
 
-    private void autoCom() {
-        if (BaseUtils.isNetConnected(SearchLocMapApplication.getContext())) {
-//            netCom();
-        } else {
-            bdCom();
-        }
-    }
+//    private void autoCom() {
+//        if (BaseUtils.isNetConnected(SearchLocMapApplication.getContext())) {
+////            netCom();
+//        } else {
+//            bdCom();
+//        }
+//    }
 
     public void uploadToNet(Object request, final UploadInfoBean infoBean){
         //短消息
