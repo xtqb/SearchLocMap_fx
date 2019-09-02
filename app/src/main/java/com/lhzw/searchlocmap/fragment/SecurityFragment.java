@@ -293,6 +293,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 //    private ImageView mIvSwitchRg;
     private FrameLayout mFlContainer;
     private ImageView mIvOpen;
+    private boolean isTimer;
+    private int uploadCounter;
 
 
     private void initScrollView() {
@@ -1024,13 +1026,17 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 break;
             case R.id.dialog_timer_close:
                 try {
-                    timerCloseDialog.dismiss();
-                    showSearchToast(getString(R.string.timer_search_end_note));
-                    isTimerRuning = false;
-                    rl_upload_inner.setEnabled(true);
-                    stopAnimation();
-                    note_content_tv.setText("");
-                    mHandler.removeMessages(SEARCH);
+                    if(isTimer) {
+                        tv_update_leisure.setText(getString(R.string.update_state_note));
+                        timerCloseDialog.dismiss();
+                        timerCloseDialog = null;
+                        showSearchToast(getString(R.string.timer_search_end_note));
+                        isTimer = false;
+                        rl_upload_inner.setEnabled(true);
+                        stopAnimation();
+                        note_content_tv.setText("");
+                        mHandler.removeMessages(SEARCH);
+                    }
 //                    SpUtils.putBoolean(SPConstants.COMMON_SWITCH, false);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1079,6 +1085,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 uploadDetail = null;
                 break;
             case R.id.rl_upload_inner:
+                if(isTimer) {
+                    timerCloseDialog = new ShowTimerCloseDialog(getActivity());
+                    timerCloseDialog.show();
+                    timerCloseDialog.setListener(this);
+                    return;
+                }
+
                 im_upload_state_cancel.setText(getString(R.string.upload_state_cancel_monitor));
                 BaseUtils.flipAnimatorXViewShow(rl_upload_outer, rl_upload_state_progress, 200);
                 scanani_view.startAnimation();
@@ -1111,6 +1124,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 }
                 break;
             case R.id.rl_upload_time_select:
+                if(isTimer) {
+                    timerCloseDialog = new ShowTimerCloseDialog(getActivity());
+                    timerCloseDialog.show();
+                    timerCloseDialog.setListener(SecurityFragment.this);
+                    return;
+                }
+
                 timerSearch();
                 mScrollLayout.setToExit();
                 mScrollLayout.getBackground().setAlpha(0);
@@ -1472,6 +1492,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         bdByteArr = null;
         isSettingEnable = false;
         syncFLId = -1;
+        isTimer = false;
         isShowing = false;
         sos_bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_sos);
         common_bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_common);
@@ -1792,66 +1813,72 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     break;
                 case TIMER_REPORT:
                     //上报搜索信息
-                    if (!isUpload) {
-                        return;
-                    }
-                    List<PersonalInfo> rxList = CommonDBOperator.queryByOrderKey(persondao, "num");
-                    if (rxList != null && rxList.size() > 0) {
-                        Log.e("Tag", "size : " + rxList.size());
-                        String body = "";
-                        String locTime = "";
-                        String register = "";
-                        String offset = "";
-                        int counter = 0;
-                        String local_latlon = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + "," + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
-                        List<UploadInfoBean> uploadList = new ArrayList<>();
-                        for (PersonalInfo item : rxList) {
-                            if (counter == rxList.size() - 1) {
-                                body += item.getLatitude() + "," + item.getLongitude();
-                                locTime += item.getLocTime();
-                                offset += counter;
-                                register += item.getNum();
-                            } else {
-                                body += item.getLatitude() + "," + item.getLongitude() + "-";
-                                locTime += item.getLocTime() + "-";
-                                offset += counter + "-";
-                                register += item.getNum() + "-";
+                    if(isUpload || isTimer) {
+                        List<PersonalInfo> rxList = CommonDBOperator.queryByOrderKey(persondao, "num");
+                        if (rxList != null && rxList.size() > 0) {
+                            Log.e("Tag", "size : " + rxList.size());
+                            String body = "";
+                            String locTime = "";
+                            String register = "";
+                            String offset = "";
+                            int counter = 0;
+                            String local_latlon = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + "," + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
+                            List<UploadInfoBean> uploadList = new ArrayList<>();
+                            for (PersonalInfo item : rxList) {
+                                if (counter == rxList.size() - 1) {
+                                    body += item.getLatitude() + "," + item.getLongitude();
+                                    locTime += item.getLocTime();
+                                    offset += counter;
+                                    register += item.getNum();
+                                } else {
+                                    body += item.getLatitude() + "," + item.getLongitude() + "-";
+                                    locTime += item.getLocTime() + "-";
+                                    offset += counter + "-";
+                                    register += item.getNum() + "-";
+                                }
+                                counter++;
                             }
-                            counter++;
-                        }
-                        UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), body, locTime, offset, local_latlon,
-                                SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, register);
-                        uploadList.add(bean);
-                        if (SpUtils.getInt(SPConstants.SP_BD_MODE, Constants.UOLOAD_STATE_0) == Constants.UOLOAD_STATE_1) {
-                            bean.setTx_type(Constants.TX_QZH);
-                            bean.setNum(SpUtils.getString(Constants.UPLOAD_QZH_NUM, Constants.BD_NUM_DEF));
+                            UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), body, locTime, offset, local_latlon,
+                                    SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, register);
                             uploadList.add(bean);
+                            if (SpUtils.getInt(SPConstants.SP_BD_MODE, Constants.UOLOAD_STATE_0) == Constants.UOLOAD_STATE_1) {
+                                bean.setTx_type(Constants.TX_QZH);
+                                bean.setNum(SpUtils.getString(Constants.UPLOAD_QZH_NUM, Constants.BD_NUM_DEF));
+                                uploadList.add(bean);
+                            }
+                            rxList.clear();
+                            mComUtils.uploadBena(uploadList);
+                            // 写入日志
+                            try {
+                                LogWrite writer = LogWrite.open();
+                                String log = LogWrite.df.format(System.currentTimeMillis()) + " \t data_type = " + Constants.TX_COMMON + " latLons : " + body;
+                                writer.writeLog(log);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            List<UploadInfoBean> uploadList = new ArrayList<>();
+                            String local_latlon = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + "," + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
+                            UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), null, null, null, local_latlon,
+                                    SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, null);
+                            uploadList.add(bean);
+                            mComUtils.uploadBena(uploadList);
                         }
-                        rxList.clear();
-                        mComUtils.uploadBena(uploadList);
-                        // 写入日志
-                        try {
-                            LogWrite writer = LogWrite.open();
-                            String log = LogWrite.df.format(System.currentTimeMillis()) + " \t data_type = " + Constants.TX_COMMON + " latLons : " + body;
-                            writer.writeLog(log);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        List<UploadInfoBean> uploadList = new ArrayList<>();
-                        String local_latlon = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + "," + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
-                        UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), null, null, null, local_latlon,
-                                SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, null);
-                        uploadList.add(bean);
-                        mComUtils.uploadBena(uploadList);
                     }
 
-                    tv_search_state.setText(getString(R.string.upload_data));
-                    tv_upload_state.setText(getString(R.string.upload_state_waiting));
-                    String[] rev = BaseUtils.formatTime(System.currentTimeMillis()).split("  ");
-                    tv_serach_date.setText(rev[0]);
-                    tv_serach_time.setText(rev[1]);
-                    mHandler.sendEmptyMessageDelayed(COMPLETE, 2000);
+                    if(isUpload) {
+                        tv_search_state.setText(getString(R.string.upload_data));
+                        tv_upload_state.setText(getString(R.string.upload_state_waiting));
+                        String[] rev = BaseUtils.formatTime(System.currentTimeMillis()).split("  ");
+                        tv_serach_date.setText(rev[0]);
+                        tv_serach_time.setText(rev[1]);
+                        mHandler.sendEmptyMessageDelayed(COMPLETE, 2000);
+                    }
+                    if(isTimer) {
+                        uploadCounter ++;
+                        tv_update_leisure.setText(getString(R.string.uploading_timer_counter).replace("@", uploadCounter+""));
+                        saveWactchTime();
+                    }
                     break;
                 case SYNC_DELAY_SIGNAL:
                     //延时
@@ -1932,6 +1959,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     tv_serach_date.setText("");
                     tv_serach_time.setText("");
                     tv_update_leisure.setVisibility(View.VISIBLE);
+                    isUpload = false;
                     break;
             }
         }
@@ -2342,8 +2370,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     public void onTimerClick(final long pos) {
         // 定时搜索
         Log.e("Tag", "pos : " + searchTimeArr[(int) pos]);
-        if (!isTimerRuning) {
-            isTimerRuning = true;
+        if (!isTimer) {
+            isTimer = true;
+            tv_update_leisure.setText(getString(R.string.uploading_timer));
+            uploadCounter = 0;
             startAnimation();
 //            SpUtils.putBoolean(SPConstants.COMMON_SWITCH, true);
             delay = Integer.valueOf(searchTimeArr[(int) pos]) * 60 * 1000;

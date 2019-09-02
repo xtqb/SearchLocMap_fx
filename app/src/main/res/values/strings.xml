@@ -55,7 +55,7 @@
     <string name="security_title">安全监控</string>
     <string name="undetermine_title">待定区域:</string>
     <string name="persons_search">上报</string>
-    <string name="auto_search">自动搜索</string>
+    <string name="auto_search">定时上报</string>
     <string name="total_persons_search">搜索功能</string>
     <string name="search_function_select">搜索功能</string>
     <string name="timer_search_note">定时上报已开启，是否退出</string>
@@ -362,6 +362,8 @@
     <string name="upload_state_cancel_monitor">取消监控</string>
     <string name="upload_search_ing">搜索中</string>
     <string name="upload_cancel_search">取消搜索</string>
+    <string name="uploading_timer_counter">正在定时上报中(已上报@次)</string>
+    <string name="uploading_timer">正在定时上报中</string>
 
     <string name="bd_signal_level_excellent">优</string>
     <string name="bd_signal_level_good">良</string>
