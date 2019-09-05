@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -97,6 +98,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         et_user_name = (EditText) findViewById(R.id.et_user_name);
         et_user_password = (EditText) findViewById(R.id.et_user_password);
         bt_login = (Button) findViewById(R.id.bt_login);
+        bt_login.setClickable(true);
         im_name_del = (ImageView) findViewById(R.id.im_name_del);
     }
 
@@ -548,5 +550,30 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             return true;
         }
         return false;
+    }
+
+
+    /** 判断登录是否是快速点击 */
+    private  long  lastClickTime;
+
+    public  boolean isFastDoubleClick() {
+        long time = System.currentTimeMillis();
+        long timeD = time - lastClickTime;
+        if (0 < timeD && timeD < 1000) {
+            return true;
+        }
+        lastClickTime = time;
+        return false;
+    }
+
+    /** 判断触摸时间派发间隔 */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            if (isFastDoubleClick()) {
+                return true;
+            }
+        }
+        return super.dispatchTouchEvent(ev);
     }
 }

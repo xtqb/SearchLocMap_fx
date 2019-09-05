@@ -95,6 +95,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private Intent mIntent;
 
     private void initBDChangeCheck() {
+        LogUtil.e("MAC="+BaseUtils.getMacFromHardware());
         String bdNum = BaseUtils.getDipperNum(this);
         LogUtil.e("初始化本机北斗号=="+bdNum);
         //本机北斗号为空  不处理
