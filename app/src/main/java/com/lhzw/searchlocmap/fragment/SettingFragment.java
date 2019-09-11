@@ -81,6 +81,8 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private ShowProgressDialog progress;
     private Toast mGlobalToast;
     private RelativeLayout rl_net_setting;
+    private TextView tv_name;
+    private TextView tv_amc;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -116,6 +118,9 @@ public class SettingFragment extends Fragment implements OnClickListener,
         rl_update = (RelativeLayout) view.findViewById(R.id.rl_update);
         rl_sync_data = (RelativeLayout) view.findViewById(R.id.rl_sync_data);
         rl_net_setting = (RelativeLayout) view.findViewById(R.id.rl_net_setting);
+
+        tv_name = (TextView) view.findViewById(R.id.tv_name);
+        tv_amc = (TextView) view.findViewById(R.id.tv_amc);
     }
 
     private void initData() {
@@ -123,6 +128,9 @@ public class SettingFragment extends Fragment implements OnClickListener,
         isVibrate = SpUtils.getBoolean(SPConstants.SLIDE_VIBRATOR, true);
         toggle_bell.setSliderState(isPlaySound);
         toggle_vibrator.setSliderState(isVibrate);
+
+        tv_name.setText(SpUtils.getString(SPConstants.LOGIN_NAME, "lisi"));
+        tv_amc.setText("mac地址：" + BaseUtils.getMacFromHardware());
     }
 
     private void setListener() {

@@ -33,4 +33,6 @@ public class SPConstants {
 	public static final String NET_BASE_IP = "NET_BASE_IP"; // IP
 
 	public static final String NET_BASE_COM = "NET_BASE_COM"; // COM
+
+	public static final String LOGIN_NAME = "LOGIN_NAME"; // COM
 }

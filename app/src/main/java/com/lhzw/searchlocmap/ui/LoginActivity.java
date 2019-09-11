@@ -28,6 +28,7 @@ import com.lhzw.searchlocmap.bean.LocalBDNum;
 import com.lhzw.searchlocmap.bean.PersonalInfo;
 import com.lhzw.searchlocmap.bean.UserInfo;
 import com.lhzw.searchlocmap.constants.Constants;
+import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 import com.lhzw.searchlocmap.net.CallbackListObserver;
@@ -117,6 +118,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     return;
                 }
                 // new AyncLoginTask().execute();
+                SpUtils.putString(SPConstants.LOGIN_NAME, mLoginName);;
                 doLoginTask();//执行登录操作
                 break;
             case R.id.im_name_del:
