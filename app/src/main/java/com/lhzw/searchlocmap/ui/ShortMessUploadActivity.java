@@ -68,8 +68,7 @@ public class ShortMessUploadActivity extends Activity implements
 	private String realName;
 	private String bdNum;
 	private boolean isDestroy;
-	EventBusBean eventBusBean = new EventBusBean(); // 刷新安全监管页未读数据
-	EventBusBean eventBusBean1 = new EventBusBean(); //通知最近联系人列表刷新
+
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -233,14 +232,16 @@ public class ShortMessUploadActivity extends Activity implements
 		}
 
 		// 刷新安全监管页未读数据
-
+        EventBusBean eventBusBean = new EventBusBean(); // 刷新安全监管页未读数据
 		eventBusBean.setCode(Constants.EVENT_CODE_REFRESH_MSG_NUM);
 		EventBus.getDefault().post(eventBusBean);
 
 		//通知最近联系人列表刷新
-
+        EventBusBean eventBusBean1 = new EventBusBean(); //通知最近联系人列表刷新
 		eventBusBean1.setCode(Constants.EVENT_CODE_REFRESH_MSG_LIST);
+		eventBusBean1.setStringTag("refresh");
 		EventBus.getDefault().post(eventBusBean1);
+		LogUtil.e("发送刷新最近联系人列表的event");
 
 	}
 

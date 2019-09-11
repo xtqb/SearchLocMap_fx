@@ -280,11 +280,15 @@ public class ShortMessageFragment extends BaseLazyFragment {
 
     @Subscribe(threadMode= ThreadMode.BACKGROUND)
     public void getEventBus(EventBusBean eventBusBean){
-        if(isVisible&&eventBusBean!=null){
+        if(eventBusBean!=null){
             switch (eventBusBean.getCode()){
                 case Constants.EVENT_CODE_REFRESH_MSG_LIST://刷新最近联系人列表
-                    LogUtil.d("eventBus 刷新列表");
-                    updateRecentContactList();
+                    LogUtil.e("eventBus 刷新最近联系人列表");
+                    if ("refresh".equals(eventBusBean.getStringTag())){//必刷新
+                        updateRecentContactList();
+                    }else if(isVisible){
+                                updateRecentContactList(); }
+
                     break;
             }
         }
