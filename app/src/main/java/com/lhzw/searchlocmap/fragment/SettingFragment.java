@@ -481,7 +481,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
             Integer[] values = new Integer[2];
             values[0] = mHttpRequstInfos.size() + mLocalBDNums.size();
             publishProgress(values);
-            int delay = 4000 / values[0];
+            int delay = 50;
             int counter = 0;
             for (HttpRequstInfo info : mHttpRequstInfos) {
                 counter++;

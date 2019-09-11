@@ -139,9 +139,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     CommonDBOperator.deleteAllItems(mBdNumDao);
                     CommonDBOperator.deleteAllItems(mLocPersonDao);
                     SpUtils.putString(Constants.HTTP_TOOKEN, token);
-                    getAllBDInfoFromServer();//获取平台的北斗号
-                    getBindingWatchFromServer();//获取当前手持机绑定的手表
                     getAllPersonInfoBean();
+                    getAllBDInfoFromServer();//获取平台的北斗号
+
+
                 } else {
                     showToast("Token获取失败");
                 }
@@ -201,7 +202,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             Integer[] values = new Integer[2];
             values[0] = mHttpRequstInfos.size() + mLocalBDNums.size();
             publishProgress(values);
-            int delay = 4000 / values[0];
+            int delay = 50;
             int counter = 0;
             for (HttpRequstInfo info : mHttpRequstInfos) {
                 counter++;
@@ -248,8 +249,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         @Override
         protected void onPostExecute(Boolean isSuccess) {
             if (isSuccess) {
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                LoginActivity.this.finish();
+                getBindingWatchFromServer();//获取当前手持机绑定的手表
+//                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+//                LoginActivity.this.finish();
             } else {
                 showToast(getString(R.string.net_request_fail));
             }
@@ -387,22 +389,35 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                         //有绑定数据   插入表中
                         for (int i = 0; i < bean.getData().size(); i++) {
                             BindingWatchBean.DataBean dataBean = bean.getData().get(i);
+                            List<HttpPersonInfo> httpPersonInfo = CommonDBOperator.queryByKeys(httpPerDao, "deviceNumbers", dataBean.getDeviceNumber());
+                            String realName = "";
+
+                            if(httpPersonInfo!=null && httpPersonInfo.size()>0){
+                                realName = TextUtils.isEmpty(httpPersonInfo.get(0).getRealName())? "" : httpPersonInfo.get(0).getRealName();
+                            }else {
+                                LogUtil.e("httpPersonInfo=="+httpPersonInfo);
+                            }
                             LocPersonalInfo perInfo = new LocPersonalInfo();
                             perInfo.setNum(dataBean.getDeviceNumber());
-                            perInfo.setName("");
+                            perInfo.setName(realName);
                             CommonDBOperator.saveToDB(mLocPersonDao, perInfo);
 
                             PersonalInfo personalInfo = new PersonalInfo();
-                            personalInfo.setName("");
+                            personalInfo.setName(realName);
+                            personalInfo.setNum(dataBean.getDeviceNumber());
                             personalInfo.setSex("0");
                             personalInfo.setState(Constants.PERSON_OFFLINE);
-                            CommonDBOperator.saveToDB(mPersonalInfoDao, perInfo);
+                            LogUtil.e("new = = "+personalInfo.getSex());
+                            boolean saveToDB = CommonDBOperator.saveToDB(mPersonalInfoDao, personalInfo);
+                            LogUtil.e("保存到mPersonalInfoDao=="+saveToDB);
                             uploadOffset();
                         }
                     }
                 } else {
                     showToast("请求失败==" + bean.getCode());
                 }
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                LoginActivity.this.finish();
             }
 
             @Override
@@ -417,10 +432,11 @@ public class LoginActivity extends Activity implements View.OnClickListener {
      * 重新设置ID值
      */
     private void uploadOffset() {
-        List<PersonalInfo> rxList = CommonDBOperator.queryByOrderKey(mPersonalInfoDao, "num");
-        for (int offset = 0; offset < rxList.size(); offset++) {
-            rxList.get(offset).setOffset(offset);
-            CommonDBOperator.updateItem(mPersonalInfoDao, rxList.get(offset));
+        List<PersonalInfo> PersonalInfo = CommonDBOperator.queryByOrderKey(mPersonalInfoDao, "num");
+        LogUtil.e("PersonalInfo表的大小=="+PersonalInfo.size());
+        for (int i = 0; i < PersonalInfo.size(); i++) {
+            PersonalInfo.get(i).setOffset(i);
+            CommonDBOperator.updateItem(mPersonalInfoDao, PersonalInfo.get(i));
         }
     }
 
