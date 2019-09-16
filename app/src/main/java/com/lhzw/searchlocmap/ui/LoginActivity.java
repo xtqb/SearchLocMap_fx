@@ -118,7 +118,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     return;
                 }
                 // new AyncLoginTask().execute();
-                SpUtils.putString(SPConstants.LOGIN_NAME, mLoginName);;
+                SpUtils.putString(SPConstants.LOGIN_NAME, mLoginName);
+                ShowProgressDialog();
                 doLoginTask();//执行登录操作
                 break;
             case R.id.im_name_del:
@@ -139,12 +140,11 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     CommonDBOperator.deleteAllItems(mBdNumDao);
                     CommonDBOperator.deleteAllItems(mLocPersonDao);
                     SpUtils.putString(Constants.HTTP_TOOKEN, token);
-                    getAllPersonInfoBean();
+//                    getAllPersonInfoBean();
                     getAllBDInfoFromServer();//获取平台的北斗号
-
-
                 } else {
                     showToast("Token获取失败");
+                    cancelProgressDialog();
                 }
 
             }
@@ -152,6 +152,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             @Override
             protected void onFailed() {
                 showToast(getString(R.string.net_request_fail));
+                cancelProgressDialog();
             }
         });
     }
@@ -193,7 +194,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
         @Override
         protected void onPreExecute() {
-            ShowProgressDialog();
+//            ShowProgressDialog();
         }
 
         @Override
@@ -479,6 +480,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                         e.printStackTrace();
                                         SpUtils.putString(Constants.HTTP_TOOKEN, "");
                                         ToastUtil.showToast("北斗服务连接失败,退出APP");
+                                        cancelProgressDialog();
                                         finish();
                                     }
                                 }
@@ -486,33 +488,39 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                 LocalBDNum localBDNum = new LocalBDNum(dataBean.getBdNumber(), dataBean.getSend(), dataBean.getReceive());
                                 mLocalBDNums.add(localBDNum);
                             }
+
                             try {//上传到服务接口
                                 if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
                                     SearchLocMapApplication.getInstance().getUploadService().updateBDNum(mNumList);
                                 } else {
                                     SpUtils.putString(Constants.HTTP_TOOKEN, "");
                                     ToastUtil.showToast("北斗服务连接失败,退出APP");
+                                    cancelProgressDialog();
                                     finish();
                                 }
                             } catch (RemoteException e) {
                                 e.printStackTrace();
                                 SpUtils.putString(Constants.HTTP_TOOKEN, "");
                                 ToastUtil.showToast("北斗服务连接失败,退出APP");
+                                cancelProgressDialog();
                                 finish();
                             }
-
+                            getAllPersonInfoBean();
                         }
                     } else {
                         showToast(bean.getMessage() + "");
+                        cancelProgressDialog();
                     }
                 } else {
                     showToast("服务器未能获取北斗平台的信息");
+                    cancelProgressDialog();
                 }
             }
 
             @Override
             protected void onFailed() {
                 showToast(getString(R.string.net_request_fail));
+                cancelProgressDialog();
             }
         });
     }
