@@ -487,6 +487,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                 //添加到本地数据库
                                 LocalBDNum localBDNum = new LocalBDNum(dataBean.getBdNumber(), dataBean.getSend(), dataBean.getReceive());
                                 mLocalBDNums.add(localBDNum);
+
                             }
 
                             try {//上传到服务接口
