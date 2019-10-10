@@ -289,7 +289,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private void doLoginTask() {
         ShowProgressDialog();
         getAllBDInfoFromServer();//获取平台的北斗号
-        getAllPersonInfoBean();//获取人员基础信息
+
     }
 
     /**
@@ -310,10 +310,12 @@ public class SettingFragment extends Fragment implements OnClickListener,
                         new ProgressTask().execute();
                     } else {
                         showToast("获取人员数据为空");
+                        cancelProgressDialog();
                     }
                 } else {
                     LogUtil.e(bean.getMessage());
                     showToast("获取全员信息失败,message==" + bean.getMessage());
+                    cancelProgressDialog();
                 }
             }
 
@@ -321,6 +323,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
             protected void onFailed() {
                 cancelProgressDialog();
                 showToast(getString(R.string.net_request_fail));
+                cancelProgressDialog();
             }
         });
     }
@@ -353,12 +356,14 @@ public class SettingFragment extends Fragment implements OnClickListener,
                                             SearchLocMapApplication.getInstance().getUploadService().setNum(Constants.TX_JZH, dataBean.getBdNumber());
                                         } else {
                                             SpUtils.putString(Constants.HTTP_TOOKEN, "");
+                                            cancelProgressDialog();
                                             ToastUtil.showToast("应急通信服务连接失败,退出APP");
                                             getActivity().finish();
                                         }
 
                                     } catch (RemoteException e) {
                                         e.printStackTrace();
+                                        cancelProgressDialog();
                                         SpUtils.putString(Constants.HTTP_TOOKEN, "");
                                         ToastUtil.showToast("应急通信服务连接失败,退出APP");
                                         getActivity().finish();
@@ -372,29 +377,39 @@ public class SettingFragment extends Fragment implements OnClickListener,
                                 if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
                                     SearchLocMapApplication.getInstance().getUploadService().updateBDNum(mNumList);
                                 } else {
+                                    cancelProgressDialog();
                                     SpUtils.putString(Constants.HTTP_TOOKEN, "");
                                     ToastUtil.showToast("北斗服务连接失败,退出APP");
                                     getActivity().finish();
+
                                 }
                             } catch (RemoteException e) {
                                 e.printStackTrace();
+                                cancelProgressDialog();
                                 SpUtils.putString(Constants.HTTP_TOOKEN, "");
                                 ToastUtil.showToast("北斗服务连接失败,退出APP");
                                 getActivity().finish();
+
                             }
+
+
+                            getAllPersonInfoBean();//获取人员基础信息
 
                         }
                     } else {
                         showToast(bean.getMessage() + "");
+                        cancelProgressDialog();
                     }
                 } else {
                     showToast("服务器未能获取北斗平台的信息");
+                    cancelProgressDialog();
                 }
             }
 
             @Override
             protected void onFailed() {
                 showToast(getString(R.string.net_request_fail));
+                cancelProgressDialog();
             }
         });
     }

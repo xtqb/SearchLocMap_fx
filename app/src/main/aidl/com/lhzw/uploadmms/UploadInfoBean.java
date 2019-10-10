@@ -20,7 +20,7 @@ public class UploadInfoBean implements Parcelable{
 	private String num;        // 备注  可能为北斗号
 	private int comFont;          //北斗传输类型
 	private int sendID;           //有数据ID
-	private String bdNum;          //北斗号列表
+	private String bdNum;          //手表的设备号
 	public UploadInfoBean() {
 		super();
 		// TODO Auto-generated constructor stub

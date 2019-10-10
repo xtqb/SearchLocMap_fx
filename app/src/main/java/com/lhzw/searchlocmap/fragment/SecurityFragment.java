@@ -979,7 +979,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         latSos = Double.valueOf(tatolMap.get(icon_id).getLatitude());
                         lngSos = Double.valueOf(tatolMap.get(icon_id).getLongitude());
                     }
-                    WatchLocBean bean = new WatchLocBean("watch", tatolMap.get(icon_id).getOffset() + "", "", "", "sosfinished", "", latSos + "", lngSos + "", BaseUtils.sdf.format(tatolMap.get(icon_id).getLocTime()));
+                   // WatchLocBean bean = new WatchLocBean("watch", tatolMap.get(icon_id).getOffset() + "", "", "", "sosfinished", "", latSos + "", lngSos + "", BaseUtils.sdf.format(tatolMap.get(icon_id).getLocTime()));
+                    WatchLocBean bean = new WatchLocBean("watch", tatolMap.get(icon_id).getNum(), "", "", "sosfinished", "", latSos + "", lngSos + "", BaseUtils.sdf.format(tatolMap.get(icon_id).getLocTime()));
                     List<WatchLocBean> sosListUpload = new ArrayList<>();
                     sosListUpload.add(bean);
                     RequestCommonBean sosBean = new RequestCommonBean(Constants.CMD_SOS, "handsetsession", "HANDSET",

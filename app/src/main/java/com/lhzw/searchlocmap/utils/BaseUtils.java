@@ -586,7 +586,7 @@ public class BaseUtils {
         }
         list = new ArrayList<>();
         String[] locTimes = infoBean.getLocTimes().split("-");
-        String[] idArr = infoBean.getBdNum().split("-");
+        String[] idArr = infoBean.getBdNum().split("-");//手表的设备号
         String[] latLngArr = infoBean.getBody().split("-");
         for(int pos = 0; pos < idArr.length; pos ++) {
             String watchstatus = "offline";

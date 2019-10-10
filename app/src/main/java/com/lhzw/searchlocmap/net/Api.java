@@ -50,7 +50,7 @@ public interface Api {
     /**
      * 手持机与手表解绑接口
      *
-     * @param mac         手持机的北斗号
+     * @param mac         手持机的mac号
      * @param childNumber 手表的固话注册码   如果是多个之间用,隔开
      * @return
      */
@@ -79,7 +79,7 @@ public interface Api {
     Observable<BindingWatchBean> getBindingWatch(@Path("handsetNumber") String mac);
 
     /**
-     * handsetNumber长度必须是12位数字或者字母组成的mac地址 bdNumber长度必须是7位数字组成的北斗号
+     * mac与北斗上传绑定关系的接口
      */
 
     @PUT("handsets/binding/bd/{handsetNumber}-{bdNumber}")
