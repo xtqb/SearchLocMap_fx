@@ -974,7 +974,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 if(BaseUtils.isNetConnected(SearchLocMapApplication.getContext())) {
                     double latSos = 0.0;
                     double lngSos = 0.0;
-                    if(!"".equals(tatolMap.get(icon_id).getLatitude()) && !"".equals(tatolMap.get(icon_id).getLongitude())
+                    if(tatolMap.get(icon_id)!= null && !"".equals(tatolMap.get(icon_id).getLatitude()) && !"".equals(tatolMap.get(icon_id).getLongitude())
                             && !"null".equals(tatolMap.get(icon_id).getLatitude()) && !"null".equals(tatolMap.get(icon_id).getLongitude())){
                         latSos = Double.valueOf(tatolMap.get(icon_id).getLatitude());
                         lngSos = Double.valueOf(tatolMap.get(icon_id).getLongitude());
