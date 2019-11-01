@@ -63,6 +63,7 @@ public class WatchSignalReceiver extends BroadcastReceiver {
 		try {
 			if(intent != null) {
 				ProtocolParser parser = intent.getParcelableExtra("result");
+				if(parser == null) return;
 				taskQueue.add(parser);
 				Log.e("Tag", "receive 433 communication");
 				doTask();
