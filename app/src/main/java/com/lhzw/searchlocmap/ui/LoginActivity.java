@@ -2,10 +2,14 @@ package com.lhzw.searchlocmap.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -79,7 +83,49 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             initData();
             setListener();
         }
+
+        requestPermission();
     }
+
+    private void requestPermission() {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS}, 1);
+        } else {
+
+        }
+        boolean isLocation = false;
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
+            Log.e("Tag", "request location permission   ACCESS_COARSE_LOCATION");
+        } else {
+            isLocation = true;
+        }
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 3);
+            Log.e("Tag", "request location permission    ACCESS_FINE_LOCATION");
+        } else {
+            //两个权限都有了，申请权限成功
+            if (isLocation) {
+                //startLocation();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (1 == requestCode) {
+            if (permissions[0].equals(android.Manifest.permission.READ_EXTERNAL_STORAGE) && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && permissions[1].equals(android.Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS) && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                //  initMap();
+            }
+        }
+    }
+
+
 
 
     private void setListener() {
