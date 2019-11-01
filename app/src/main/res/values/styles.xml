@@ -49,14 +49,14 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
-<!--仿微信滑动切换底部菜单-->
+    <!--仿微信滑动切换底部菜单-->
     <declare-styleable name="TabMenu">
-        <attr name="selected" format="integer"/>
-        <attr name="itemCount" format="integer"/>
-        <attr name="android:textSize"/>
-        <attr name="text_color" format="color"/>
-        <attr name="text_select_color" format="color"/>
-        <attr name="item_bg" format="color"/>
+        <attr name="selected" format="integer" />
+        <attr name="itemCount" format="integer" />
+        <attr name="android:textSize" />
+        <attr name="text_color" format="color" />
+        <attr name="text_select_color" format="color" />
+        <attr name="item_bg" format="color" />
     </declare-styleable>
 
     <declare-styleable name="ScrollLayout">

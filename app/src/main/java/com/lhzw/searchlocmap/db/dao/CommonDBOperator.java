@@ -8,12 +8,15 @@ import java.util.concurrent.Callable;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.Where;
+import com.lhzw.searchlocmap.application.SearchLocMapApplication;
+import com.lhzw.searchlocmap.bean.PersonalInfo;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 
@@ -486,6 +489,77 @@ public class CommonDBOperator {
 		return list;
 	}
 
+	/**
+	 * 通过多个条件模糊查询
+	 *
+	 * @String name
+	 * @param map
+	 * @return
+	 */
+	public synchronized static  List<PersonalInfo> queryByMultiKeysFuzzy(
+			String name, Map<String, String> map, Map<String, String> map1) {
+
+		List<PersonalInfo> list = null;
+		if((map == null || map.size() == 0) && (map1 == null || map1.size() == 0)){
+			return list;
+		}
+
+		String sql = "SELECT * FROM " + name + " WHERE ";
+		if(map != null && map.size() > 0) {
+			sql += "(";
+		}
+		String whereClass[] = new String[map.size() + map1.size()];
+		int counter = 0;
+		for(Map.Entry<String, String> entry : map.entrySet()) {
+			whereClass[counter] = entry.getValue();
+			counter ++;
+			if(counter == map.size()){
+				sql += entry.getKey() + " LIKE '%" + entry.getValue()+ "%')";
+			} else {
+				sql += entry.getKey() + " LIKE '%" + entry.getValue()+ "%' OR ";
+			}
+		}
+
+		if(map1 != null && map1.size() > 0) {
+			sql += " AND ";
+		}
+
+		for(Map.Entry<String, String> entry : map1.entrySet()) {
+			whereClass[counter] = entry.getValue();
+			counter ++;
+			if(counter == map1.size() + map.size()){
+				sql += entry.getKey() + " = '" + entry.getValue() + "'";
+			} else {
+				sql += entry.getKey() + " = '" + entry.getValue()+ "' AND ";
+			}
+		}
+
+		Cursor cursor = DatabaseHelper.getHelper(SearchLocMapApplication.getContext()).getWritableDatabase().rawQuery(sql, null);
+		if(cursor != null && cursor.moveToFirst()){
+			list = new ArrayList<>();
+			do {
+				PersonalInfo item = new PersonalInfo();
+				item.setNum(cursor.getString(cursor.getColumnIndex("num")));
+				item.setName(cursor.getString(cursor.getColumnIndex("name")));
+				item.setAge(cursor.getInt(cursor.getColumnIndex("age")));
+				item.setSex(cursor.getString(cursor.getColumnIndex("sex")));
+				item.setPhone(cursor.getString(cursor.getColumnIndex("phone")));
+				item.setContact1(cursor.getString(cursor.getColumnIndex("contact1")));
+				item.setContact2(cursor.getString(cursor.getColumnIndex("contact2")));
+				item.setAllergy(cursor.getString(cursor.getColumnIndex("allergy")));
+				item.setBloodtype(cursor.getString(cursor.getColumnIndex("allergy")));
+				item.setState(cursor.getString(cursor.getColumnIndex("state")));
+				item.setState1(cursor.getString(cursor.getColumnIndex("state1")));
+				item.setLatitude(cursor.getString(cursor.getColumnIndex("latitude")));
+				item.setLongitude(cursor.getString(cursor.getColumnIndex("latitude")));
+				item.setTime(cursor.getLong(cursor.getColumnIndex("time")));
+				item.setLocTime(cursor.getLong(cursor.getColumnIndex("locTime")));
+				list.add(item);
+			}while (cursor.moveToNext());
+		}
+		cursor.close();
+		return list;
+	}
 
 	/**
 	 * 判断某张表内是否有数据
