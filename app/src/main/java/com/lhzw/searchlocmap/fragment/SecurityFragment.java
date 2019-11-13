@@ -978,22 +978,24 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                             && !"null".equals(tatolMap.get(icon_id).getLatitude()) && !"null".equals(tatolMap.get(icon_id).getLongitude())){
                         latSos = Double.valueOf(tatolMap.get(icon_id).getLatitude());
                         lngSos = Double.valueOf(tatolMap.get(icon_id).getLongitude());
+                        WatchLocBean bean = new WatchLocBean("watch", tatolMap.get(icon_id).getNum(), "", "", "sosfinished", "", latSos + "", lngSos + "", BaseUtils.sdf.format(tatolMap.get(icon_id).getLocTime()));
+                        List<WatchLocBean> sosListUpload = new ArrayList<>();
+                        sosListUpload.add(bean);
+                        RequestCommonBean sosBean = new RequestCommonBean(Constants.CMD_SOS, "handsetsession", "HANDSET",
+                                BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
+                                SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
+                                System.currentTimeMillis())), sosListUpload);
+                        ComUtils.getInstance().uploadToNet(sosBean, null);
+
+                        // 存在更新状态
+                        updataState(icon_id);
+                        showToast(getString(R.string.send_command_success_note));
                     }
                    // WatchLocBean bean = new WatchLocBean("watch", tatolMap.get(icon_id).getOffset() + "", "", "", "sosfinished", "", latSos + "", lngSos + "", BaseUtils.sdf.format(tatolMap.get(icon_id).getLocTime()));
-                    WatchLocBean bean = new WatchLocBean("watch", tatolMap.get(icon_id).getNum(), "", "", "sosfinished", "", latSos + "", lngSos + "", BaseUtils.sdf.format(tatolMap.get(icon_id).getLocTime()));
-                    List<WatchLocBean> sosListUpload = new ArrayList<>();
-                    sosListUpload.add(bean);
-                    RequestCommonBean sosBean = new RequestCommonBean(Constants.CMD_SOS, "handsetsession", "HANDSET",
-                            BaseUtils.getDipperNum(SearchLocMapApplication.getContext()), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
-                            SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
-                            System.currentTimeMillis())), sosListUpload);
-                    ComUtils.getInstance().uploadToNet(sosBean, null);
                 }
-
-                updataState(icon_id);
                 mPopWindow.dismiss();
                 mPopWindow = null;
-                showToast(getString(R.string.send_command_success_note));
+//                showToast(getString(R.string.send_command_success_note));
                 break;
             case R.id.dialog_timer_search:
 
