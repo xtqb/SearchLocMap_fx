@@ -74,3 +74,14 @@ fastlane/screenshots
 fastlane/test_output
 fastlane/readme.md
 >>>>>>> 79e8eb621df604145ae583109f8a9f6543a754d1
+
+*.iml
+.gradle
+/local.properties
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
