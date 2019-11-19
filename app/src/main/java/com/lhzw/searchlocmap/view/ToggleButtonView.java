@@ -13,11 +13,11 @@ import com.lhzw.searchlocmap.R;
 public class ToggleButtonView extends View implements OnTouchListener {
 	private int with;
 	private int heigh;
-	private Paint paintDef;
-	private Paint paintPre;
-	private Paint paintSlide;
+	private Paint paintDef;//关闭状态
+	private Paint paintPre;//打开状态
+	private Paint paintSlide;//滑块色
 	private boolean state;
-	private Paint backgroud;
+	private Paint backgroud;//状态画笔
 	private onToggleClickListener listener;
 
 	public ToggleButtonView(Context context, AttributeSet attrs, int defStyle) {
@@ -45,8 +45,8 @@ public class ToggleButtonView extends View implements OnTouchListener {
 		paintSlide = new Paint();
 		paintSlide.setColor(getResources().getColor(R.color.white));
 		paintPre = new Paint();
-		paintPre.setColor(getResources().getColor(R.color.green3));
-		backgroud = paintDef;
+		paintPre.setColor(getResources().getColor(R.color.green_little));
+		backgroud = paintPre;
 		this.setOnTouchListener(this);
 		setSliderState(false);
 	}
@@ -57,16 +57,16 @@ public class ToggleButtonView extends View implements OnTouchListener {
 		super.onDraw(canvas);
 		with = getWidth();
 		heigh = getHeight();
-		canvas.drawRect(41, heigh / 2 - 38, with - 41, heigh / 2 + 38,
+		canvas.drawRect(42, heigh / 2 - 30, with - 42, heigh / 2 + 30,
 				backgroud);
-		if (state) {
-			canvas.drawCircle(41, heigh / 2, 39, backgroud);
-			canvas.drawCircle(with - 40, heigh / 2, 38, backgroud);
-			canvas.drawCircle(40 + 1, heigh / 2, 38, paintSlide);
+		if (!state) {
+			canvas.drawCircle(42, heigh / 2, 32, backgroud);
+			canvas.drawCircle(with - 40, heigh / 2, 30, backgroud);
+			canvas.drawCircle(40 + 2, heigh / 2, 30, paintSlide);
 		} else {
-			canvas.drawCircle(40, heigh / 2, 38, backgroud);
-			canvas.drawCircle(with - 41, heigh / 2, 39, backgroud);
-			canvas.drawCircle(with - 40 - 1, heigh / 2, 38, paintSlide);
+			canvas.drawCircle(40, heigh / 2, 30, backgroud);
+			canvas.drawCircle(with - 42, heigh / 2, 32, backgroud);
+			canvas.drawCircle(with - 40 - 2, heigh / 2, 30, paintSlide);
 		}
 
 	}
@@ -81,21 +81,25 @@ public class ToggleButtonView extends View implements OnTouchListener {
 		invalidate();
 	}
 
+	public boolean isState() {
+		return state;
+	}
+
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		// TODO Auto-generated method stub
 		switch (event.getAction()) {
-		case MotionEvent.ACTION_UP:
-			if (listener != null) {
-				state = !state;
-				setSliderState(state);
-				listener.onToggleClick(v);
-			}
+			case MotionEvent.ACTION_UP:
+				if (listener != null) {
+					state = !state;
+					setSliderState(state);
+					listener.onToggleClick(v);
+				}
 
-			break;
+				break;
 
-		default:
-			break;
+			default:
+				break;
 		}
 		return true;
 	}
