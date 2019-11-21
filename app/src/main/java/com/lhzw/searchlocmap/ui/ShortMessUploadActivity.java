@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.bdsignal.BDSignal;
+import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.MessageInfoIBean;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
@@ -68,6 +69,7 @@ public class ShortMessUploadActivity extends Activity implements
 	private String realName;
 	private String bdNum;
 	private boolean isDestroy;
+	private Dao<HttpPersonInfo, Integer> mHttpPerDao;
 
 
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +95,7 @@ public class ShortMessUploadActivity extends Activity implements
 		mBDManager.systemCheck(2+"");
 		helper = DatabaseHelper.getHelper(ShortMessUploadActivity.this);
 		mesDao = helper.getMesgInfoDao();
+		mHttpPerDao = helper.getHttpPerDao();
 		mComUtils = ComUtils.getInstance();
 
 		isCurrentActivity = true;
@@ -156,6 +159,11 @@ public class ShortMessUploadActivity extends Activity implements
 			body = ed_content.getText().toString();
 			if (BaseUtils.isStringEmpty(body.trim())) {
 				showToast(getString(R.string.short_mess_send_fail_note));
+				return;
+			}
+			List<HttpPersonInfo> list = CommonDBOperator.queryByKeys(mHttpPerDao, "loginName", SpUtils.getString(SPConstants.LOGIN_NAME, ""));
+			if (list!=null && list.size()>0 && list.get(0).getId()==ID){
+				showToast("不能给自己发消息!!!");
 				return;
 			}
 			sendMesgToServer();
