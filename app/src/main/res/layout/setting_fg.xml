@@ -601,6 +601,106 @@
                 android:background="#cccccc" />
 
             <RelativeLayout
+                android:id="@+id/rl_sos_pattern"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@color/white"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/im_sos_pattern"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="16dp"
+                    android:background="@drawable/icon_upload_pattern" />
+
+                <TextView
+                    android:id="@+id/tv_sos_pattern"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/im_sos_pattern"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/im_sos_pattern"
+                    android:text="@string/settings_sos_pattern"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_pattern_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/toggle_upload_pattern"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/upload_pattern_default"
+                    android:textSize="16sp" />
+
+                <com.lhzw.searchlocmap.view.ToggleButtonView
+                    android:id="@+id/toggle_upload_pattern"
+                    android:layout_width="55dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#cccccc" />
+
+            <RelativeLayout
+                android:id="@+id/rl_statistics_postion"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@color/white"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/im_statistics_postion"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="16dp"
+                    android:background="@drawable/icon_static_position" />
+
+                <TextView
+                    android:id="@+id/tv_statistics_postion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/im_statistics_postion"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/im_statistics_postion"
+                    android:text="@string/settings_position_statistics"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_statistics_postion_counter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/toggle_statistics_postion"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/setting_upload_statistics_num"
+                    android:textSize="16sp" />
+
+                <com.lhzw.searchlocmap.view.ToggleButtonView
+                    android:id="@+id/toggle_statistics_postion"
+                    android:layout_width="55dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#cccccc" />
+
+            <RelativeLayout
                 android:id="@+id/rl_compass"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"

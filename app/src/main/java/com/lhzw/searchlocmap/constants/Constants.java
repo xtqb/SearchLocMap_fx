@@ -101,7 +101,7 @@ public class Constants {
 	public static final String APK_map = "map";
 	public static final int CHANNEL_DEF = 0;//默认信道
 	public static final String IP_ADD = "http://47.104.109.138:8080/";
-   // public static final String IP_ADD = "http://192.168.1.129:8070/";
+//    public static final String IP_ADD = "http://192.168.1.129:8070/";
 	public static final int SEND_ID_DEF = 1;
 
 //对手表的指令接收状态
@@ -133,4 +133,10 @@ public class Constants {
 	public static final String CMD_FIRE_POINT = "receivefirepointindication";
    //北斗改变
 	public static final String BD_NUM_ISCHANGING = "android.intent.action.BD_NUM_CHANGE";
+
+	public static final Boolean UPLOAD_PATTERN_DEFAULT = false;
+	public static final int UPLOAD_UPPER_DEAFAULT = 8;
+
+	public static final int REPORT_NUM_DEFAULT = 0x00;
+
 }

@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +49,7 @@ import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.searchlocmap.utils.ToastUtil;
 import com.lhzw.searchlocmap.view.ShowProgressDialog;
+import com.lhzw.searchlocmap.view.ShowUploadUpper;
 import com.lhzw.searchlocmap.view.ToggleButtonView;
 import com.lhzw.searchlocmap.view.ToggleButtonView.onToggleClickListener;
 import com.lhzw.uploadmms.BDNum;
@@ -62,6 +65,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private TextView tv_back;
     private ToggleButtonView toggle_bell;
     private ToggleButtonView toggle_vibrator;
+    private ToggleButtonView toggle_statistics_postion;
     private RelativeLayout rl_sos_upload;
     private RelativeLayout rl_person_upload;
     private RelativeLayout rl_time_setting;
@@ -70,8 +74,11 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private RelativeLayout rl_loc_info;
     private RelativeLayout rl_offline_map;
     private RelativeLayout rl_compass;
+    private ToggleButtonView toggle_upload_pattern;
     private boolean isPlaySound;
     private boolean isVibrate;
+    private boolean isUpload;
+    private boolean isStatistics;
     private AlerDialogshow alertdialog;
     private RelativeLayout rl_bd_setting;
     private RelativeLayout rl_bd_service;
@@ -83,6 +90,9 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private RelativeLayout rl_net_setting;
     private TextView tv_name;
     private TextView tv_amc;
+    private TextView tv_pattern_content;
+    private TextView tv_statistics_postion_counter;
+    private ShowUploadUpper uploadUpper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -118,7 +128,10 @@ public class SettingFragment extends Fragment implements OnClickListener,
         rl_update = (RelativeLayout) view.findViewById(R.id.rl_update);
         rl_sync_data = (RelativeLayout) view.findViewById(R.id.rl_sync_data);
         rl_net_setting = (RelativeLayout) view.findViewById(R.id.rl_net_setting);
-
+        toggle_upload_pattern = (ToggleButtonView) view.findViewById(R.id.toggle_upload_pattern);
+        toggle_statistics_postion = (ToggleButtonView) view.findViewById(R.id.toggle_statistics_postion);
+        tv_pattern_content = (TextView) view.findViewById(R.id.tv_pattern_content);
+        tv_statistics_postion_counter = (TextView) view.findViewById(R.id.tv_statistics_postion_counter);
         tv_name = (TextView) view.findViewById(R.id.tv_name);
         tv_amc = (TextView) view.findViewById(R.id.tv_amc);
     }
@@ -126,17 +139,34 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private void initData() {
         isPlaySound = SpUtils.getBoolean(SPConstants.SLIDE_SOUND, true);
         isVibrate = SpUtils.getBoolean(SPConstants.SLIDE_VIBRATOR, true);
+        isUpload = SpUtils.getBoolean(SPConstants.UPLOAD_PATTERN, false);
+        isStatistics = SpUtils.getBoolean(SPConstants.STATISTICS_REPORT_POISTION, false);
         toggle_bell.setSliderState(isPlaySound);
         toggle_vibrator.setSliderState(isVibrate);
+        toggle_upload_pattern.setSliderState(isUpload);
+        toggle_statistics_postion.setSliderState(isStatistics);
 
         tv_name.setText(SpUtils.getString(SPConstants.LOGIN_NAME, "lisi"));
         tv_amc.setText("mac地址：" + BaseUtils.getMacFromHardware());
+        tv_pattern_content.setText(isUpload ? getString(R.string.upload_pattern_auto).replace("@",
+                SpUtils.getInt(SPConstants.UPLOAD_UPPER, Constants.UPLOAD_UPPER_DEAFAULT) + "")
+                : getString(R.string.upload_pattern_default));
+        if(isStatistics){
+            tv_statistics_postion_counter.setText(getString(R.string.setting_upload_statistics_num).replace
+                    ("@", SpUtils.getInt(SPConstants.STATISTICS_REPORT_NUM, 0) + ""));
+        } else {
+            tv_statistics_postion_counter.setVisibility(View.GONE);
+            tv_statistics_postion_counter.setText("");
+        }
+
     }
 
     private void setListener() {
         tv_back.setOnClickListener(this);
         toggle_bell.setOnToggleClickListener(this);
         toggle_vibrator.setOnToggleClickListener(this);
+        toggle_upload_pattern.setOnToggleClickListener(this);
+        toggle_statistics_postion.setOnToggleClickListener(this);
         rl_sos_upload.setOnClickListener(this);
         rl_person_upload.setOnClickListener(this);
         rl_time_setting.setOnClickListener(this);
@@ -151,6 +181,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
         rl_update.setOnClickListener(this);
         rl_sync_data.setOnClickListener(this);
         rl_net_setting.setOnClickListener(this);
+        tv_pattern_content.setOnClickListener(this);
     }
 
     @Override
@@ -226,6 +257,41 @@ public class SettingFragment extends Fragment implements OnClickListener,
             case R.id.rl_net_setting:
                 startActivityForResult(new Intent(getActivity(), NetSettingActivity.class), 0x0002);
                 break;
+            case R.id.tv_pattern_content:
+                if (!isUpload) {
+                    return;
+                }
+                showUploadUpperDialog();
+                break;
+            case R.id.bt_upload_pattern_save:
+                if (uploadUpper != null) {
+                    if ("".equals(uploadUpper.getUpperNum())) {
+                        showToast(getString(R.string.upload_pattern_auto_input_et_fail));
+                        return;
+                    } else if (Integer.parseInt(uploadUpper.getUpperNum()) < 8) {
+                        showToast(getString(R.string.diglog_note_input_upper_num_save));
+                        return;
+                    } else {
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (imm.isActive()) {
+                            imm.hideSoftInputFromWindow(uploadUpper.getPlotEditext().getApplicationWindowToken(), 0);
+                        }
+                        SpUtils.putInt(SPConstants.UPLOAD_UPPER, Integer.parseInt(uploadUpper.getUpperNum()));
+                        showToast(getString(R.string.diglog_upper_num_save_success));
+                        tv_pattern_content.setText(getString(R.string.upload_pattern_auto).replace("@", uploadUpper.getUpperNum()));
+                    }
+                    uploadUpper.dismiss();
+                }
+                break;
+            case R.id.bt_upload_pattern_cancle:
+                if (uploadUpper != null) {
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm.isActive()) {
+                        imm.hideSoftInputFromWindow(uploadUpper.getPlotEditext().getApplicationWindowToken(), 0);
+                    }
+                    uploadUpper.dismiss();
+                }
+                break;
         }
     }
 
@@ -241,8 +307,27 @@ public class SettingFragment extends Fragment implements OnClickListener,
                 SpUtils.putBoolean(SPConstants.SLIDE_VIBRATOR,
                         !SpUtils.getBoolean(SPConstants.SLIDE_VIBRATOR, true));
                 break;
-
-            default:
+            case R.id.toggle_upload_pattern:
+                isUpload = !isUpload;
+                SpUtils.putBoolean(SPConstants.UPLOAD_PATTERN,
+                        isUpload);
+                tv_pattern_content.setText(isUpload ? getString(R.string.upload_pattern_auto).replace("@",
+                        SpUtils.getInt(SPConstants.UPLOAD_UPPER, Constants.UPLOAD_UPPER_DEAFAULT) + "")
+                        : getString(R.string.upload_pattern_default));
+                break;
+            case R.id.toggle_statistics_postion:
+                isStatistics = !isStatistics;
+                SpUtils.putBoolean(SPConstants.STATISTICS_REPORT_POISTION,
+                        isStatistics);
+                if(isStatistics) {
+                    tv_statistics_postion_counter.setVisibility(View.VISIBLE);
+                    tv_statistics_postion_counter.setText(getString(R.string.setting_upload_statistics_num).replace
+                            ("@", SpUtils.getInt(SPConstants.STATISTICS_REPORT_NUM, 0) + ""));
+                } else {
+                    SpUtils.putInt(SPConstants.STATISTICS_REPORT_NUM, 0);
+                    tv_statistics_postion_counter.setVisibility(View.GONE);
+                    tv_statistics_postion_counter.setText("");
+                }
                 break;
         }
     }
@@ -676,6 +761,18 @@ public class SettingFragment extends Fragment implements OnClickListener,
         return bean;
     }
 
+    private void showUploadUpperDialog() {
+        if (uploadUpper == null) {
+            uploadUpper = new ShowUploadUpper(getActivity());
+        }
+        uploadUpper.showDialog();
+        uploadUpper.setListener(this);
+        uploadUpper.cleanEtContent();
+        uploadUpper.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        uploadUpper.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    }
+
+
     private void ShowProgressDialog() {
         progress = new ShowProgressDialog(getActivity());
         progress.show();
@@ -696,5 +793,10 @@ public class SettingFragment extends Fragment implements OnClickListener,
             mGlobalToast.setDuration(Toast.LENGTH_SHORT);
             mGlobalToast.show();
         }
+    }
+
+    public void refleshStatistics(){
+        tv_statistics_postion_counter.setText(getString(R.string.setting_upload_statistics_num).replace
+                ("@", SpUtils.getInt(SPConstants.STATISTICS_REPORT_NUM, 0) + ""));
     }
 }

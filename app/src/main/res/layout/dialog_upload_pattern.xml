@@ -10,26 +10,27 @@
         android:layout_height="1dp" />
 
     <TextView
-        android:id="@+id/tv_plot_title"
+        android:id="@+id/tv_upload_pattern_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="18dp"
         android:layout_marginTop="20dp"
-        android:text="@string/diglog_plot_title"
+        android:text="@string/diglog_upload_upper"
         android:textSize="16sp" />
 
     <EditText
-        android:id="@+id/et_plot_name"
+        android:id="@+id/et_upload_num"
         android:layout_width="fill_parent"
         android:layout_height="34dp"
-        android:layout_below="@+id/tv_plot_title"
+        android:layout_below="@+id/tv_upload_pattern_title"
         android:layout_marginLeft="18dp"
         android:layout_marginTop="5dp"
         android:layout_marginRight="18dp"
         android:background="@drawable/corner_rectangle_et_bg"
         android:focusable="true"
-        android:hint="@string/plot_name_note"
-        android:paddingLeft="5dp"
+        android:hint="@string/diglog_input_upper_num"
+        android:inputType="number"
+        android:paddingLeft="8dp"
         android:paddingRight="5dp"
         android:singleLine="true"
         android:textSize="16sp" />
@@ -41,7 +42,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/bt_plot_save"
+            android:id="@+id/bt_upload_pattern_save"
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_marginRight="0.5dp"
@@ -52,7 +53,7 @@
             android:textSize="17sp" />
 
         <Button
-            android:id="@+id/bt_plot_cancle"
+            android:id="@+id/bt_upload_pattern_cancle"
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_marginLeft="0.5dp"

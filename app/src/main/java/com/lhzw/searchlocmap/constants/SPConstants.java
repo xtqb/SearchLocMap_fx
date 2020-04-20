@@ -35,4 +35,13 @@ public class SPConstants {
 	public static final String NET_BASE_COM = "NET_BASE_COM"; // COM
 
 	public static final String LOGIN_NAME = "LOGIN_NAME"; // COM
+
+	public static final String UPLOAD_PATTERN = "UPLOAD_PATTERN";
+
+    public static final String UPLOAD_UPPER = "UPLOAD_UPPER";
+
+    public static final String STATISTICS_REPORT_POISTION = "STATISTICS_REPORT_POISTION";
+
+	public static final String STATISTICS_REPORT_NUM = "STATISTICS_REPORT_NUM";
+
 }

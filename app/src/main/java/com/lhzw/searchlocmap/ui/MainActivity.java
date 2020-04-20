@@ -70,6 +70,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private AlerDialogshow dialog;
     private BDManager mBDManager;
     private PowerManager.WakeLock wakeLock;
+    private SettingFragment settingFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +84,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         initWakeLock();
     }
 
+    @SuppressLint("InvalidWakeLockTag")
     private void initWakeLock(){
         PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyTAG");
@@ -215,12 +217,12 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         SecurityFragment fragment1 = new SecurityFragment();
         PersManagerFragment fragment2 = new PersManagerFragment();
-        SettingFragment fragment3 = new SettingFragment();
+        settingFragment = new SettingFragment();
 
         SpUtils.putBoolean(SPConstants.PERSON_ENTER, false);
         list.add(fragment1);
         list.add(fragment2);
-        list.add(fragment3);
+        list.add(settingFragment);
 
         viewPager.setAdapter(adapter);
     }
@@ -403,6 +405,13 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
     };
 
+    // 刷新设置统计
+    public void refleshStatistics(){
+        if(settingFragment != null) {
+            settingFragment.refleshStatistics();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -410,6 +419,5 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         if(wakeLock != null) {
             wakeLock.release();
         }
-
     }
 }

@@ -116,6 +116,7 @@ import com.lhzw.searchlocmap.scrolllayout.ScrollLayout;
 import com.lhzw.searchlocmap.ui.CommandStateActivity;
 import com.lhzw.searchlocmap.ui.CommunicationListActivity;
 import com.lhzw.searchlocmap.ui.LocationTrackActivity;
+import com.lhzw.searchlocmap.ui.MainActivity;
 import com.lhzw.searchlocmap.ui.PerStateActivity;
 import com.lhzw.searchlocmap.ui.PlotItemListActivity;
 import com.lhzw.searchlocmap.ui.ShortMessUploadActivity;
@@ -285,12 +286,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private TextView tv_update_leisure;
     private View scroll_cancel;
     private TextView tv_upload_state;
-//    private LoadingView loadingView;
+    //    private LoadingView loadingView;
     private final int COMPLETE = 0x0087;
     private Map<String, String> mHashMap;
     private Dao<MessageInfoIBean, Integer> mMsgDao;
     private RadioGroup mRadioGroup;
-//    private ImageView mIvSwitchRg;
+    //    private ImageView mIvSwitchRg;
     private FrameLayout mFlContainer;
     private ImageView mIvOpen;
     private boolean isTimer;
@@ -354,6 +355,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             initMapConfig();
             FrameLayout map_layout = (FrameLayout) view.findViewById(R.id.map);
             if (tileProviderBase == null) {
+                Log.e("Tag", "tileProviderBase  ...");
                 tileProviderBase = new MapTileProviderBasic(getActivity().getApplicationContext(), TileSourceFactory.getTileSourceByMapName("YX|ZJ"));
             }
             mMapView = new MapView(getActivity(), 256, new DefaultResourceProxyImpl(getActivity()), tileProviderBase);
@@ -782,6 +784,16 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 startLeftAnimation(false);
                 drawer.closeDrawer(Gravity.LEFT);
                 measureDistance();
+//                byte[] sndBytes = new byte[11];
+//                try {
+//                    byte[] numByte1 = obtainBDNum();
+//                    for (int j = 0; j < 4; j++) {
+//                        sndBytes[5 + j] = numByte1[j];
+//                    }
+//                    loRaManager.sendMessage(sndBytes, "你好".getBytes("GB2312"));
+//                } catch (UnsupportedEncodingException e) {
+//                    e.printStackTrace();
+//                }
                 break;
             case R.id.rl_mesure_area:
                 isSettingEnable = true;
@@ -869,7 +881,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 isSyncState = true;
                 mHandler.sendEmptyMessageDelayed(SYNC_DELAY_SIGNAL, SYNC_DELAY);
                 try {
-                    if(SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
+                    if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
                         SearchLocMapApplication.getInstance().getUploadService().reuestData(lat, lon);
                         // 写入日志
                         LogWrite writer = LogWrite.open();
@@ -971,11 +983,11 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 isSosFlash = false;
                 sendCMDSOSComplete(codeArr);
 
-                if(BaseUtils.isNetConnected(SearchLocMapApplication.getContext())) {
+                if (BaseUtils.isNetConnected(SearchLocMapApplication.getContext())) {
                     double latSos = 0.0;
                     double lngSos = 0.0;
-                    if(tatolMap.get(icon_id)!= null && !"".equals(tatolMap.get(icon_id).getLatitude()) && !"".equals(tatolMap.get(icon_id).getLongitude())
-                            && !"null".equals(tatolMap.get(icon_id).getLatitude()) && !"null".equals(tatolMap.get(icon_id).getLongitude())){
+                    if (tatolMap.get(icon_id) != null && !"".equals(tatolMap.get(icon_id).getLatitude()) && !"".equals(tatolMap.get(icon_id).getLongitude())
+                            && !"null".equals(tatolMap.get(icon_id).getLatitude()) && !"null".equals(tatolMap.get(icon_id).getLongitude())) {
                         latSos = Double.valueOf(tatolMap.get(icon_id).getLatitude());
                         lngSos = Double.valueOf(tatolMap.get(icon_id).getLongitude());
                         WatchLocBean bean = new WatchLocBean("watch", tatolMap.get(icon_id).getNum(), "", "", "sosfinished", "", latSos + "", lngSos + "", BaseUtils.sdf.format(tatolMap.get(icon_id).getLocTime()));
@@ -991,7 +1003,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         updataState(icon_id);
                         showToast(getString(R.string.send_command_success_note));
                     }
-                   // WatchLocBean bean = new WatchLocBean("watch", tatolMap.get(icon_id).getOffset() + "", "", "", "sosfinished", "", latSos + "", lngSos + "", BaseUtils.sdf.format(tatolMap.get(icon_id).getLocTime()));
+                    // WatchLocBean bean = new WatchLocBean("watch", tatolMap.get(icon_id).getOffset() + "", "", "", "sosfinished", "", latSos + "", lngSos + "", BaseUtils.sdf.format(tatolMap.get(icon_id).getLocTime()));
                 }
                 mPopWindow.dismiss();
                 mPopWindow = null;
@@ -1029,7 +1041,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 break;
             case R.id.dialog_timer_close:
                 try {
-                    if(isTimer) {
+                    if (isTimer) {
                         tv_update_leisure.setText(getString(R.string.update_state_note));
                         timerCloseDialog.dismiss();
                         timerCloseDialog = null;
@@ -1088,7 +1100,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 uploadDetail = null;
                 break;
             case R.id.rl_upload_inner:
-                if(isTimer) {
+                if (isTimer) {
                     timerCloseDialog = new ShowTimerCloseDialog(getActivity());
                     timerCloseDialog.show();
                     timerCloseDialog.setListener(this);
@@ -1103,13 +1115,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 tatolSearch();
                 break;
             case R.id.im_upload_state_cancel:
-                if(isUpload) {
+                if (isUpload) {
                     isUpload = false;
                     mHandler.removeMessages(SEARCH_NOTE);
                     mHandler.removeMessages(TIMER_REPORT);
                     mHandler.removeMessages(COMPLETE);
                 }
-                if(isTimerRuning) {
+                if (isTimerRuning) {
                     isTimerRuning = false;
                     mHandler.removeMessages(REFLESH_TV);
                 }
@@ -1127,7 +1139,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 }
                 break;
             case R.id.rl_upload_time_select:
-                if(isTimer) {
+                if (isTimer) {
                     timerCloseDialog = new ShowTimerCloseDialog(getActivity());
                     timerCloseDialog.show();
                     timerCloseDialog.setListener(SecurityFragment.this);
@@ -1140,7 +1152,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 break;
             case R.id.rl_upload_history:
                 // 单次搜索
-                if(sosList.size() == 0 && commonList.size() == 0 && undetermined_List.size() == 0) {
+                if (sosList.size() == 0 && commonList.size() == 0 && undetermined_List.size() == 0) {
                     showToast(getString(R.string.total_search_person_none));
                     return;
                 }
@@ -1160,8 +1172,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     protected int initView() {
         return R.layout.security_fg;
     }
+
     private boolean isShow;//是否显示radioGroup
     private DragView mDragView;
+
     @SuppressLint("WrongConstant")
     @Override
     protected void initData() {
@@ -1230,20 +1244,20 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId){
+                switch (checkedId) {
                     case R.id.rg_btn_bd:
-                       SpUtils.putInt(SPConstants.COM_MODE,Constants.COM_MODE_BD);
+                        SpUtils.putInt(SPConstants.COM_MODE, Constants.COM_MODE_BD);
                         break;
                     case R.id.rg_btn_net:
-                        SpUtils.putInt(SPConstants.COM_MODE,Constants.COM_MODE_NET);
+                        SpUtils.putInt(SPConstants.COM_MODE, Constants.COM_MODE_NET);
                         break;
                     case R.id.rg_btn_auto:
-                        SpUtils.putInt(SPConstants.COM_MODE,Constants.COM_MODE_AUTO);
+                        SpUtils.putInt(SPConstants.COM_MODE, Constants.COM_MODE_AUTO);
                         break;
                 }
                 if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
                     try {
-                        SearchLocMapApplication.getInstance().getUploadService().setCom(SpUtils.getInt(SPConstants.COM_MODE,Constants.COM_MODE_BD));
+                        SearchLocMapApplication.getInstance().getUploadService().setCom(SpUtils.getInt(SPConstants.COM_MODE, Constants.COM_MODE_BD));
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -1251,8 +1265,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             }
         });
 
-        switch (SpUtils.getInt(SPConstants.COM_MODE,Constants.COM_MODE_BD)){
-            case Constants.COM_MODE_BD :
+        switch (SpUtils.getInt(SPConstants.COM_MODE, Constants.COM_MODE_BD)) {
+            case Constants.COM_MODE_BD:
                 mRadioGroup.check(R.id.rg_btn_bd);
                 break;
             case Constants.COM_MODE_NET:
@@ -1271,7 +1285,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             }
         }
 
-        LogUtil.d("当前网络模式为"+SpUtils.getInt(SPConstants.COM_MODE,Constants.COM_MODE_BD));
+        LogUtil.d("当前网络模式为" + SpUtils.getInt(SPConstants.COM_MODE, Constants.COM_MODE_BD));
 
         mScrollLayout = (ScrollLayout) view.findViewById(R.id.scrolllayout);
 
@@ -1513,11 +1527,11 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private void initMenuBtnListener() {
         mFlContainer = (FrameLayout) view.findViewById(R.id.fl_menu_container);
         LinearLayout btnDraw = (LinearLayout) view.findViewById(R.id.ll_btn_draw);
-        LinearLayout btnSms= (LinearLayout) view.findViewById(R.id.ll_btn_sms);
-        LinearLayout btnLocation= (LinearLayout) view.findViewById(R.id.ll_btn_location);
-        LinearLayout btnSearch= (LinearLayout) view.findViewById(R.id.ll_btn_search);
-        LinearLayout btnBdService= (LinearLayout) view.findViewById(R.id.ll_btn_bd_service);
-        LinearLayout btnComMode= (LinearLayout) view.findViewById(R.id.ll_btn_communicate_mode);
+        LinearLayout btnSms = (LinearLayout) view.findViewById(R.id.ll_btn_sms);
+        LinearLayout btnLocation = (LinearLayout) view.findViewById(R.id.ll_btn_location);
+        LinearLayout btnSearch = (LinearLayout) view.findViewById(R.id.ll_btn_search);
+        LinearLayout btnBdService = (LinearLayout) view.findViewById(R.id.ll_btn_bd_service);
+        LinearLayout btnComMode = (LinearLayout) view.findViewById(R.id.ll_btn_communicate_mode);
         mIvOpen = (ImageView) view.findViewById(R.id.iv_open);
         btnDraw.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1557,26 +1571,26 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         btnComMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isShow){
+                if (isShow) {
                     mRadioGroup.setVisibility(View.GONE);
                     mIvOpen.setImageDrawable(getResources().getDrawable(R.drawable.icon_sf_close2));
-                }else {
+                } else {
                     mRadioGroup.setVisibility(View.VISIBLE);
                     mIvOpen.setImageDrawable(getResources().getDrawable(R.drawable.icon_sf_open2));
                 }
-                isShow=!isShow;
+                isShow = !isShow;
             }
         });
         btnLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                            //将镜头平移到当前手持机定位的中心
-                            mapController = mMapView.getController();
-                            mapController.setCenter(new GeoPoint(lat, lon));
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
+                    //将镜头平移到当前手持机定位的中心
+                    mapController = mMapView.getController();
+                    mapController.setCenter(new GeoPoint(lat, lon));
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
             }
         });
     }
@@ -1816,7 +1830,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     break;
                 case TIMER_REPORT:
                     //上报搜索信息
-                    if(isUpload || isTimer) {
+                    if (isUpload || isTimer) {
                         List<PersonalInfo> rxList = CommonDBOperator.queryByOrderKey(persondao, "num");
                         if (rxList != null && rxList.size() > 0) {
                             Log.e("Tag", "size : " + rxList.size());
@@ -1867,9 +1881,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                             uploadList.add(bean);
                             mComUtils.uploadBena(uploadList);
                         }
+                        if (SpUtils.getBoolean(SPConstants.STATISTICS_REPORT_POISTION, false)) {
+                            SpUtils.putInt(SPConstants.STATISTICS_REPORT_NUM, SpUtils.getInt(SPConstants.STATISTICS_REPORT_NUM, 0) + 1);
+                            ((MainActivity) getActivity()).refleshStatistics();
+                        }
                     }
 
-                    if(isUpload) {
+                    if (isUpload) {
                         tv_search_state.setText(getString(R.string.upload_data));
                         tv_upload_state.setText(getString(R.string.upload_state_waiting));
                         String[] rev = BaseUtils.formatTime(System.currentTimeMillis()).split("  ");
@@ -1877,9 +1895,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         tv_serach_time.setText(rev[1]);
                         mHandler.sendEmptyMessageDelayed(COMPLETE, 2000);
                     }
-                    if(isTimer) {
-                        uploadCounter ++;
-                        tv_update_leisure.setText(getString(R.string.uploading_timer_counter).replace("@", uploadCounter+""));
+                    if (isTimer) {
+                        uploadCounter++;
+                        tv_update_leisure.setText(getString(R.string.uploading_timer_counter).replace("@", uploadCounter + ""));
                         saveWactchTime();
                     }
                     break;
@@ -2093,10 +2111,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     //点击变大
     private void setTouched(int id) {
-        if(isShow){
+        if (isShow) {
             mRadioGroup.setVisibility(View.GONE);
-            isShow=!isShow;
-           // mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_open));
+            isShow = !isShow;
+            // mIvSwitchRg.setImageDrawable(getResources().getDrawable(R.drawable.icon_open));
             mIvOpen.setImageDrawable(getResources().getDrawable(R.drawable.icon_sf_close2));
 
         }
@@ -2513,6 +2531,61 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         }
     }
 
+    // 自动上传 位置信息
+    @Override
+    public void autoUpload() {
+        Log.e("Tag", "auto upload message ...");
+        List<PersonalInfo> rxList = CommonDBOperator.queryByOrderKey(persondao, "num");
+        if (rxList != null && rxList.size() > 0) {
+            Log.e("Tag", "size : " + rxList.size());
+            String body = "";
+            String locTime = "";
+            String register = "";
+            String offset = "";
+            int counter = 0;
+            String local_latlon = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + "," + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
+            List<UploadInfoBean> uploadList = new ArrayList<>();
+            for (PersonalInfo item : rxList) {
+                if (counter == rxList.size() - 1) {
+                    body += item.getLatitude() + "," + item.getLongitude();
+                    locTime += item.getLocTime();
+                    offset += counter;
+                    register += item.getNum();
+                } else {
+                    body += item.getLatitude() + "," + item.getLongitude() + "-";
+                    locTime += item.getLocTime() + "-";
+                    offset += counter + "-";
+                    register += item.getNum() + "-";
+                }
+                counter++;
+            }
+            UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), body, locTime, offset, local_latlon,
+                    SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, register);
+            uploadList.add(bean);
+            if (SpUtils.getInt(SPConstants.SP_BD_MODE, Constants.UOLOAD_STATE_0) == Constants.UOLOAD_STATE_1) {
+                bean.setTx_type(Constants.TX_QZH);
+                bean.setNum(SpUtils.getString(Constants.UPLOAD_QZH_NUM, Constants.BD_NUM_DEF));
+                uploadList.add(bean);
+            }
+            rxList.clear();
+            mComUtils.uploadBena(uploadList);
+            saveWactchTime();
+            // 写入日志
+        } else {
+            List<UploadInfoBean> uploadList = new ArrayList<>();
+            String local_latlon = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + "," + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
+            UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), null, null, null, local_latlon,
+                    SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, null);
+            uploadList.add(bean);
+            mComUtils.uploadBena(uploadList);
+            saveWactchTime();
+        }
+        if (SpUtils.getBoolean(SPConstants.STATISTICS_REPORT_POISTION, false)) {
+            SpUtils.putInt(SPConstants.STATISTICS_REPORT_NUM, SpUtils.getInt(SPConstants.STATISTICS_REPORT_NUM, 0) + 1);
+            ((MainActivity) getActivity()).refleshStatistics();
+        }
+    }
+
     private class Action implements Runnable {
         @Override
         public void run() {
@@ -2520,7 +2593,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 List<PersonalInfo> list = null;
                 byte[] numByte = obtainBDNum();
                 for (int counter = 0; counter < 3; counter++) {
-                    if(!isTimerRuning) return;
+                    if (!isTimerRuning) return;
                     list = CommonDBOperator.queryByKeys(persondao, "state", Constants.PERSON_OFFLINE + "");
                     Message msg = mHandler.obtainMessage(REFLESH_TV);
                     msg.obj = counter + 1;
@@ -2957,7 +3030,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     }
                 }
                 if (unReadMsgCount == 0) {
-                    if(getActivity()!=null){
+                    if (getActivity() != null) {
                         getActivity().runOnUiThread(new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -2969,7 +3042,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
                 } else {
                     final int finalUnReadMsgCount = unReadMsgCount;
-                    if(getActivity()!=null){
+                    if (getActivity() != null) {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -2984,7 +3057,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         list.clear();
                     }
                 }
-               // mHashMap.clear();
+                // mHashMap.clear();
             }
         }).start();
 
@@ -3120,7 +3193,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     }
 
-   // private PopupWindow mPopMemuWindow;
+    // private PopupWindow mPopMemuWindow;
 //    private void initPopWindow() {
 //        View contentView = LayoutInflater.from(getContext()).inflate(R.layout.pop_menu,null);
 //        //处理popWindow 显示内容

@@ -1,8 +1,13 @@
 package com.lhzw.searchlocmap.adapter;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.LoRaManager;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +22,13 @@ import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.bean.PersonalInfo;
 import com.lhzw.searchlocmap.bean.WatchLastLocTime;
 import com.lhzw.searchlocmap.constants.Constants;
+import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
+import com.lhzw.searchlocmap.ui.MainActivity;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.LogUtil;
+import com.lhzw.searchlocmap.utils.SpUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -155,10 +163,18 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
             } else {
                 bean.setOnline(true);
             }
-           // LogUtil.e(item.getState1() + ",  " + item.getState());
+            // LogUtil.e(item.getState1() + ",  " + item.getState());
             bean.setPos(pos);
             list.add(bean);
             pos++;
+        }
+        if (SpUtils.getBoolean(SPConstants.UPLOAD_PATTERN, false) &&
+                per_num >= SpUtils.getInt(SPConstants.UPLOAD_UPPER, Constants.UPLOAD_UPPER_DEAFAULT) &&
+                update_num >= SpUtils.getInt(SPConstants.UPLOAD_UPPER, Constants.UPLOAD_UPPER_DEAFAULT) * 0.8) {
+            showNotifcationInfo(mContext, mContext.getString(R.string._data_upload_auto_per), R.drawable.icon_mesage_upload, update_num);
+            if (listener != null) {
+                listener.autoUpload();
+            }
         }
         if (locTimelist != null && locTimelist.size() > 0) {
             locTimelist.clear();
@@ -336,7 +352,9 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
     }
 
     public interface OnClickScrollItemListener {
-        public void onSrollItemClick(String state, int pos);
+        void onSrollItemClick(String state, int pos);
+
+        void autoUpload();  // 自动上传
     }
 
     public void setOnClickScrollItemListener(OnClickScrollItemListener listener) {
@@ -355,4 +373,20 @@ public class SrollAdapter extends BaseAdapter implements AdapterView.OnItemClick
         return true;
     }
 
+    private void showNotifcationInfo(Context context, String text, int id, int update) {
+        Intent intent = new Intent(context, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        // 设置通知到类型SOS和通知的详细信息（接收到XXX发送的SOS请求）
+        Notification n = new Notification.Builder(context).setContentTitle(
+                context.getString(R.string._already_update_per).replace("@", update + "")).setContentText(text)
+                .setSmallIcon(id).setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), id)).setWhen(System.currentTimeMillis())
+                .setContentIntent(contentIntent).build();
+        n.flags = Notification.FLAG_AUTO_CANCEL;
+        // n.number=count;
+        n.defaults = Notification.DEFAULT_SOUND;
+        // 从系统服务中获得通知管理器
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // 执行通知
+        nm.notify(1, n);
+    }
 }
