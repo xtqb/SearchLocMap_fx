@@ -15,6 +15,21 @@
         android:textColor="@color/black"
         android:textSize="16sp" />
 
+    <TextView
+        android:id="@+id/tv_send_message"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/rl_background"
+        android:gravity="center"
+        android:text="自定义"
+        android:textColor="@color/green_little"
+        android:textSize="16sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/gray_little1" />
+
     <ListView
         android:id="@+id/listview"
         android:layout_width="match_parent"

@@ -101,6 +101,7 @@ public class WatchSignalReceiver extends BroadcastReceiver {
                     if (!SpUtils.getBoolean(SPConstants.UPLOAD_PATTERN, Constants.UPLOAD_PATTERN_DEFAULT)) {
                         showNotifcationInfo(mContext, register_num, R.drawable.icon_qita2, "COMMON");
                     }
+//                    Log.e("receive433", "receive 433 TX_COMMON");
                     break;
                 case (byte) 0xA1: // SOS
                 case (byte) 0x12: // SOS
@@ -117,6 +118,7 @@ public class WatchSignalReceiver extends BroadcastReceiver {
                     if (!SpUtils.getBoolean(SPConstants.UPLOAD_PATTERN, Constants.UPLOAD_PATTERN_DEFAULT)) {
                         showNotifcationInfo(mContext, register_num, R.drawable.icon_sos2, "SOS");
                     }
+//                    Log.e("receive433", "receive 433 TX_SOS");
                     break;
                 case (byte) 0x19:// 指令反馈,刷新列表
                     //先更新数据库的数据
@@ -173,8 +175,8 @@ public class WatchSignalReceiver extends BroadcastReceiver {
                 uploadList.clear();
                 String latLonStr = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + ","
                         + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
-                UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, data_type, System.currentTimeMillis(), lat + "," +
-                        lon, locTime + "", list.get(0).getOffset() + "", latLonStr, SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 1,
+                UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_SOS, System.currentTimeMillis(), lat + "," +
+                        lon, locTime + "", list.get(0).getOffset() + "", latLonStr, SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 1+"",
                         SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, -1, register_num);
                 uploadList.add(bean);
                 if (SpUtils.getInt(SPConstants.SP_BD_MODE, Constants.UOLOAD_STATE_0) == Constants.UOLOAD_STATE_1) {
@@ -187,7 +189,6 @@ public class WatchSignalReceiver extends BroadcastReceiver {
             }
 
             CommonDBOperator.updateItem(persondao, list.get(0));
-            Log.e("Tag", "sendBroadcast    1");
             mContext.sendBroadcast(sosflash);
             list.clear();
         } else {

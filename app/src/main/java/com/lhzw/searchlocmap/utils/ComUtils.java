@@ -121,7 +121,6 @@ public class ComUtils {
 //        public static final int TX_FIRELINE = 4;
         LogUtil.d("通信类型=="+infoBean.getData_type());
         switch (infoBean.getData_type()) {
-
             case Constants.TX_FIREPOIT:
                 RequestFirePointBean firePointBean = new RequestFirePointBean(Constants.CMD_FIRE_POINT, "handsetsession", "HANDSET",
                         BaseUtils.getMacFromHardware(), SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT),
@@ -138,6 +137,7 @@ public class ComUtils {
                         System.currentTimeMillis())), BaseUtils.getWatchLocList(infoBean, "normal"));
                 LogUtil.e("TX_COMMON   " + new Gson().toJson(commonBean));
                 uploadToNet(commonBean, infoBean);
+//                Log.e("TxMess", "send message  TX_COMMON");
                 break;
             case Constants.TX_SOS:
                 RequestCommonBean sosBean = new RequestCommonBean(Constants.CMD_SOS, "handsetsession", "HANDSET",
@@ -145,6 +145,7 @@ public class ComUtils {
                         SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
                         System.currentTimeMillis())), BaseUtils.getWatchLocList(infoBean, "sosing"));
                 LogUtil.e("TX_SOS   " + new Gson().toJson(sosBean));
+//                Log.e("TxMess", "send message  TX_SOS");
                 uploadToNet(sosBean, infoBean);
                 break;
             case Constants.TX_MMS:

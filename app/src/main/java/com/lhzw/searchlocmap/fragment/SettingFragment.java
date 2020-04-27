@@ -796,7 +796,9 @@ public class SettingFragment extends Fragment implements OnClickListener,
     }
 
     public void refleshStatistics(){
-        tv_statistics_postion_counter.setText(getString(R.string.setting_upload_statistics_num).replace
-                ("@", SpUtils.getInt(SPConstants.STATISTICS_REPORT_NUM, 0) + ""));
+        if(getActivity() != null && !getActivity().isFinishing()){
+            tv_statistics_postion_counter.setText(getString(R.string.setting_upload_statistics_num).replace
+                    ("@", SpUtils.getInt(SPConstants.STATISTICS_REPORT_NUM, 0) + ""));
+        }
     }
 }

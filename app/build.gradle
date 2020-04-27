@@ -2,12 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-//        key {
-//            keyAlias 'lhzw'
-//            keyPassword '123456'
-//            storeFile file('D:/keystore')
-//            storePassword '123456'
-//        }
+        lhzw {
+            keyAlias 'keystore'
+            keyPassword '123456'
+            // storeFile file('D:/android/work/vswork/BluetoothWatch/keystore.jks')
+            storeFile file('../keystore')
+            storePassword '123456'
+        }
     }
     compileSdkVersion 23
     useLibrary 'org.apache.http.legacy'
@@ -15,8 +16,8 @@ android {
         applicationId "com.lhzw.searchlocmap"
         minSdkVersion 23
         targetSdkVersion 23
-        versionCode 16
-        versionName "2.3.4e"
+        versionCode 19
+        versionName "2.5.5e"
     }
     buildTypes {
 //        release {
@@ -27,6 +28,12 @@ android {
 //        debug {
 //            signingConfig signingConfigs.key
 //        }
+        lintOptions {
+            checkReleaseBuilds false
+            // Or, if you prefer, you can continue to check for errors in release builds,
+            // but continue the build even when errors are found:
+            abortOnError false
+        }
     }
 
     sourceSets {

@@ -8,26 +8,26 @@ public class UploadInfoBean implements Parcelable{
 	/**
 	 *
 	 */
-	private int tx_type;          //传输类型  基指、前指、终端
-	private int data_type;        // 数据类型 sos mms common fireL fireP
-	private long time;            //发送时间、定位时间
-	private String body;          //消息体
-	private String locTimes;      // 定位时间
-	private String offsets;       //偏移集合
-	private String local_latlon;  //手持定位数据
-	private long local_time;      //手持机定位时间
-	private int data_state;         //传输状态 开始  结束 sos 大火小火中火等
-	private String num;        // 备注  可能为北斗号
-	private int comFont;          //北斗传输类型
-	private int sendID;           //有数据ID
-	private String bdNum;          //手表的设备号
+	private int tx_type;          //浼犺緭绫诲瀷  鍩烘寚銆佸墠鎸囥�佺粓绔�
+	private int data_type;        // 鏁版嵁绫诲瀷 sos mms common fireL fireP
+	private long time;            //鍙戦�佹椂闂淬�佸畾浣嶆椂闂�
+	private String body;          //娑堟伅浣�
+	private String locTimes;      // 瀹氫綅鏃堕棿
+	private String offsets;       //鍋忕Щ闆嗗悎
+	private String local_latlon;  //鎵嬫寔瀹氫綅鏁版嵁
+	private long local_time;      //鎵嬫寔鏈哄畾浣嶆椂闂�
+	private String data_state;         //浼犺緭鐘舵�� 寮�濮�  缁撴潫 sos 澶х伀灏忕伀涓伀绛�
+	private String num;        // 澶囨敞  鍙兘涓哄寳鏂楀彿
+	private int comFont;          //鍖楁枟浼犺緭绫诲瀷
+	private int sendID;           //鏈夋暟鎹甀D
+	private String bdNum;          //鍖楁枟鍙峰垪琛�
 	public UploadInfoBean() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 	public UploadInfoBean(int tx_type, int data_type, long time, String body, String locTimes,  String offsets,
-						  String local_latlon, long local_time, int data_state, String num,
+						  String local_latlon, long local_time, String data_state, String num,
 						  int comFont, int sendID, String bdNum) {
 		super();
 		this.tx_type = tx_type;
@@ -57,7 +57,7 @@ public class UploadInfoBean implements Parcelable{
 		offsets = parcel.readString();
 		local_latlon = parcel.readString();
 		local_time = parcel.readLong();
-		data_state = parcel.readInt();
+		data_state = parcel.readString();
 		num = parcel.readString();
 		comFont = parcel.readInt();
 		sendID = parcel.readInt();
@@ -81,14 +81,14 @@ public class UploadInfoBean implements Parcelable{
 		parcel.writeString(offsets);
 		parcel.writeString(local_latlon);
 		parcel.writeLong(local_time);
-		parcel.writeInt(data_state);
+		parcel.writeString(data_state);
 		parcel.writeString(num);
 		parcel.writeInt(comFont);
 		parcel.writeInt(sendID);
 		parcel.writeString(bdNum);
 	}
 
-	public static final android.os.Parcelable.Creator<UploadInfoBean> CREATOR = new Creator<UploadInfoBean>() {
+	public static final Creator<UploadInfoBean> CREATOR = new Creator<UploadInfoBean>() {
 
 		@Override
 		public UploadInfoBean[] newArray(int arg0) {
@@ -175,11 +175,11 @@ public class UploadInfoBean implements Parcelable{
 		this.offsets = offsets;
 	}
 
-	public int getData_state() {
+	public String getData_state() {
 		return data_state;
 	}
 
-	public void setData_state(int data_state) {
+	public void setData_state(String data_state) {
 		this.data_state = data_state;
 	}
 

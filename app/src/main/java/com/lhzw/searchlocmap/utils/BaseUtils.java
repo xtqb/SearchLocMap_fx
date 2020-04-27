@@ -245,7 +245,7 @@ public class BaseUtils {
         return timeStr;
     }
 
-    public static String formatTime(long time){
+    public static String formatTime(long time) {
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  HH:mm:ss");
         String timeStr = sdf.format(time);
         return timeStr;
@@ -325,7 +325,7 @@ public class BaseUtils {
         }
         List<UploadInfoBean> list = new ArrayList<UploadInfoBean>();
         for (PlotItemInfo item : infoList) {
-                list.add(getUploadInfo(item));
+            list.add(getUploadInfo(item));
         }
         return list;
     }
@@ -335,7 +335,7 @@ public class BaseUtils {
         String latLonStr = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + ","
                 + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
         UploadInfoBean bean = new UploadInfoBean(item.getTx_type(), item.getData_type(), item.getTime(), item.getPaths(), item.getTime() + "", "01",
-                latLonStr, SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 1, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, -1, null);
+                latLonStr, SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 1 +"", SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, -1, null);
         return bean;
     }
 
@@ -543,65 +543,67 @@ public class BaseUtils {
 
     /**
      * 将对象转化为json作为请求体 请求接口
+     *
      * @param object
      * @return
      */
-    public static RequestBody getRequestBody(Object object){
+    public static RequestBody getRequestBody(Object object) {
         RequestBody requestBody =
                 RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
                         ToJsonUtil.getInstance().toJson(object));
         return requestBody;
     }
 
-    public static List<RequestFirePointBean.FirepointlistBean> getFirePointList(UploadInfoBean infoBean){
+    public static List<RequestFirePointBean.FirepointlistBean> getFirePointList(UploadInfoBean infoBean) {
         List<RequestFirePointBean.FirepointlistBean> list = null;
-        if(infoBean.getBody() == null){
+        if (infoBean.getBody() == null) {
             return list;
         }
         list = new ArrayList<>();
         String[] locTimes = infoBean.getLocTimes().split("-");
-       // String[] idArr = infoBean.getOffsets().split("-");
+        // String[] idArr = infoBean.getOffsets().split("-");
         String[] latLngArr = infoBean.getBody().split("-");
-        for(int pos = 0; pos < latLngArr.length; pos ++) {
+        for (int pos = 0; pos < latLngArr.length; pos++) {
             String status = "small";
             double lat = 0.0;
             double lng = 0.0;
             String time = "";
             String[] latLng = latLngArr[pos].split(",");
-            if(latLng != null && latLng.length ==2 && latLng[0] != null && latLng[1] != null &&  !"".equals(latLng[0]) && !"".equals(latLng[1]) && !"null".equals(latLng[0]) && !"null".equals(latLng[1])){
+            if (latLng != null && latLng.length == 2 && latLng[0] != null && latLng[1] != null && !"".equals(latLng[0]) && !"".equals(latLng[1]) && !"null".equals(latLng[0]) && !"null".equals(latLng[1])) {
                 lat = Double.valueOf(latLng[0]);
                 lng = Double.valueOf(latLng[1]);
                 time = sdf.format(Double.valueOf(locTimes[pos]));
             }
-            RequestFirePointBean.FirepointlistBean bean = new RequestFirePointBean.FirepointlistBean(status,  time, lng+"",lat+"");
+            RequestFirePointBean.FirepointlistBean bean = new RequestFirePointBean.FirepointlistBean(status, time, lng + "", lat + "");
             list.add(bean);
         }
         return list;
     }
 
-    public static List<WatchLocBean> getWatchLocList(UploadInfoBean infoBean, String type){
+    public static List<WatchLocBean> getWatchLocList(UploadInfoBean infoBean, String type) {
         List<WatchLocBean> list = null;
-        if(infoBean.getBody() == null){
+        if (infoBean.getBody() == null) {
             return list;
         }
         list = new ArrayList<>();
         String[] locTimes = infoBean.getLocTimes().split("-");
         String[] idArr = infoBean.getBdNum().split("-");//手表的设备号
         String[] latLngArr = infoBean.getBody().split("-");
-        for(int pos = 0; pos < idArr.length; pos ++) {
+        String[] data_state = infoBean.getData_state().split("-");
+        for (int pos = 0; pos < idArr.length; pos++) {
             String watchstatus = "offline";
             double lat = 0.0;
             double lng = 0.0;
             String time = "";
             String[] latLng = latLngArr[pos].split(",");
-            if(latLng != null && latLng.length ==2 && latLng[0] != null && latLng[1] != null &&  !"".equals(latLng[0]) && !"".equals(latLng[1]) && !"null".equals(latLng[0]) && !"null".equals(latLng[1])){
-                watchstatus = type;
+            if (latLng != null && latLng.length == 2 && latLng[0] != null && latLng[1] != null && !"".equals(latLng[0]) && !"".equals(latLng[1]) && !"null".equals(latLng[0]) && !"null".equals(latLng[1])) {
+                watchstatus = data_state[pos].equals("0") ? "normal" : "sosing";
                 lat = Double.valueOf(latLng[0]);
                 lng = Double.valueOf(latLng[1]);
                 time = sdf.format(Double.valueOf(locTimes[pos]));
             }
             WatchLocBean bean = null;
-            if(lat == 0.0) {
+            if (lat == 0.0) {
                 bean = new WatchLocBean("watch", idArr[pos], "", "", watchstatus, "", null, null, time);
             } else {
                 bean = new WatchLocBean("watch", idArr[pos], "", "", watchstatus, "", lat + "", lng + "", time);
@@ -612,28 +614,28 @@ public class BaseUtils {
         return list;
     }
 
-    public static List<FirePoint> getFirePoint(UploadInfoBean infoBean){
+    public static List<FirePoint> getFirePoint(UploadInfoBean infoBean) {
         List<FirePoint> list = null;
-        if(infoBean.getBody() == null) {
+        if (infoBean.getBody() == null) {
             return list;
         }
         list = new ArrayList<>();
         String[] latLngArr = infoBean.getBody().split("-");
-        for(int pos = 0; pos < latLngArr.length; pos ++) {
+        for (int pos = 0; pos < latLngArr.length; pos++) {
             String[] latLng = latLngArr[pos].split(",");
             double lat = 0.0;
             double lng = 0.0;
-            if(latLng != null && latLng.length ==2 && !BaseUtils.isStringEmpty(latLng[0]) && !BaseUtils.isStringEmpty(latLng[1])){
+            if (latLng != null && latLng.length == 2 && !BaseUtils.isStringEmpty(latLng[0]) && !BaseUtils.isStringEmpty(latLng[1])) {
                 lat = Double.valueOf(latLng[0]);
                 lng = Double.valueOf(latLng[1]);
             }
-            FirePoint bean = new FirePoint(pos+ 1, lat, lng);
+            FirePoint bean = new FirePoint(pos + 1, lat, lng);
             list.add(bean);
         }
         return list;
     }
 
-    public static String getBaseIP(){
+    public static String getBaseIP() {
         StringBuilder builder = new StringBuilder();
         builder.append(SpUtils.getString(SPConstants.NET_BASE_IP, Constants.BASE_IP_DEF));
         builder.append(":");
@@ -644,12 +646,13 @@ public class BaseUtils {
 
     /**
      * 获取手持机的Mac地址
+     *
      * @return
      */
 
     public static String getMacFromHardware() {
-        if(!TextUtils.isEmpty(SpUtils.getString("MAC",""))){
-            return SpUtils.getString("MAC","");
+        if (!TextUtils.isEmpty(SpUtils.getString("MAC", ""))) {
+            return SpUtils.getString("MAC", "");
         }
 
         try {
@@ -678,11 +681,11 @@ public class BaseUtils {
                 //取消：
                 String[] mac = res1.toString().split(":");
                 StringBuilder builder = new StringBuilder();
-                for(String str : mac) {
+                for (String str : mac) {
                     builder.append(str);
                 }
                 all.clear();
-                SpUtils.putString("MAC",builder.toString());
+                SpUtils.putString("MAC", builder.toString());
                 return builder.toString();
             }
         } catch (Exception e) {

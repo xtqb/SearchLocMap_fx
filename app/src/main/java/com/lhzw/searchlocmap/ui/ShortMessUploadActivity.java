@@ -180,13 +180,13 @@ public class ShortMessUploadActivity extends Activity implements
 		body  = head + body;
 		UploadInfoBean item1 = new UploadInfoBean(Constants.TX_JZH, TX_MMS,
 				System.currentTimeMillis(), body, System.currentTimeMillis()+"", 1 + "", latLon, SpUtils.getLong(
-						SPConstants.LOC_TIME, System.currentTimeMillis()), 1, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 2, -1, null);
+						SPConstants.LOC_TIME, System.currentTimeMillis()), 1 +"", SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 2, -1, null);
 		mComUtils.uploadBena(item1);
 		item1 = null;
 		if(SpUtils.getInt(SPConstants.SP_BD_MODE, Constants.UOLOAD_STATE_0) == Constants.UOLOAD_STATE_1) {
 			UploadInfoBean item2 = new UploadInfoBean(Constants.TX_QZH, TX_MMS,
 					System.currentTimeMillis(), body, System.currentTimeMillis()+"", 1 + "", latLon, SpUtils.getLong(
-					SPConstants.LOC_TIME, System.currentTimeMillis()), 1, SpUtils.getString(Constants.UPLOAD_QZH_NUM, Constants.BD_NUM_DEF), 2, -1, null);
+					SPConstants.LOC_TIME, System.currentTimeMillis()), 1 +"", SpUtils.getString(Constants.UPLOAD_QZH_NUM, Constants.BD_NUM_DEF), 2, -1, null);
 			mComUtils.uploadBena(item2);
 			item2 = null;
 		}

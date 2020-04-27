@@ -131,6 +131,7 @@ import com.lhzw.searchlocmap.view.HistogramBar;
 import com.lhzw.searchlocmap.view.HorizontalListView;
 import com.lhzw.searchlocmap.view.LocationDialog;
 import com.lhzw.searchlocmap.view.ScanAnimView;
+import com.lhzw.searchlocmap.view.SendMessageDialog;
 import com.lhzw.searchlocmap.view.ShowAlertDialogCommand;
 import com.lhzw.searchlocmap.view.ShowDialogSearch;
 import com.lhzw.searchlocmap.view.ShowHandlePlotDialog;
@@ -734,12 +735,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 Log.e("Tag", "bt_plot_list");
                 break;
             case R.id.total_search_btn:
-//                if (isTimerRuning) {
-//                    timerCloseDialog = new ShowTimerCloseDialog(getActivity());
-//                    timerCloseDialog.show();
-//                    timerCloseDialog.setListener(this);
-//                    return;
-//                }
                 if (isOpen) {
                     mScrollLayout.scrollToExit();
                 } else {
@@ -784,16 +779,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 startLeftAnimation(false);
                 drawer.closeDrawer(Gravity.LEFT);
                 measureDistance();
-//                byte[] sndBytes = new byte[11];
-//                try {
-//                    byte[] numByte1 = obtainBDNum();
-//                    for (int j = 0; j < 4; j++) {
-//                        sndBytes[5 + j] = numByte1[j];
-//                    }
-//                    loRaManager.sendMessage(sndBytes, "你好".getBytes("GB2312"));
-//                } catch (UnsupportedEncodingException e) {
-//                    e.printStackTrace();
-//                }
                 break;
             case R.id.rl_mesure_area:
                 isSettingEnable = true;
@@ -836,8 +821,6 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 trackList.clear();
                 startLeftTrackAnimation(false);
                 showToast(getString(R.string.track_start));
-//                tv_search_note.setText(getString(R.string.record_track_begaining));
-//                tv_search_note.setVisibility(View.VISIBLE);
                 break;
             case R.id.rl_track_list:
                 if (drawer.isDrawerOpen(Gravity.LEFT)) {
@@ -952,15 +935,30 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 break;
             case R.id.tv_command_cancel:
                 dialogCommmand.clear();
+                dialogCommmand = null;
                 break;
             case R.id.tv_state://查看指令状态
                 dialogCommmand.clear();//dialog消失
+                dialogCommmand = null;
                 Intent intent = new Intent(getActivity(), CommandStateActivity.class);
                 startActivity(intent);
                 break;
-
             // 下达指令
-
+            case R.id.tv_send_message:
+                if(dialogCommmand != null) {
+                    byte[] sndBytes = dialogCommmand.getSendBytes();
+                    dialogCommmand.dismiss();
+                    dialogCommmand = null;
+                    // 发送自定义信息
+                    byte[] numByte1 = obtainBDNum();
+                    for (int j = 0; j < 4; j++) {
+                        sndBytes[5 + j] = numByte1[j];
+                    }
+                    SendMessageDialog send = new SendMessageDialog(getActivity(), loRaManager, sndBytes);
+                    send.showDialog();
+                    send.setListener();
+                }
+                break;
             case R.id.normal_mass_bt:
                 sendCMDAction(codeArr, (byte) 0x03);
                 mPopWindow.dismiss();
@@ -982,7 +980,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             case R.id.pop_rescue_bt:
                 isSosFlash = false;
                 sendCMDSOSComplete(codeArr);
-
+                Log.e("resume", "resume over ...");
                 if (BaseUtils.isNetConnected(SearchLocMapApplication.getContext())) {
                     double latSos = 0.0;
                     double lngSos = 0.0;
@@ -998,13 +996,23 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                                 SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON), BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
                                 System.currentTimeMillis())), sosListUpload);
                         ComUtils.getInstance().uploadToNet(sosBean, null);
-
                         // 存在更新状态
-                        updataState(icon_id);
-                        showToast(getString(R.string.send_command_success_note));
                     }
                     // WatchLocBean bean = new WatchLocBean("watch", tatolMap.get(icon_id).getOffset() + "", "", "", "sosfinished", "", latSos + "", lngSos + "", BaseUtils.sdf.format(tatolMap.get(icon_id).getLocTime()));
+                } else {
+                    List<UploadInfoBean> uploadList = new ArrayList<>();
+                    String latLonStr = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + ","
+                            + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
+                    List<PersonalInfo> list = CommonDBOperator.queryByKeys(persondao, "num", tatolMap.get(icon_id).getNum());
+                    UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_SOS, System.currentTimeMillis(), lat + "," +
+                            lon, BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
+                            System.currentTimeMillis())) + "", list.get(0).getOffset() + "", latLonStr, SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()) , 0+"",
+                            SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, -1, tatolMap.get(icon_id).getNum());
+                    uploadList.add(bean);
+                    mComUtils.uploadBena(uploadList);  //上传到北斗服务
                 }
+                updataState(icon_id);
+                showToast(getString(R.string.send_command_success_note));
                 mPopWindow.dismiss();
                 mPopWindow = null;
 //                showToast(getString(R.string.send_command_success_note));
@@ -1838,6 +1846,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                             String locTime = "";
                             String register = "";
                             String offset = "";
+                            String data_type = "";
                             int counter = 0;
                             String local_latlon = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + "," + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
                             List<UploadInfoBean> uploadList = new ArrayList<>();
@@ -1847,16 +1856,43 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                                     locTime += item.getLocTime();
                                     offset += counter;
                                     register += item.getNum();
+                                    if(item.getState().equals(Constants.PERSON_UNDETERMINED)) {
+                                        if(item.getState1().equals(Constants.PERSON_SOS)) {
+                                            data_type += "1";
+                                        } else {
+                                            data_type += "0";
+                                        }
+                                    } else {
+                                        if(item.getState().equals(Constants.PERSON_SOS)) {
+                                            data_type += "1";
+                                        } else {
+                                            data_type += "0";
+                                        }
+                                    }
                                 } else {
                                     body += item.getLatitude() + "," + item.getLongitude() + "-";
                                     locTime += item.getLocTime() + "-";
                                     offset += counter + "-";
                                     register += item.getNum() + "-";
+                                    if(item.getState().equals(Constants.PERSON_UNDETERMINED)) {
+                                        if(item.getState1().equals(Constants.PERSON_SOS)) {
+                                            data_type += "1-";
+                                        } else {
+                                            data_type += "0-";
+                                        }
+                                    } else {
+                                        if(item.getState().equals(Constants.PERSON_SOS)) {
+                                            data_type += "1-";
+                                        } else {
+                                            data_type += "0-";
+                                        }
+                                    }
                                 }
                                 counter++;
-                            }
+                            }  // 0代表 normal  1 代表 sos
+//                            Log.e("SendType", "data_type  : " + data_type);
                             UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), body, locTime, offset, local_latlon,
-                                    SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, register);
+                                    SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), data_type, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, register);
                             uploadList.add(bean);
                             if (SpUtils.getInt(SPConstants.SP_BD_MODE, Constants.UOLOAD_STATE_0) == Constants.UOLOAD_STATE_1) {
                                 bean.setTx_type(Constants.TX_QZH);
@@ -1877,7 +1913,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                             List<UploadInfoBean> uploadList = new ArrayList<>();
                             String local_latlon = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + "," + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
                             UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), null, null, null, local_latlon,
-                                    SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, null);
+                                    SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0 + "", SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, null);
                             uploadList.add(bean);
                             mComUtils.uploadBena(uploadList);
                         }
@@ -2542,6 +2578,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             String locTime = "";
             String register = "";
             String offset = "";
+            String data_type = "";
             int counter = 0;
             String local_latlon = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + "," + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
             List<UploadInfoBean> uploadList = new ArrayList<>();
@@ -2551,16 +2588,43 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     locTime += item.getLocTime();
                     offset += counter;
                     register += item.getNum();
+                    if(item.getState().equals(Constants.PERSON_UNDETERMINED)) {
+                        if(item.getState1().equals(Constants.PERSON_SOS)) {
+                            data_type += "1";
+                        } else {
+                            data_type += "0";
+                        }
+                    } else {
+                        if(item.getState().equals(Constants.PERSON_SOS)) {
+                            data_type += "1";
+                        } else {
+                            data_type += "0";
+                        }
+                    }
                 } else {
                     body += item.getLatitude() + "," + item.getLongitude() + "-";
                     locTime += item.getLocTime() + "-";
                     offset += counter + "-";
                     register += item.getNum() + "-";
+                    if(item.getState().equals(Constants.PERSON_UNDETERMINED)) {
+                        if(item.getState1().equals(Constants.PERSON_SOS)) {
+                            data_type += "1-";
+                        } else {
+                            data_type += "0-";
+                        }
+                    } else {
+                        if(item.getState().equals(Constants.PERSON_SOS)) {
+                            data_type += "1-";
+                        } else {
+                            data_type += "0-";
+                        }
+                    }
                 }
                 counter++;
             }
+//            Log.e("SendType", "data_type  : " + data_type);
             UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), body, locTime, offset, local_latlon,
-                    SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, register);
+                    SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), data_type, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, register);
             uploadList.add(bean);
             if (SpUtils.getInt(SPConstants.SP_BD_MODE, Constants.UOLOAD_STATE_0) == Constants.UOLOAD_STATE_1) {
                 bean.setTx_type(Constants.TX_QZH);
@@ -2575,7 +2639,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             List<UploadInfoBean> uploadList = new ArrayList<>();
             String local_latlon = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + "," + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
             UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), null, null, null, local_latlon,
-                    SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0, SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, null);
+                    SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0+"", SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, null);
             uploadList.add(bean);
             mComUtils.uploadBena(uploadList);
             saveWactchTime();
@@ -2671,6 +2735,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         dialogCommmand = new ShowAlertDialogCommand(getActivity());
         dialogCommmand.showDialog();
         dialogCommmand.setListener(this);
+        dialogCommmand.setSendBytes(sndBytes);
         dialogCommmand.setAdapter(new CommandAdapter(getActivity()));
         dialogCommmand.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -2686,6 +2751,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     Log.e("Tag", "sndBytes[" + pos + "] = " + Integer.toHexString(sndBytes[pos]));
                 }
                 dialogCommmand.clear();
+                dialogCommmand = null;
                 showToast(getString(R.string.send_command_success_note));
                 //TODO 发指令  就清空上次的指令  更新指令表的状态
                 Dao<PersonalInfo, Integer> infoDao = helper.getPersonalInfoDao();
