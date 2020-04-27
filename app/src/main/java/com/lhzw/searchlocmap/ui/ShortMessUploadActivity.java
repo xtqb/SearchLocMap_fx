@@ -427,12 +427,11 @@ public class ShortMessUploadActivity extends Activity implements
 					map.clear();
 				}
 
-
 				if(intent.getIntExtra("ID", -1) ==  ID) {
 					updataList();
 					showToast("接收成功");
 				}else {
-				//	showToast("接收短消息成功,ID不匹配");
+					showToast("接收短消息成功,ID不匹配");
 					LogUtil.e("收到短消息,但是页面未没刷新,原因为:ID=="+ID+"<====>收到的消息唯一标识ID=="+intent.getIntExtra("ID", -1));
 				}
 			}else if (intent.getAction().equals(Constants.BD_SIG_ACTION)) {
@@ -471,7 +470,6 @@ public class ShortMessUploadActivity extends Activity implements
 	@Override
 	protected void onStop() {
 		super.onStop();
-		isDestroy = true;
 	}
 
 	@Override
@@ -483,6 +481,7 @@ public class ShortMessUploadActivity extends Activity implements
 		if (receiver != null) {
 			unregisterReceiver(receiver);
 		}
+		isDestroy = true;
 		if (mesgList != null && mesgList.size() > 0) {
 			mesgList.clear();
 			mesgList = null;
