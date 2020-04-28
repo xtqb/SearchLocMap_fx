@@ -1,5 +1,6 @@
 package com.lhzw.searchlocmap.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BDManager;
 import android.content.BroadcastReceiver;
@@ -86,6 +87,7 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
     private ImageView im_channel_edit;
     private boolean isFinish;
     private Dao<HttpPersonInfo, Integer> mHttpPerDao;
+    private int offset = 0;
 
     private boolean canSave;
 
@@ -98,6 +100,7 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
         setListener();
     }
 
+    @SuppressLint("WrongConstant")
     private void initData() {
         isCurrentApp = true;
         person_sex = getString(R.string.person_sex_man);
@@ -172,7 +175,6 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
                 default:
                     break;
             }
-
         }
 
     };
@@ -283,6 +285,7 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
                                     list.get(0).setContact2(add_phone2_et.getText() + "");
                                     list.get(0).setBloodtype(add_blood_et.getText() + "");
                                     list.get(0).setAllergy(add_allergy_et.getText() + "");
+                                    list.get(0).setOffset(offset);
                                     CommonDBOperator.updateItem(perdao, list.get(0));
                                     list.clear();
                                     list = null;
@@ -312,6 +315,7 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
                                     perInfo.setContact2(add_phone2_et.getText() + "");
                                     perInfo.setBloodtype(add_blood_et.getText() + "");
                                     perInfo.setAllergy(add_allergy_et.getText() + "");
+                                    perInfo.setOffset(offset);
                                     CommonDBOperator.saveToDB(perdao, perInfo);
                                     perInfo = null;
 
@@ -392,11 +396,27 @@ public class PerItemAddActivity extends Activity implements OnClickListener,
                     icon_watch.setVisibility(View.GONE);
                     add_num_et.setText(register_num);
 
+                    // 获取最新的排序序号
+                    List<LocPersonalInfo> locList = CommonDBOperator.queryByKeys(perdao, "num", register_num);
+                    if(locList != null && locList.size() > 0) {
+                        offset = locList.get(0).getOffset();
+                    } else {
+                        List<LocPersonalInfo> locList1 = CommonDBOperator.queryByOrderKey(perdao, "offset", true);
+                        offset = 1;
+                        for(LocPersonalInfo per : locList1) {
+                            if(offset == per.getOffset()) {
+                                offset ++;
+                            } else {
+                                break;
+                            }
+                        }
+                    }
                     byte[] sndBytes = BaseUtils.getPerRegisterByteArr(add_num_et.getText().toString());
                     byte[] numByte1 = obtainBDNum();
                     for (int j = 0; j < 5; j++) {
                         sndBytes[5 + j] = numByte1[j];
                     }
+                    sndBytes[10] = (byte) offset;
                     sendCMDSearch(sndBytes);
                     //根据固话注册码  查此人的信息  显示在页面上
                     List<HttpPersonInfo> personInfos = CommonDBOperator.queryByKeys(mHttpPerDao, "deviceNumbers", register_num);

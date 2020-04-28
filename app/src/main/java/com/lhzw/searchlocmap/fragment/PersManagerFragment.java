@@ -150,13 +150,13 @@ public class PersManagerFragment extends Fragment implements
                 break;
 
             case R.id.delete:
-                 //将选择的加入list
+                //将选择的加入list
                 for (int i = 0; i < peradapter.getCheckStateList().size(); i++) {
                     if (peradapter.getCheckStateList().get(i).isCheck()) {
                         mSelectedList.add(peradapter.getCheckStateList().get(i));
                     }
                 }
-                LogUtil.e("选中的个数为"+mSelectedList.size());
+                LogUtil.e("选中的个数为" + mSelectedList.size());
                 //拼接参数
                 if (mSelectedList.size() > 0) {
                     StringBuilder sb = new StringBuilder();
@@ -207,29 +207,29 @@ public class PersManagerFragment extends Fragment implements
                             LogUtil.d("解绑成功");
 
                             for (CheckBoxState item : mSelectedList) {
-                                    CommonDBOperator.deleteByKeys(persondao, "num",
-                                            item.getNum());
-                                    // 删除本地表
+                                CommonDBOperator.deleteByKeys(persondao, "num",
+                                        item.getNum());
+                                // 删除本地表
 
-                                    CommonDBOperator.deleteByKeys(dao, "num", item.getNum());
+                                CommonDBOperator.deleteByKeys(dao, "num", item.getNum());
                             }
 
-                                perList = (ArrayList<LocPersonalInfo>) CommonDBOperator
-                                        .getList(persondao);
-                                peradapter.setList(perList);
-                                peradapter.initList();
-                                perlistview.setOnItemClickListener(PersManagerFragment.this);
+                            perList = (ArrayList<LocPersonalInfo>) CommonDBOperator
+                                    .getList(persondao);
+                            peradapter.setList(perList);
+                            peradapter.initList();
+                            perlistview.setOnItemClickListener(PersManagerFragment.this);
 
-                                SpUtils.putBoolean(SPConstants.CHECKBOX_ISSHOW, false);
-                                relativeLayout1.setVisibility(View.INVISIBLE);
-                                ani_state = !ani_state;
+                            SpUtils.putBoolean(SPConstants.CHECKBOX_ISSHOW, false);
+                            relativeLayout1.setVisibility(View.INVISIBLE);
+                            ani_state = !ani_state;
 
-                                peradapter.notifyDataSetChanged();
+                            peradapter.notifyDataSetChanged();
 
-                                // 通知地图更新界面
-                                Intent intent1 = new Intent("com.lhzw.soildersos.change");
-                                intent1.putExtra("has_new", false);
-                                getActivity().sendBroadcast(intent1);
+                            // 通知地图更新界面
+                            Intent intent1 = new Intent("com.lhzw.soildersos.change");
+                            intent1.putExtra("has_new", false);
+                            getActivity().sendBroadcast(intent1);
 
                             mSelectedList.clear();
 

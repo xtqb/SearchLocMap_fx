@@ -1,11 +1,5 @@
 package com.lhzw.searchlocmap.db.dao;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -19,6 +13,12 @@ import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bean.PersonalInfo;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.utils.BaseUtils;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * 数据库操作类
@@ -335,6 +335,23 @@ public class CommonDBOperator {
 		List<T> list = null;
 		try {
 			list = dao.queryBuilder().orderBy("num", true).query();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	/**
+	 *
+	 * @param dao
+	 * @param key
+	 * @param <T>
+	 * @return
+	 */
+	public synchronized static <T> List<T> queryByOrderKey(Dao<T, Integer> dao, String key, boolean ascending){
+		List<T> list = null;
+		try {
+			list = dao.queryBuilder().orderBy(key, ascending).query();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

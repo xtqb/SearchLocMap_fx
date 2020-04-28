@@ -469,6 +469,7 @@ public class ShortMessUploadActivity extends Activity implements
 
 	@Override
 	protected void onStop() {
+		isDestroy = true;
 		super.onStop();
 	}
 
@@ -481,7 +482,6 @@ public class ShortMessUploadActivity extends Activity implements
 		if (receiver != null) {
 			unregisterReceiver(receiver);
 		}
-		isDestroy = true;
 		if (mesgList != null && mesgList.size() > 0) {
 			mesgList.clear();
 			mesgList = null;
