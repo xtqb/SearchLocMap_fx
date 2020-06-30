@@ -37,7 +37,6 @@ public class SLMRetrofit {
                 .build();
 
         mApi = retrofit.create(Api.class);
-
     }
 
     private OkHttpClient genericClient() {
@@ -89,6 +88,11 @@ public class SLMRetrofit {
                                 // .addHeader("Cookie", cookie)
                                 //.addHeader("Authorization","APPCODE " + Constant.OCR_APP_CODE)
                                 .build();
+//                        Log.e("Http",
+//                                "发送请求: method：" + request.method()
+//                                        + "\nurl：" + request.url()
+//                                        + "\n请求头：" + request.headers()
+//                                        + "\n请求参数: " + request.body());
                         return chain.proceed(request);
                     }
                 })

@@ -43,8 +43,8 @@ import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 import com.lhzw.searchlocmap.net.CallbackListObserver;
 import com.lhzw.searchlocmap.net.SLMRetrofit;
 import com.lhzw.searchlocmap.net.ThreadSwitchTransformer;
+import com.lhzw.searchlocmap.ui.BindingWatchActivity;
 import com.lhzw.searchlocmap.ui.PerDetailsActivity;
-import com.lhzw.searchlocmap.ui.PerItemAddActivity;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.CheckBoxState;
 import com.lhzw.searchlocmap.utils.LogUtil;
@@ -115,6 +115,7 @@ public class PersManagerFragment extends Fragment implements
 
         perList = (ArrayList<LocPersonalInfo>) CommonDBOperator
                 .getList(persondao);// 取出来
+
         perlistview = (ListView) view.findViewById(R.id.personal_listview);
         peradapter = new PerManageAdapter(perList, getActivity(),
                 R.layout.item_per_list, tv_num);
@@ -128,8 +129,9 @@ public class PersManagerFragment extends Fragment implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_add:
-                Intent intent = new Intent(getActivity(), PerItemAddActivity.class);
-                startActivityForResult(intent, 250);
+//                Intent intent = new Intent(getActivity(), PerItemAddActivity.class);
+//                startActivityForResult(intent, 250);
+                startActivityForResult(new Intent(getActivity(), BindingWatchActivity.class), 250);
                 break;
             case R.id.im_delete:
                 if (perList == null || perList.size() == 0) {

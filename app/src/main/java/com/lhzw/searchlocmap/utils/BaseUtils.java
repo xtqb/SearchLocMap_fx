@@ -335,7 +335,7 @@ public class BaseUtils {
         String latLonStr = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + ","
                 + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
         UploadInfoBean bean = new UploadInfoBean(item.getTx_type(), item.getData_type(), item.getTime(), item.getPaths(), item.getTime() + "", "01",
-                latLonStr, SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 1 +"", SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, -1, null);
+                latLonStr, SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 1 + "", SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, -1, null);
         return bean;
     }
 
@@ -592,6 +592,7 @@ public class BaseUtils {
         String[] data_state = infoBean.getData_state().split("-");
         for (int pos = 0; pos < idArr.length; pos++) {
             String watchstatus = "offline";
+            WatchLocBean bean = null;
             double lat = 0.0;
             double lng = 0.0;
             String time = "";
@@ -602,7 +603,6 @@ public class BaseUtils {
                 lng = Double.valueOf(latLng[1]);
                 time = sdf.format(Double.valueOf(locTimes[pos]));
             }
-            WatchLocBean bean = null;
             if (lat == 0.0) {
                 bean = new WatchLocBean("watch", idArr[pos], "", "", watchstatus, "", null, null, time);
             } else {
@@ -649,8 +649,10 @@ public class BaseUtils {
      *
      * @return
      */
-
+//    private static boolean state = true;
     public static String getMacFromHardware() {
+//        if (state)
+//            return "A4D4B255B58C";
         if (!TextUtils.isEmpty(SpUtils.getString("MAC", ""))) {
             return SpUtils.getString("MAC", "");
         }
@@ -664,7 +666,6 @@ public class BaseUtils {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface nif : all) {
                 if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
-
                 byte[] macBytes = nif.getHardwareAddress();
                 if (macBytes == null) {
                     return "";
@@ -685,8 +686,10 @@ public class BaseUtils {
                     builder.append(str);
                 }
                 all.clear();
-                SpUtils.putString("MAC", builder.toString());
-                return builder.toString();
+                if (builder.toString().length() == 12) {
+                    SpUtils.putString("MAC", builder.toString());
+                    return builder.toString();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -694,6 +697,23 @@ public class BaseUtils {
         return getMacFromHardware();
     }
 
+    @SuppressLint("WrongConstant")
+    public static byte[] obtainSearchBytes() {
+        String numStr = SpUtils.getString(SPConstants.BINDING_NUM, "");
+        if ("".equals(numStr) || numStr.length() != 8) {
+            numStr = getMacFromHardware().substring(4);
+            SpUtils.putString(SPConstants.BINDING_NUM, numStr);
+        }
+        int CHANNEL = SpUtils.getInt(SPConstants.CHANNEL_NUM, 0);
+        String channel;
+        if (CHANNEL == 10) {
+            channel = "0" + "a";
+        } else {
+            channel = "0" + CHANNEL + "";
+        }
+        numStr = numStr + channel;
+        return BaseUtils.getPerRegisterByteArr(numStr);
+    }
 
 }
 

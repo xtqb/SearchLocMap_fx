@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.RemoteException;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -78,8 +79,24 @@ public class ComUtils {
                 List<UploadInfoBean> uploadList = new ArrayList<>();
                 do {
                     uploadList.add(uploadQueue.poll());
-                }while(!uploadQueue.isEmpty());
+                } while (!uploadQueue.isEmpty());
                 if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
+                    UploadInfoBean item = uploadList.get(0);
+                    Log.e("Proxy", item.getBdNum() + "\n" +
+                            item.getBody() + "\n" +
+                            item.getData_state() + "\n" +
+                            item.getLocal_latlon() + "\n" +
+                            item.getLocTimes() + "\n" +
+                            item.getOffsets()+ "\n" +
+                            item.getComFont()+ "\n" +
+                            item.getLocal_time()+ "\n" +
+                            item.getNum()+ "\n" +
+                            item.getSendID()+ "\n" +
+                            item.getTime() + "\n" +
+                            item.getTx_type() + "\n" +
+                            item.getData_state()
+                    );
+
                     SearchLocMapApplication.getInstance().getUploadService().doTask(uploadList);
                 }
             } catch (RemoteException e) {
@@ -108,7 +125,7 @@ public class ComUtils {
 //    }
 
     public void netCom(UploadInfoBean infoBean) {
-        if(!isNetConnection) {
+        if (!isNetConnection) {
             Toast.makeText(SearchLocMapApplication.getContext(), "当前网络已断开，请连接网络或者切换北斗模式传输", Toast.LENGTH_SHORT).show();
             uploadQueue.add(infoBean);
             doTask();
@@ -119,7 +136,7 @@ public class ComUtils {
 //        public static final int TX_SOS = 2;
 //        public static final int TX_MMS = 3;
 //        public static final int TX_FIRELINE = 4;
-        LogUtil.d("通信类型=="+infoBean.getData_type());
+        LogUtil.d("通信类型==" + infoBean.getData_type());
         switch (infoBean.getData_type()) {
             case Constants.TX_FIREPOIT:
                 RequestFirePointBean firePointBean = new RequestFirePointBean(Constants.CMD_FIRE_POINT, "handsetsession", "HANDSET",
@@ -176,21 +193,21 @@ public class ComUtils {
 //        }
 //    }
 
-    public void uploadToNet(Object request, final UploadInfoBean infoBean){
+    public void uploadToNet(Object request, final UploadInfoBean infoBean) {
         //短消息
         Observable<NetResponseBean> observable = SLMRetrofit.getInstance().getApi().uploadInfo(BaseUtils.getRequestBody(request));
         observable.compose(new ThreadSwitchTransformer<NetResponseBean>()).subscribe(new CallbackListObserver<NetResponseBean>() {
             @Override
             protected void onSucceed(NetResponseBean bean) {
                 LogUtil.e(bean.toString());
-                if("OK".equals(bean.getStatus())){
+                if ("OK".equals(bean.getStatus())) {
                     //请求成功
                     ToastUtil.showToast("上传成功");
-                }else {
+                } else {
                     //请求成功
                     ToastUtil.showToast(bean.getReason());
                     LogUtil.e("uplpad fail ：" + bean.getStatus() + " , " + bean.getReason());
-                    if(infoBean != null) {
+                    if (infoBean != null) {
                         uploadQueue.add(infoBean);
                         doTask();
                     }
@@ -201,7 +218,7 @@ public class ComUtils {
             protected void onFailed() {
                 //请求成功
                 ToastUtil.showToast("网络错误,请检查网络是否打开");
-                if(infoBean != null) {
+                if (infoBean != null) {
                     uploadQueue.add(infoBean);
                     doTask();
                 }
@@ -210,7 +227,7 @@ public class ComUtils {
 
     }
 
-    public void registerBroadcastReceiver(){
+    public void registerBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         SearchLocMapApplication.getContext().registerReceiver(receiver, intentFilter);
@@ -225,7 +242,7 @@ public class ComUtils {
                     case Constants.COM_MODE_BD:
                         break;
                     case Constants.COM_MODE_NET:
-                        if(isNetConnection) {
+                        if (isNetConnection) {
                             SearchLocMapApplication.getInstance().getUploadService().setCom(Constants.COM_MODE_NET);
                         }
                         break;
@@ -239,9 +256,9 @@ public class ComUtils {
         }
     };
 
-    public void unRegisterBroadcastReceiver(){
+    public void unRegisterBroadcastReceiver() {
         try {
-            if(receiver != null) {
+            if (receiver != null) {
                 SearchLocMapApplication.getContext().unregisterReceiver(receiver);
             }
         } catch (Exception e) {

@@ -81,6 +81,7 @@
     <string name="act">行动</string>
     <string name="normal_order">下达指令</string>
     <string name="person_manager_add">添加</string>
+    <string name="person_manager_binding">绑定</string>
     <string name="person_manager_cancel">取消</string>
     <string name="person_sex_man">男</string>
     <string name="person_sex_women">女</string>

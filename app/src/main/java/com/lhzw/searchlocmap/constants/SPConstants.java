@@ -43,5 +43,6 @@ public class SPConstants {
     public static final String STATISTICS_REPORT_POISTION = "STATISTICS_REPORT_POISTION";
 
 	public static final String STATISTICS_REPORT_NUM = "STATISTICS_REPORT_NUM";
+	public static final String BINDING_NUM = "BINDING_NUM";
 
 }

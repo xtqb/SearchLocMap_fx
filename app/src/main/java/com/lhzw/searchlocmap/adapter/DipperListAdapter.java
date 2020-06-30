@@ -1,7 +1,6 @@
 package com.lhzw.searchlocmap.adapter;
 
 import android.content.Context;
-import android.content.pm.LabeledIntent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,6 +100,7 @@ public class DipperListAdapter extends BaseExpandableListAdapter implements
         } else {
             gHolder = (GroupViewHolder) convertView.getTag();
         }
+
         gHolder.tv_gName.setText(groupName[groupPosition]);
         gHolder.tv_statistics.setText(chTotal[groupPosition] + "/" + gTotal);
         if (isOpen[groupPosition]) {

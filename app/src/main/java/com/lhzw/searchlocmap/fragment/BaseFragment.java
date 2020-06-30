@@ -1,5 +1,6 @@
 package com.lhzw.searchlocmap.fragment;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
+import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bean.PlotItemInfo;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
@@ -48,7 +50,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
     private boolean isPrepared;// 标志位，View已经初始化完成。
     private boolean isFirstLoad = true;// 是否第一次加载
     private boolean isReflesh = false;
-    protected Context mContext;
+    protected Activity mContext;
     protected View view;
 
     private List<Intent> taskQueue = new LinkedList<>();
@@ -68,6 +70,12 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
     private ShowMesureDisDialog mesureDialog;
 
     @Override
+    public void onAttach(Activity context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         isFirstLoad = true;
@@ -82,9 +90,10 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
         // TODO Auto-generated method stub
         super.onDestroy();
         try {
-            if (receiver != null && getActivity() != null) {
-                getActivity().unregisterReceiver(receiver);
+            if (receiver != null) {
+                mContext.unregisterReceiver(receiver);
             }
+            receiver = null;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -92,7 +101,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
 
     public void showToast(String text) {
         if (mGlobalToast == null) {
-            mGlobalToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+            mGlobalToast = Toast.makeText(SearchLocMapApplication.getContext(), text, Toast.LENGTH_SHORT);
             mGlobalToast.show();
         } else {
             mGlobalToast.setText(text);
@@ -102,7 +111,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
     }
 
     protected void showMesureDistantNote() {
-        mesureDialog = new ShowMesureDisDialog(getActivity());
+        mesureDialog = new ShowMesureDisDialog(mContext);
         mesureDialog.show();
         mesureDialog.setListener(BaseFragment.this);
     }
@@ -127,7 +136,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
 //        filter.addAction(Constants.ACTION_FEEDBACK);
         filter.addAction(Constants.BD_SIGNAL_LIST);
         receiver = new SoilderInfoChangeReceiver();
-        getActivity().registerReceiver(receiver, filter);
+        mContext.registerReceiver(receiver, filter);
     }
 
     private class SoilderInfoChangeReceiver extends BroadcastReceiver {
@@ -169,14 +178,14 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
                 long time = intent.getLongExtra("time", System.currentTimeMillis());
                 String num = intent.getStringExtra("num");
 //                int tx_type = intent.getIntExtra("tx_type", Constants.TX_JZH);
-                DatabaseHelper helper = DatabaseHelper.getHelper(getActivity());
+                DatabaseHelper helper = DatabaseHelper.getHelper(mContext);
                 syncDao = helper.getPlotItemDao();
                 Log.e("Tag", "receive sync fire line countent : " + fireLine);
                 PlotItemInfo plot = new PlotItemInfo("", -1, time, fireLine, Constants.TX_SYNCFL, 0, Constants.TX_JZH, Constants.UPLOAD_STATE_ON);
                 CommonDBOperator.saveToDB(syncDao, plot);
                 //绘制下发火线
-                if (isVisible && getActivity() != null) {
-                    getActivity().runOnUiThread(new Runnable() {
+                if (isVisible && mContext != null) {
+                    mContext.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             drawSyncFireLine();
@@ -188,8 +197,8 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
             } else if (intent.getAction().equals(Constants.ACTION_FEEDBACK)) {
 //                updateFeedback(intent.getIntExtra("sendID", -1));
             } else if (intent.getAction().equals(Constants.BD_SIGNAL_LIST)) {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(new Runnable() {
+                if (mContext != null) {
+                    mContext.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             refleshBdSignal(intent);
@@ -209,10 +218,10 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
     protected void showSearchToast(String content) {
         //LayoutInflater的作用：对于一个没有被载入或者想要动态载入的界面，都需要LayoutInflater.inflate()来载入，LayoutInflater是用来找res/layout/下的xml布局文件，并且实例化
         if (searchToast == null) {
-            LayoutInflater inflater = getActivity().getLayoutInflater();//调用Activity的getLayoutInflater()
+            LayoutInflater inflater = mContext.getLayoutInflater();//调用Activity的getLayoutInflater()
             View view = inflater.inflate(R.layout.toast_search_end, null); //加載layout下的布局
             tv_search_content = (TextView) view.findViewById(R.id.tv_search_content);
-            searchToast = new Toast(getActivity());
+            searchToast = new Toast(mContext);
             searchToast.setGravity(Gravity.CENTER, 0, -400);//setGravity用来设置Toast显示的位置，相当于xml中的android:gravity或android:layout_gravity
             searchToast.setDuration(Toast.LENGTH_LONG);//setDuration方法：设置持续时间，以毫秒为单位。该方法是设置补间动画时间长度的主要方法
             searchToast.setView(view); //添加视图文件
@@ -295,5 +304,16 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
 
     protected abstract void onReflesh();
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mGlobalToast = null;
+        view = null;
+    }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mContext = null;
+    }
 }

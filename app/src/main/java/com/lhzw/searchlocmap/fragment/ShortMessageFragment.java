@@ -77,6 +77,11 @@ public class ShortMessageFragment extends BaseLazyFragment {
 
     }
 
+    @Override
+    protected void onReflesh() {
+
+    }
+
     private void initCurrentContactRv() {
         //初始化Rv
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);

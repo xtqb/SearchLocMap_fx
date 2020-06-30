@@ -7,6 +7,7 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import com.lhzw.searchlocmap.bean.BindingOfWatchBean;
 import com.lhzw.searchlocmap.bean.DipperInfoBean;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.LocPersonalInfo;
@@ -37,10 +38,11 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
     private Dao<TreeStateBean, Integer> treeDao;
     private Dao<WatchLastLocTime, Integer> lastLocDao;
     private Dao<LocalBDNum, Integer> bdNumDao;
+    private Dao<BindingOfWatchBean, Integer> bindingOfWatchDao;
     private static DatabaseHelper<?> instance;
 
     private DatabaseHelper(Context context) {
-        super(context, Constants.DB_NAME, null, 3);// 数据库的名字
+        super(context, Constants.DB_NAME, null, 5);// 数据库的名字
         // TODO Auto-generated constructor stub
     }
 
@@ -69,6 +71,7 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, TreeStateBean.class);
             TableUtils.createTable(connectionSource, WatchLastLocTime.class);
             TableUtils.createTable(connectionSource, LocalBDNum.class);
+            TableUtils.createTable(connectionSource, BindingOfWatchBean.class);
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -87,6 +90,11 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
 
             if (oldVersion < 3) {
                 TableUtils.createTable(connectionSource, LocalBDNum.class);
+                getLocPersonDao().executeRawNoArgs("ALTER TABLE LocPersonalInfo ADD COLUMN offset INTEGER");
+            }
+
+            if (oldVersion < 5) {
+                TableUtils.createTable(connectionSource, BindingOfWatchBean.class);
                 getLocPersonDao().executeRawNoArgs("ALTER TABLE LocPersonalInfo ADD COLUMN offset INTEGER");
             }
 			/*
@@ -261,6 +269,17 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
         return bdNumDao;
     }
 
+    public Dao<BindingOfWatchBean, Integer> getBindingOfWatchDao() {
+        if (bindingOfWatchDao == null) {
+            try {
+                bindingOfWatchDao = getDao(BindingOfWatchBean.class);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return bindingOfWatchDao;
+    }
+
     @Override
     public void close() {
         // TODO Auto-generated method stub
@@ -272,6 +291,7 @@ public class DatabaseHelper<T> extends OrmLiteSqliteOpenHelper {
         httpPerDao = null;
         lastLocDao = null;
         bdNumDao = null;
+        bindingOfWatchDao = null;
     }
 
 }

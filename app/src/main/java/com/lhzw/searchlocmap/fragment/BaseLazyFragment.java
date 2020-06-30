@@ -1,6 +1,6 @@
 package com.lhzw.searchlocmap.fragment;
 
-import android.content.Context;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -28,9 +28,16 @@ public abstract class BaseLazyFragment extends Fragment {
     private boolean isPrepared;//标志位，View已经初始化完成。
     private boolean isFirstLoad = true;//是否第一次加载
     protected LayoutInflater inflater;
-    protected Context mContext;
+    protected Activity mContext;
     private Unbinder mUnbinder;
+    private boolean isReflesh = false;
+    protected View convertView;
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mContext = activity;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,13 +45,12 @@ public abstract class BaseLazyFragment extends Fragment {
         isFirstLoad = true;
         getActivity().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);// 页面不随软键盘的弹出而上移
-        View view = inflater.inflate(initView(), container, false);
-        mContext = getContext();
+        convertView = inflater.inflate(initView(), container, false);
         isPrepared = true;
-        mUnbinder = ButterKnife.bind(this, view);
+        mUnbinder = ButterKnife.bind(this, convertView);
         TAG = getClass().getSimpleName();//得到类名
         lazyLoad();
-        return view;
+        return convertView;
     }
 
     /**
@@ -79,6 +85,9 @@ public abstract class BaseLazyFragment extends Fragment {
     }
 
     protected void onVisible() {
+        if (isReflesh) {
+            onReflesh();
+        }
         lazyLoad();
     }
 
@@ -91,6 +100,7 @@ public abstract class BaseLazyFragment extends Fragment {
         }
         isFirstLoad = false;
         initData();
+        isReflesh = true;
     }
 
     @Override
@@ -99,6 +109,12 @@ public abstract class BaseLazyFragment extends Fragment {
         if (mUnbinder != null) {
             mUnbinder.unbind();
         }
+
+        convertView = null;
+
+        TAG = null;
+
+        inflater = null;
     }
 
     /**
@@ -114,5 +130,11 @@ public abstract class BaseLazyFragment extends Fragment {
      */
     protected abstract void initData();
 
+    protected abstract void onReflesh();
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mContext = null;
+    }
 }

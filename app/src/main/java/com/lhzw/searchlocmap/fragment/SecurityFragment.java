@@ -357,15 +357,15 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             FrameLayout map_layout = (FrameLayout) view.findViewById(R.id.map);
             if (tileProviderBase == null) {
                 Log.e("Tag", "tileProviderBase  ...");
-                tileProviderBase = new MapTileProviderBasic(getActivity().getApplicationContext(), TileSourceFactory.getTileSourceByMapName("YX|ZJ"));
+                tileProviderBase = new MapTileProviderBasic(mContext.getApplicationContext(), TileSourceFactory.getTileSourceByMapName("YX|ZJ"));
             }
-            mMapView = new MapView(getActivity(), 256, new DefaultResourceProxyImpl(getActivity()), tileProviderBase);
+            mMapView = new MapView(mContext, 256, new DefaultResourceProxyImpl(mContext), tileProviderBase);
             //设置是否手动控制缩放
             mMapView.setMultiTouchControls(true);
             //设置是否显示缩放按钮
             mMapView.setBuiltInZoomControls(false);
             //增加比例尺显示
-            mMapView.getOverlayManager().add(new ScaleBarOverlay(getActivity()));
+            mMapView.getOverlayManager().add(new ScaleBarOverlay(mContext));
             mGraphicOverlay = new GraphicOverlay(getContext(), mMapView);
             GM_EditGlobalFunc.GM_GetEgraphicGlobalPropertySetPtr().SetBoolProperty("GM_EDIT2_KEEP_CREATE", true);
             //火点火线标绘层
@@ -406,23 +406,23 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     }
 
     private void requestPermission() {
-        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity().getApplicationContext(), android.Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS}, 1);
+        if (ContextCompat.checkSelfPermission(mContext.getApplicationContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(mContext.getApplicationContext(), android.Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(mContext, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS}, 1);
         } else {
             initMap();
         }
         boolean isLocation = false;
-        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (ContextCompat.checkSelfPermission(mContext.getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
+            ActivityCompat.requestPermissions(mContext, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
             Log.e("Tag", "request location permission   ACCESS_COARSE_LOCATION");
         } else {
             isLocation = true;
         }
-        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(mContext.getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 3);
+            ActivityCompat.requestPermissions(mContext, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 3);
             Log.e("Tag", "request location permission    ACCESS_FINE_LOCATION");
         } else {
             //两个权限都有了，申请权限成功
@@ -434,44 +434,44 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e("Tag", "OnActlkasdjfklasjf  ....");
         super.onActivityResult(requestCode, resultCode, data);
         boolean isLocation = false;
         if (resultCode == 1) {
-            int i = ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE);
+            int i = ActivityCompat.checkSelfPermission(mContext.getApplicationContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE);
             if (i == PackageManager.PERMISSION_GRANTED) {
                 initMap();
             }
         } else if (resultCode == 2) {
-            int i = ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION);
+            int i = ActivityCompat.checkSelfPermission(mContext.getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION);
             if (i == PackageManager.PERMISSION_GRANTED) {
                 isLocation = true;
             }
             Log.e("Tag", "state : " + i + "  " + PackageManager.PERMISSION_GRANTED);
         } else if (resultCode == 3) {
-            int i = ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION);
+            int i = ActivityCompat.checkSelfPermission(mContext.getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION);
             if (isLocation && i == PackageManager.PERMISSION_GRANTED) {
                 startLocation();
             }
         } else if (resultCode == 4) {
             int markerId = data.getIntExtra("markerId", 0);
             icon_id = markerId;
-            Log.e("Tag", "num " + data.getStringExtra("num") + "  " + tatolMap.get(markerId).getNum());
-            if (tatolMap.get(markerId) != null) {
-                if ((Constants.PERSON_COMMON).equals(tatolMap.get(markerId).getState())) {
-                    showNormalPopupWindow(tatolMap.get(markerId));
+            PersonalInfo item = tatolMap.get(markerId);
+            if (item != null) {
+                Log.e("Tag", "num " + data.getStringExtra("num") + "  " + item.getNum());
+                if ((Constants.PERSON_COMMON).equals(item.getState())) {
+                    showNormalPopupWindow(item);
                     setTouched(markerId);
-                } else if ((Constants.PERSON_SOS).equals(tatolMap.get(markerId).getState())) {
-                    codeArr = BaseUtils.getPerRegisterByteArr(tatolMap.get(markerId).getNum());
+                } else if ((Constants.PERSON_SOS).equals(item.getState())) {
+                    codeArr = BaseUtils.getPerRegisterByteArr(item.getNum());
                     byte[] numByte = obtainBDNum();
                     for (int j = 0; j < 4; j++) {
                         codeArr[5 + j] = numByte[j];
                     }
-                    showSosPopupWindow(tatolMap.get(markerId));
+                    showSosPopupWindow(item);
                     setTouched(markerId);
                 }
                 mapController = mMapView.getController();
-                mapController.setCenter(new GeoPoint(Double.valueOf(tatolMap.get(markerId).getLatitude()), Double.valueOf(tatolMap.get(markerId).getLongitude())));
+                mapController.setCenter(new GeoPoint(Double.valueOf(item.getLatitude()), Double.valueOf(item.getLongitude())));
             }
         } else if (resultCode == 5) {
             String num = data.getStringExtra("num");
@@ -727,7 +727,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 //        super.onClick(v);
         switch (v.getId()) {
             case R.id.communication_btn:
-                startActivity(new Intent(getActivity(), CommunicationListActivity.class));
+                startActivity(new Intent(mContext, CommunicationListActivity.class));
                 break;
             case R.id.bt_plot_list:
                 drawer.setScrimColor(Color.TRANSPARENT);
@@ -760,7 +760,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 }
                 break;
             case R.id.im_person_state:
-                startActivityForResult(new Intent(getActivity(), PerStateActivity.class), PERSTATE_REQCODE);
+                startActivityForResult(new Intent(mContext, PerStateActivity.class), PERSTATE_REQCODE);
                 break;
             case R.id.tv_function:
                 if (isSettingEnable) {
@@ -809,7 +809,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 if (drawer.isDrawerOpen(Gravity.LEFT)) {
                     drawer.closeDrawer(Gravity.LEFT);
                 }
-                startActivityForResult(new Intent(getActivity(), PlotItemListActivity.class), 0x0061);
+                startActivityForResult(new Intent(mContext, PlotItemListActivity.class), 0x0061);
                 break;
             case R.id.rl_loc_track:
                 Log.e("Tag", "tv_loc_track");
@@ -826,7 +826,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 if (drawer.isDrawerOpen(Gravity.LEFT)) {
                     drawer.closeDrawer(Gravity.LEFT);
                 }
-                startActivity(new Intent(getActivity(), LocationTrackActivity.class));
+                startActivity(new Intent(mContext, LocationTrackActivity.class));
                 Log.e("Tag", "tv_track_list");
                 break;
             case R.id.rl_quick_loc:
@@ -834,12 +834,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 if (drawer.isDrawerOpen(Gravity.LEFT)) {
                     drawer.closeDrawer(Gravity.LEFT);
                 }
-                LocationDialog locationDialog = new LocationDialog(getActivity(), mMapView);
+                LocationDialog locationDialog = new LocationDialog(mContext, mMapView);
                 Window window1 = locationDialog.getWindow();
                 window1.setGravity(Gravity.BOTTOM);
                 window1.setWindowAnimations(R.style.dialog_animation);
                 locationDialog.show();
-                WindowManager windowManager = getActivity().getWindowManager();
+                WindowManager windowManager = mContext.getWindowManager();
                 Display display = windowManager.getDefaultDisplay();
                 WindowManager.LayoutParams lp = locationDialog.getWindow().getAttributes();
                 lp.width = (int) (display.getWidth()); //设置宽度
@@ -848,7 +848,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 locationDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                 break;
             case R.id.rl_sync_fire_line:
-                if (BaseUtils.getDBManager(getActivity()) == null) {
+                if (BaseUtils.getDBManager(mContext) == null) {
                     return;
                 }
                 //同步火线
@@ -940,12 +940,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             case R.id.tv_state://查看指令状态
                 dialogCommmand.clear();//dialog消失
                 dialogCommmand = null;
-                Intent intent = new Intent(getActivity(), CommandStateActivity.class);
+                Intent intent = new Intent(mContext, CommandStateActivity.class);
                 startActivity(intent);
                 break;
             // 下达指令
             case R.id.tv_send_message:
-                if(dialogCommmand != null) {
+                if (dialogCommmand != null) {
                     byte[] sndBytes = dialogCommmand.getSendBytes();
                     dialogCommmand.dismiss();
                     dialogCommmand = null;
@@ -954,7 +954,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     for (int j = 0; j < 4; j++) {
                         sndBytes[5 + j] = numByte1[j];
                     }
-                    SendMessageDialog send = new SendMessageDialog(getActivity(), loRaManager, sndBytes);
+                    SendMessageDialog send = new SendMessageDialog(mContext, loRaManager, sndBytes);
                     send.showDialog();
                     send.setListener();
                 }
@@ -1000,16 +1000,26 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     }
                     // WatchLocBean bean = new WatchLocBean("watch", tatolMap.get(icon_id).getOffset() + "", "", "", "sosfinished", "", latSos + "", lngSos + "", BaseUtils.sdf.format(tatolMap.get(icon_id).getLocTime()));
                 } else {
-                    List<UploadInfoBean> uploadList = new ArrayList<>();
-                    String latLonStr = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + ","
-                            + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
-                    List<PersonalInfo> list = CommonDBOperator.queryByKeys(persondao, "num", tatolMap.get(icon_id).getNum());
-                    UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_SOS, System.currentTimeMillis(), lat + "," +
-                            lon, BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
-                            System.currentTimeMillis())) + "", list.get(0).getOffset() + "", latLonStr, SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()) , 0+"",
-                            SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, -1, tatolMap.get(icon_id).getNum());
-                    uploadList.add(bean);
-                    mComUtils.uploadBena(uploadList);  //上传到北斗服务
+                    try {
+                        List<UploadInfoBean> uploadList = new ArrayList<>();
+                        String latLonStr = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + ","
+                                + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
+                        List<PersonalInfo> list = CommonDBOperator.queryByKeys(persondao, "num", tatolMap.get(icon_id).getNum());
+                        UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_SOS, System.currentTimeMillis(), lat + "," +
+                                lon, BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME,
+                                System.currentTimeMillis())) + "", list.get(0).getOffset() + "", latLonStr, SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0 + "",
+                                SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, -1, tatolMap.get(icon_id).getNum());
+                        Log.e("Proxy", lat + "," + lon + "\n" +
+                                BaseUtils.sdf.format(SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis())) + "\n" +
+                                list.get(0).getOffset() + "\n" +
+                                latLonStr + "\n" +
+                                tatolMap.get(icon_id).getNum());
+                        uploadList.add(bean);
+                        mComUtils.uploadBena(uploadList);  //上传到北斗服务
+                    } catch (Exception e) {
+                        Log.e("Tag", "发送信息失败");
+                    }
+
                 }
                 updataState(icon_id);
                 showToast(getString(R.string.send_command_success_note));
@@ -1029,11 +1039,11 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 searchDialog.dismiss();
                 break;
             case R.id.dialog_history:
-                startActivity(new Intent(getActivity(), TreeStateListActivity.class));
+                startActivity(new Intent(mContext, TreeStateListActivity.class));
                 searchDialog.dismiss();
                 break;
             case R.id.dialog_upload:
-                if (BaseUtils.getDBManager(getActivity()) == null) {
+                if (BaseUtils.getDBManager(mContext) == null) {
                     return;
                 }
                 try {
@@ -1094,10 +1104,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 break;
             case R.id.dialog_search_upload:
                 isUploading = true;
-                treeDialog = new ShowStateTreeDialog(getActivity());
+                treeDialog = new ShowStateTreeDialog(mContext);
                 treeDialog.showDialog();
                 WindowManager.LayoutParams params = treeDialog.getWindow().getAttributes();
-                params.width = getActivity().getWindowManager().getDefaultDisplay().getWidth() - 80;
+                params.width = mContext.getWindowManager().getDefaultDisplay().getWidth() - 80;
                 params.height = 644;
                 treeDialog.getWindow().setAttributes(params);
                 treeDialog.setOnSearchCancelListener(this);
@@ -1109,7 +1119,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 break;
             case R.id.rl_upload_inner:
                 if (isTimer) {
-                    timerCloseDialog = new ShowTimerCloseDialog(getActivity());
+                    timerCloseDialog = new ShowTimerCloseDialog(mContext);
                     timerCloseDialog.show();
                     timerCloseDialog.setListener(this);
                     return;
@@ -1148,7 +1158,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 break;
             case R.id.rl_upload_time_select:
                 if (isTimer) {
-                    timerCloseDialog = new ShowTimerCloseDialog(getActivity());
+                    timerCloseDialog = new ShowTimerCloseDialog(mContext);
                     timerCloseDialog.show();
                     timerCloseDialog.setListener(SecurityFragment.this);
                     return;
@@ -1188,7 +1198,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     @Override
     protected void initData() {
         EventBus.getDefault().register(this);
-        helper = DatabaseHelper.getHelper(getActivity());
+        helper = DatabaseHelper.getHelper(mContext);
         mHashMap = new HashMap<>();
         mHashMap.put("type", ShortMessUploadActivity.MESSAGE_RECEIVE + "");
         mHashMap.put("state", Constants.MESSAGE_UNREAD + "");
@@ -1413,7 +1423,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         tv_upload_state = (TextView) view.findViewById(R.id.tv_upload_state);
         scroll_cancel = view.findViewById(R.id.scroll_cancel);
         scroll_cancel.setOnClickListener(this);
-        mScrollAdapter = new SrollAdapter(getActivity(), sosList, commonList, undetermined_List, tv_per_num, tv_update_num, tv_sos_num);
+        mScrollAdapter = new SrollAdapter(mContext, sosList, commonList, undetermined_List, tv_per_num, tv_update_num, tv_sos_num);
         scroll_listview.setAdapter(mScrollAdapter);
         scroll_listview.setOnItemClickListener(mScrollAdapter);
         scroll_listview.setOnItemLongClickListener(mScrollAdapter);
@@ -1453,13 +1463,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         list_h_state = true;
         isTrackState = false;
         isSyncState = false;
-        am1 = AnimationUtils.loadAnimation(getActivity(), R.anim.anima_down);
+        am1 = AnimationUtils.loadAnimation(mContext, R.anim.anima_down);
         am1.setFillAfter(true);
         am1.setInterpolator(new LinearInterpolator());
-        am2 = AnimationUtils.loadAnimation(getActivity(), R.anim.anima_up);
+        am2 = AnimationUtils.loadAnimation(mContext, R.anim.anima_up);
         am2.setInterpolator(new LinearInterpolator());
         am2.setFillAfter(true);
-        plotHAdapter = new PlotHorizonAdapter(getActivity(), landscapeList);
+        plotHAdapter = new PlotHorizonAdapter(mContext, landscapeList);
         rl_h_list.setAdapter(plotHAdapter);
 
         rl_h_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -1494,16 +1504,16 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             }
         });
         // 右侧的list
-        portaitAdapter = new PortaitAdapter(getActivity(), firePlots);
+        portaitAdapter = new PortaitAdapter(mContext, firePlots);
         plot_listView.setOnItemClickListener(portaitAdapter);
         portaitAdapter.setOnItemSelectedListener(this);
         plot_listView.setAdapter(portaitAdapter);
         plot_listView.setOnItemLongClickListener(this);
         startBottomAnimation(list_h_state);
-        locManager = (LocationManager) getActivity().getSystemService(Service.LOCATION_SERVICE);
-        loRaManager = (LoRaManager) getActivity().getSystemService(Context.LORA_SERVICE);
+        locManager = (LocationManager) mContext.getSystemService(Service.LOCATION_SERVICE);
+        loRaManager = (LoRaManager) mContext.getSystemService(Context.LORA_SERVICE);
         setBDType(SpUtils.getInt(SPConstants.CHANNEL_NUM, Constants.CHANNEL_DEF));
-        mBDManager = (BDManager) getActivity().getSystemService(Context.BD_SERVICE);
+        mBDManager = (BDManager) mContext.getSystemService(Context.BD_SERVICE);
         if (locManager != null) {
             intLoc();
         }
@@ -1511,7 +1521,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         lat = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT);
         lon = SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
 //        radius = SpUtils.getInt(SPConstants.SECURITY_R, Constants.RADIUS);
-        searchTimeArr = getActivity().getResources().getStringArray(R.array.pick_time);
+        searchTimeArr = mContext.getResources().getStringArray(R.array.pick_time);
         isTimerRuning = false;
         bytes = new byte[11];
         bdByteArr = null;
@@ -1552,7 +1562,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         btnSms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), CommunicationListActivity.class));
+                startActivity(new Intent(mContext, CommunicationListActivity.class));
             }
         });
         btnSearch.setOnClickListener(new View.OnClickListener() {
@@ -1626,16 +1636,17 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     private byte[] obtainBDNum() {
         if (bdByteArr == null) {
-            String numStr = mBDManager.getBDCardNumber();
-            if (BaseUtils.isStringEmpty(numStr)) {
-                numStr = "000000";
-            }
-            if (numStr.length() == 6) {
-                numStr = "00" + numStr + "00";
-            } else if (numStr.length() == 7) {
-                numStr = "0" + numStr + "00";
-            }
-            bdByteArr = BaseUtils.getPerRegisterByteArr(numStr);
+//            String numStr = mBDManager.getBDCardNumber();
+//            if (BaseUtils.isStringEmpty(numStr)) {
+//                numStr = "000000";
+//            }
+//            if (numStr.length() == 6) {
+//                numStr = "00" + numStr + "00";
+//            } else if (numStr.length() == 7) {
+//                numStr = "0" + numStr + "00";
+//            }
+//            bdByteArr = BaseUtils.getPerRegisterByteArr(numStr);
+            bdByteArr = BaseUtils.obtainSearchBytes();
         }
         return bdByteArr;
     }
@@ -1650,7 +1661,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     }
 
     private void showSearchEndNoteDialog(int searchNum, int total, int sucess, int fail) {
-        searchEndnoteDialog = new ShowSearchEndNoteDialog(getActivity());
+        searchEndnoteDialog = new ShowSearchEndNoteDialog(mContext);
         searchEndnoteDialog.show();
         searchEndnoteDialog.setContent(searchNum, total, sucess, fail);
         searchEndnoteDialog.setListener(this);
@@ -1658,10 +1669,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     // 创建一个Dialog 选择定时上报时间间隔
     private void timerSearch() {
-        ShowTimerDialog showTimerDialog = new ShowTimerDialog(getActivity());
+        ShowTimerDialog showTimerDialog = new ShowTimerDialog(mContext);
         showTimerDialog.show();
         showTimerDialog.setOnTimeItemClickListener(this);
-        TimerSearchAdapter adapter = new TimerSearchAdapter(getActivity(), getActivity().getResources().getStringArray(R.array.pick_time_arr));
+        TimerSearchAdapter adapter = new TimerSearchAdapter(mContext, mContext.getResources().getStringArray(R.array.pick_time_arr));
         showTimerDialog.setAdapter(adapter);
     }
 
@@ -1697,7 +1708,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         if (demAnalysis) {
             DEMPointOverlay demOverlay = (DEMPointOverlay) overlayManager.getOverlay(OverlayFactory.MEASUREDEM);
             if (demOverlay == null) {
-                demOverlay = (DEMPointOverlay) OverlayFactory.createOverlayInstance(OverlayFactory.MEASUREDEM, getActivity());
+                demOverlay = (DEMPointOverlay) OverlayFactory.createOverlayInstance(OverlayFactory.MEASUREDEM, mContext);
                 mMapView.getOverlayManager().add(demOverlay);
                 overlayManager.addOverlay(OverlayFactory.MEASUREDEM, demOverlay);
             }
@@ -1710,7 +1721,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         if (demAnalysis) {
             P2pviewAnalysisOverlay p2pOverlay = (P2pviewAnalysisOverlay) overlayManager.getOverlay(OverlayFactory.P2PVIEWANALYSIS);
             if (p2pOverlay == null) {
-                p2pOverlay = (P2pviewAnalysisOverlay) OverlayFactory.createOverlayInstance(OverlayFactory.P2PVIEWANALYSIS, getActivity());
+                p2pOverlay = (P2pviewAnalysisOverlay) OverlayFactory.createOverlayInstance(OverlayFactory.P2PVIEWANALYSIS, mContext);
                 mMapView.getOverlayManager().add(p2pOverlay);
                 overlayManager.addOverlay(OverlayFactory.P2PVIEWANALYSIS, p2pOverlay);
             }
@@ -1755,12 +1766,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     private void startLeftAnimation(boolean state) {
         if (state) {
-            Animation am = AnimationUtils.loadAnimation(getActivity(), R.anim.anima_dimss);
+            Animation am = AnimationUtils.loadAnimation(mContext, R.anim.anima_dimss);
             am.setInterpolator(new LinearInterpolator());
             ll_plot_tools.startAnimation(am);
             ll_plot_tools.setVisibility(View.GONE);
         } else {
-            Animation am = AnimationUtils.loadAnimation(getActivity(), R.anim.anima_out);
+            Animation am = AnimationUtils.loadAnimation(mContext, R.anim.anima_out);
             am.setInterpolator(new LinearInterpolator());
             ll_plot_tools.startAnimation(am);
             ll_plot_tools.setVisibility(View.VISIBLE);
@@ -1769,14 +1780,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     private void startLeftTrackAnimation(boolean state) {
         if (state) {
-            Animation am = AnimationUtils.loadAnimation(getActivity(), R.anim.anima_dimss);
+            Animation am = AnimationUtils.loadAnimation(mContext, R.anim.anima_dimss);
             am.setInterpolator(new LinearInterpolator());
             bt_track_complete.startAnimation(am);
             bt_track_complete.setVisibility(View.GONE);
             bt_track_complete.clearAnimation();
             bt_track_complete.invalidate();
         } else {
-            Animation am = AnimationUtils.loadAnimation(getActivity(), R.anim.anima_out);
+            Animation am = AnimationUtils.loadAnimation(mContext, R.anim.anima_out);
             am.setInterpolator(new LinearInterpolator());
             bt_track_complete.startAnimation(am);
             bt_track_complete.setVisibility(View.VISIBLE);
@@ -1785,7 +1796,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     private void startPlotLeftAnimation(boolean state) {
         if (state) {
-            Animation am = AnimationUtils.loadAnimation(getActivity(), R.anim.anima_dimss);
+            Animation am = AnimationUtils.loadAnimation(mContext, R.anim.anima_dimss);
             am.setInterpolator(new LinearInterpolator());
             ll_plot_function.startAnimation(am);
             ll_plot_function.setVisibility(View.GONE);
@@ -1793,7 +1804,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             ll_plot_function.invalidate();
             Log.e("Tag", "startPlotLeftAnimation");
         } else {
-            Animation am = AnimationUtils.loadAnimation(getActivity(), R.anim.anima_out);
+            Animation am = AnimationUtils.loadAnimation(mContext, R.anim.anima_out);
             am.setInterpolator(new LinearInterpolator());
             ll_plot_function.startAnimation(am);
             ll_plot_function.setVisibility(View.VISIBLE);
@@ -1856,14 +1867,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                                     locTime += item.getLocTime();
                                     offset += counter;
                                     register += item.getNum();
-                                    if(item.getState().equals(Constants.PERSON_UNDETERMINED)) {
-                                        if(item.getState1().equals(Constants.PERSON_SOS)) {
+                                    if (item.getState().equals(Constants.PERSON_UNDETERMINED)) {
+                                        if (item.getState1().equals(Constants.PERSON_SOS)) {
                                             data_type += "1";
                                         } else {
                                             data_type += "0";
                                         }
                                     } else {
-                                        if(item.getState().equals(Constants.PERSON_SOS)) {
+                                        if (item.getState().equals(Constants.PERSON_SOS)) {
                                             data_type += "1";
                                         } else {
                                             data_type += "0";
@@ -1874,14 +1885,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                                     locTime += item.getLocTime() + "-";
                                     offset += counter + "-";
                                     register += item.getNum() + "-";
-                                    if(item.getState().equals(Constants.PERSON_UNDETERMINED)) {
-                                        if(item.getState1().equals(Constants.PERSON_SOS)) {
+                                    if (item.getState().equals(Constants.PERSON_UNDETERMINED)) {
+                                        if (item.getState1().equals(Constants.PERSON_SOS)) {
                                             data_type += "1-";
                                         } else {
                                             data_type += "0-";
                                         }
                                     } else {
-                                        if(item.getState().equals(Constants.PERSON_SOS)) {
+                                        if (item.getState().equals(Constants.PERSON_SOS)) {
                                             data_type += "1-";
                                         } else {
                                             data_type += "0-";
@@ -1919,7 +1930,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         }
                         if (SpUtils.getBoolean(SPConstants.STATISTICS_REPORT_POISTION, false)) {
                             SpUtils.putInt(SPConstants.STATISTICS_REPORT_NUM, SpUtils.getInt(SPConstants.STATISTICS_REPORT_NUM, 0) + 1);
-                            ((MainActivity) getActivity()).refleshStatistics();
+                            ((MainActivity) mContext).refleshStatistics();
                         }
                     }
 
@@ -2171,12 +2182,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     // 显示SOS的popwindow
     private void showSosPopupWindow(PersonalInfo item) {
         if (isShowing) return;
-        View contentView = LayoutInflater.from(getActivity()).inflate(
+        View contentView = LayoutInflater.from(mContext).inflate(
                 R.layout.popup_sos, null);
         mPopWindow = new PopupWindow(contentView, RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT, true);
         // 获取屏幕
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Display display = mContext.getWindowManager().getDefaultDisplay();
         mPopWindow.setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
         mPopWindow.setHeight(576);
         mPopWindow.setContentView(contentView);
@@ -2202,10 +2213,18 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         distance_bt.setOnClickListener(this);
         TextView distance_tv = (TextView) contentView
                 .findViewById(R.id.distancetv);
-
-        distance_tv.setText("距离您：" + df.format(GT_GeoArithmetic.ComputeDistanceOfTwoPoints(new GeoPoint(Double.valueOf(item.getLatitude()),
-                        Double.valueOf(item.getLongitude())),
-                new GeoPoint(lat, lon))) + "m");
+        try {
+            if (item.getLatitude() == null || item.getLatitude().isEmpty() || item.getLongitude() == null || item.getLongitude().isEmpty()) {
+                distance_tv.setText("距离您：" + "0m");
+            } else {
+                distance_tv.setText("距离您：" + df.format(GT_GeoArithmetic.ComputeDistanceOfTwoPoints(new GeoPoint(Double.valueOf(item.getLatitude()),
+                                Double.valueOf(item.getLongitude())),
+                        new GeoPoint(lat, lon))) + "m");
+            }
+        } catch (NullPointerException e) {
+            Log.e("Tag", (item == null) + "  faile");
+            distance_tv.setText("距离您：" + "0m");
+        }
 
         LinearLayout pop_track_bt = (LinearLayout) contentView
                 .findViewById(R.id.pop_track_bt);
@@ -2216,7 +2235,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 //		pop_track_bt.setOnClickListener(this);
         pop_rescue_bt.setOnClickListener(this);
         // 显示 PopupWindow
-        View rootview = LayoutInflater.from(getActivity()).inflate(
+        View rootview = LayoutInflater.from(mContext).inflate(
                 R.layout.security_fg, null);
         mPopWindow.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
         isShowing = true;
@@ -2225,12 +2244,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     // 显示normal的popwindow
     private void showNormalPopupWindow(final PersonalInfo item) {
         if (isShowing) return;
-        View contentView = LayoutInflater.from(getActivity()).inflate(
+        View contentView = LayoutInflater.from(mContext).inflate(
                 R.layout.popup_normal_command, null);
         mPopWindow = new PopupWindow(contentView, RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT, true);
         // 获取屏幕
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Display display = mContext.getWindowManager().getDefaultDisplay();
         mPopWindow.setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
         mPopWindow.setHeight(576);
         mPopWindow.setContentView(contentView);
@@ -2258,10 +2277,19 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
         TextView distance_tv = (TextView) contentView
                 .findViewById(R.id.normal_distancetv);
+        try {
+            if (item.getLatitude() == null || item.getLatitude().isEmpty() || item.getLongitude() == null || item.getLongitude().isEmpty()) {
+                distance_tv.setText("距离您：" + "0m");
+            } else {
+                distance_tv.setText("距离您：" + df.format(GT_GeoArithmetic.ComputeDistanceOfTwoPoints(new GeoPoint(Double.valueOf(item.getLatitude()),
+                                Double.valueOf(item.getLongitude())),
+                        new GeoPoint(lat, lon))) + "m");
+            }
+        } catch (NullPointerException e) {
+            distance_tv.setText("距离您：" + "0m");
+            Log.e("Tag", (item == null) + "  faile");
+        }
 
-        distance_tv.setText("距离您：" + df.format(GT_GeoArithmetic.ComputeDistanceOfTwoPoints(new GeoPoint(Double.valueOf(item.getLatitude()),
-                        Double.valueOf(item.getLongitude())),
-                new GeoPoint(lat, lon))) + "m");
         TextView tv_issue_command = (TextView) contentView.findViewById(R.id.tv_issue_command);
         tv_issue_command.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -2271,7 +2299,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             }
         });
         // 显示 PopupWindow
-        View rootview = LayoutInflater.from(getActivity()).inflate(
+        View rootview = LayoutInflater.from(mContext).inflate(
                 R.layout.security_fg, null);
         mPopWindow.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
         isShowing = true;
@@ -2354,7 +2382,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             public boolean onItemLongPress(int i, OverlayItem overlayItem) {
                 return false;
             }
-        }, new DefaultResourceProxyImpl(getActivity()));
+        }, new DefaultResourceProxyImpl(mContext));
         locationOverlay.setFocusItemsOnTap(true);
         locationOverlay.setFocusedItem(0);
         mMapView.getOverlayManager().add(locationOverlay);
@@ -2588,14 +2616,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     locTime += item.getLocTime();
                     offset += counter;
                     register += item.getNum();
-                    if(item.getState().equals(Constants.PERSON_UNDETERMINED)) {
-                        if(item.getState1().equals(Constants.PERSON_SOS)) {
+                    if (item.getState().equals(Constants.PERSON_UNDETERMINED)) {
+                        if (item.getState1().equals(Constants.PERSON_SOS)) {
                             data_type += "1";
                         } else {
                             data_type += "0";
                         }
                     } else {
-                        if(item.getState().equals(Constants.PERSON_SOS)) {
+                        if (item.getState().equals(Constants.PERSON_SOS)) {
                             data_type += "1";
                         } else {
                             data_type += "0";
@@ -2606,14 +2634,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     locTime += item.getLocTime() + "-";
                     offset += counter + "-";
                     register += item.getNum() + "-";
-                    if(item.getState().equals(Constants.PERSON_UNDETERMINED)) {
-                        if(item.getState1().equals(Constants.PERSON_SOS)) {
+                    if (item.getState().equals(Constants.PERSON_UNDETERMINED)) {
+                        if (item.getState1().equals(Constants.PERSON_SOS)) {
                             data_type += "1-";
                         } else {
                             data_type += "0-";
                         }
                     } else {
-                        if(item.getState().equals(Constants.PERSON_SOS)) {
+                        if (item.getState().equals(Constants.PERSON_SOS)) {
                             data_type += "1-";
                         } else {
                             data_type += "0-";
@@ -2639,14 +2667,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             List<UploadInfoBean> uploadList = new ArrayList<>();
             String local_latlon = SpUtils.getFloat(SPConstants.LAT_ADDR, Constants.CENTRE_LAT) + "," + SpUtils.getFloat(SPConstants.LON_ADDR, Constants.CENTRE_LON);
             UploadInfoBean bean = new UploadInfoBean(Constants.TX_JZH, Constants.TX_COMMON, System.currentTimeMillis(), null, null, null, local_latlon,
-                    SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0+"", SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, null);
+                    SpUtils.getLong(SPConstants.LOC_TIME, System.currentTimeMillis()), 0 + "", SpUtils.getString(Constants.UPLOAD_JZH_NUM, Constants.BD_NUM_DEF), 0, isRuuning ? BaseUtils.getSendID() : -1, null);
             uploadList.add(bean);
             mComUtils.uploadBena(uploadList);
             saveWactchTime();
         }
         if (SpUtils.getBoolean(SPConstants.STATISTICS_REPORT_POISTION, false)) {
             SpUtils.putInt(SPConstants.STATISTICS_REPORT_NUM, SpUtils.getInt(SPConstants.STATISTICS_REPORT_NUM, 0) + 1);
-            ((MainActivity) getActivity()).refleshStatistics();
+            ((MainActivity) mContext).refleshStatistics();
         }
     }
 
@@ -2732,11 +2760,11 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     // 显示中心点的popup
     private void ShowAlertDialogCommand(final byte[] sndBytes) {
-        dialogCommmand = new ShowAlertDialogCommand(getActivity());
+        dialogCommmand = new ShowAlertDialogCommand(mContext);
         dialogCommmand.showDialog();
         dialogCommmand.setListener(this);
         dialogCommmand.setSendBytes(sndBytes);
-        dialogCommmand.setAdapter(new CommandAdapter(getActivity()));
+        dialogCommmand.setAdapter(new CommandAdapter(mContext));
         dialogCommmand.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -2790,11 +2818,11 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     // 待定区域普通人员
     private void showUnderlineNormalPopupWindow(final int pos) {
-        View contentView = LayoutInflater.from(getActivity()).inflate(R.layout.popup_normal_command, null);
+        View contentView = LayoutInflater.from(mContext).inflate(R.layout.popup_normal_command, null);
         mPopWindow = new PopupWindow(contentView, RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT, true);
         // 获取屏幕
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Display display = mContext.getWindowManager().getDefaultDisplay();
         mPopWindow.setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
         mPopWindow.setHeight(576);
         mPopWindow.setContentView(contentView);
@@ -2832,19 +2860,19 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             }
         });
         // 显示 PopupWindow
-        View rootview = LayoutInflater.from(getActivity()).inflate(
+        View rootview = LayoutInflater.from(mContext).inflate(
                 R.layout.security_fg, null);
         mPopWindow.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
     }
 
     // 待定区域普通人员
     private void showUnderlineOfflinePopupWindow(int pos) {
-        View contentView = LayoutInflater.from(getActivity()).inflate(
+        View contentView = LayoutInflater.from(mContext).inflate(
                 R.layout.popup_normal_command, null);
         mPopWindow = new PopupWindow(contentView, RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT, true);
         // 获取屏幕
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Display display = mContext.getWindowManager().getDefaultDisplay();
         mPopWindow.setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
         mPopWindow.setHeight(576);
         mPopWindow.setContentView(contentView);
@@ -2876,7 +2904,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         TextView tv_issue_command = (TextView) contentView.findViewById(R.id.tv_issue_command);
         tv_issue_command.setBackgroundColor(getResources().getColor(R.color.gray_background));
         // 显示 PopupWindow
-        View rootview = LayoutInflater.from(getActivity()).inflate(
+        View rootview = LayoutInflater.from(mContext).inflate(
                 R.layout.security_fg, null);
         mPopWindow.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
     }
@@ -2884,12 +2912,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     // 待定区域sos
     private void showUnderlineSosPopupWindow(int pos) {
 
-        View contentView = LayoutInflater.from(getActivity()).inflate(
+        View contentView = LayoutInflater.from(mContext).inflate(
                 R.layout.popup_sos, null);
         mPopWindow = new PopupWindow(contentView, RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT, true);
         // 获取屏幕
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Display display = mContext.getWindowManager().getDefaultDisplay();
         mPopWindow.setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
         mPopWindow.setHeight(576);
         mPopWindow.setContentView(contentView);
@@ -2941,7 +2969,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             }
         });
         // 显示 PopupWindow
-        View rootview = LayoutInflater.from(getActivity()).inflate(
+        View rootview = LayoutInflater.from(mContext).inflate(
                 R.layout.security_fg, null);
         mPopWindow.showAtLocation(rootview, Gravity.BOTTOM, 0, 0);
 
@@ -3096,8 +3124,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                     }
                 }
                 if (unReadMsgCount == 0) {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(new Thread(new Runnable() {
+                    if (map_common != null) {
+                        mContext.runOnUiThread(new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 tv_conmnication_num.setText("");
@@ -3108,8 +3136,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
                 } else {
                     final int finalUnReadMsgCount = unReadMsgCount;
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(new Runnable() {
+                    if (mContext != null) {
+                        mContext.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 tv_conmnication_num.setVisibility(View.VISIBLE);
@@ -3157,26 +3185,26 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 case 0:
                 case 1:
                     tv_signal_level.setText(getString(R.string.bd_signal_level_bad));
-                    tv_signal_level.setBackgroundColor(getActivity().getResources().getColor(R.color.red));
+                    tv_signal_level.setBackgroundColor(mContext.getResources().getColor(R.color.red));
                     break;
                 case 2:
                     tv_signal_level.setText(getString(R.string.bd_signal_level_middle));
-                    tv_signal_level.setBackgroundColor(getActivity().getResources().getColor(R.color.yellow));
+                    tv_signal_level.setBackgroundColor(mContext.getResources().getColor(R.color.yellow));
                     break;
                 case 3:
                     tv_signal_level.setText(getString(R.string.bd_signal_level_good));
-                    tv_signal_level.setBackgroundColor(getActivity().getResources().getColor(R.color.green3));
+                    tv_signal_level.setBackgroundColor(mContext.getResources().getColor(R.color.green3));
                     break;
                 case 4:
                     tv_signal_level.setText(getString(R.string.bd_signal_level_excellent));
-                    tv_signal_level.setBackgroundColor(getActivity().getResources().getColor(R.color.green));
+                    tv_signal_level.setBackgroundColor(mContext.getResources().getColor(R.color.green));
                     break;
             }
         }
     }
 
     private void showSearchDialog() {
-        searchDialog = new ShowDialogSearch(getActivity());
+        searchDialog = new ShowDialogSearch(mContext);
         searchDialog.show();
         searchDialog.setListner(this);
     }
@@ -3186,14 +3214,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
      */
 
     public void showUploadDetailDialog(int total, int success, int fail, String body) {
-        uploadDetail = new ShowUploadDetailDialog(getActivity(), total, success, fail, body);
+        uploadDetail = new ShowUploadDetailDialog(mContext, total, success, fail, body);
         uploadDetail.show();
         uploadDetail.intContent();
         uploadDetail.setOnClickListener(this);
     }
 
     private void showHandleDialog() {
-        handleDialog = new ShowHandlePlotDialog(getActivity());
+        handleDialog = new ShowHandlePlotDialog(mContext);
         handleDialog.show();
         handleDialog.setListner(this);
     }
@@ -3257,6 +3285,94 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     @Override
     public void onChildScroll(int top) {
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        landscapeList.clear();
+        landscapeList = null;
+        overlayManager = null;
+        plotHAdapter = null;
+        mMapView = null;
+        mGraphicOverlay = null;
+        locManager = null;
+        criteria = null;
+        locationOverlay = null;
+        content = null;
+        mPopWindow = null;
+        treeDialog = null;
+        locationOverlay = null;
+        bytes = null;
+        animation = null;
+        undetermined_List.clear();
+        undetermined_List = null;
+        commonList.clear();
+        commonList = null;
+        sosList = null;
+        persondao = null;
+        helper = null;
+        if (map_sos != null) {
+            map_sos.clear();
+            map_sos = null;
+        }
+        if (map_common != null) {
+            map_common.clear();
+            map_common = null;
+        }
+        sos_marker_id.clear();
+        sos_marker_id = null;
+        common_marker_id.clear();
+        common_marker_id = null;
+        searchTimeArr = null;
+        animation = null;
+        am1 = null;
+        am2 = null;
+        loRaManager = null;
+        bdByteArr = null;
+        mPopWindow = null;
+        dialogCommmand = null;
+        mapController = null;
+        codeArr = null;
+        if (trackList != null) {
+            trackList.clear();
+            trackList = null;
+        }
+        if (tatolMap != null) {
+            tatolMap.clear();
+            tatolMap = null;
+        }
+        if (firePlots != null) {
+            firePlots.clear();
+            firePlots = null;
+        }
+        plotDao = null;
+        plotItemDao = null;
+        locTrackDao = null;
+        df = null;
+        if (newFirePlots != null) {
+            newFirePlots.clear();
+            newFirePlots = null;
+        }
+        sos_bitmap = null;
+        common_bitmap = null;
+        searchDialog = null;
+        searchEndnoteDialog = null;
+        timerCloseDialog = null;
+        mComUtils = null;
+        bdByteArr = null;
+        tileProviderBase = null;
+        handleDialog = null;
+        content = null;
+        treeDialog = null;
+        treeDao = null;
+        mHttpDao = null;
+        uploadDetail = null;
+        locTimeDao = null;
+        if (mHashMap != null) {
+            mHashMap.clear();
+            mHashMap = null;
+        }
     }
 
     // private PopupWindow mPopMemuWindow;

@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lhzw.searchlocmap"
     android:sharedUserId="com.fireproof"
-    android:versionCode="20"
-    android:versionName="2.6.5e">
+    android:versionCode="22"
+    android:versionName="2.8.0e">
 
     <!-- locationManager定位权限 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -173,6 +173,7 @@
         <!-- 联系人页 -->
         <activity android:name=".ui.CommunicationListActivity" />
         <activity android:name=".ui.CommandStateActivity" />
+        <activity android:name=".ui.BindingWatchActivity"></activity>
 
         <receiver android:name=".receiver.WatchSignalReceiver">
             <intent-filter>

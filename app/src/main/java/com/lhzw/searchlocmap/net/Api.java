@@ -3,9 +3,12 @@ package com.lhzw.searchlocmap.net;
 import com.lhzw.searchlocmap.bean.AllBDInfosBean;
 import com.lhzw.searchlocmap.bean.AllPersonInfoBean;
 import com.lhzw.searchlocmap.bean.BaseBean;
+import com.lhzw.searchlocmap.bean.BindingOfWatchBean;
 import com.lhzw.searchlocmap.bean.BindingWatchBean;
 import com.lhzw.searchlocmap.bean.NetResponseBean;
 import com.lhzw.searchlocmap.bean.UserInfo;
+
+import java.util.List;
 
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
@@ -23,6 +26,7 @@ import retrofit2.http.Query;
 public interface Api {
     /**
      * 登录接口
+     *
      * @param loginName
      * @param password
      * @return
@@ -32,6 +36,7 @@ public interface Api {
 
     /**
      * 获取全员信息
+     *
      * @return
      */
     @GET("security/user")
@@ -56,6 +61,15 @@ public interface Api {
      */
     @DELETE("handsets/binding/{handsetNumber}-{childNumber}")
     Observable<BaseBean> deleteBinding(@Path("handsetNumber") String mac, @Path("childNumber") String childNumber);
+
+    /**
+     * 获取绑定关系
+     *
+     * @param org
+     * @return
+     */
+    @GET("handsets/binding")
+    Observable<BaseBean<List<BindingOfWatchBean>>> getBindingWatchs(@Query("org") int org);
 
     /**
      * 获取所有的北斗信息

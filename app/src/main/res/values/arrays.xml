@@ -246,6 +246,12 @@
         <item>移动终端</item>
     </string-array>
 
+    <string-array name="binding_type">
+        <item>基指</item>
+        <item>前指</item>
+        <item>移动终端</item>
+    </string-array>
+
     <integer-array name="dipper_type_id">
         <item>5</item>
         <item>1</item>

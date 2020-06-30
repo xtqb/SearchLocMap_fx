@@ -115,6 +115,11 @@ public class ContactFragment extends BaseLazyFragment {
         });
     }
 
+    @Override
+    protected void onReflesh() {
+
+    }
+
 
     /**
      * 为RecyclerView的bean 设置首字符数据
