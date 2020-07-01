@@ -26,7 +26,6 @@ import java.text.NumberFormat;
  */
 public class MeasureOriginDistanceOverlay extends OverlayController {
     private double distance;
-    private double totalDistance;
     private Context context;
     private GeoPoint center;
 
@@ -50,6 +49,12 @@ public class MeasureOriginDistanceOverlay extends OverlayController {
     public void repealLastPoint() {
         if (touchGps.size() != 0) {
             touchGps.remove(touchGps.size() - 1);
+        }
+    }
+
+    public void addGeoPoint(GeoPoint geoPoint){
+        if(touchGps!= null) {
+            touchGps.add(geoPoint);
         }
     }
 
