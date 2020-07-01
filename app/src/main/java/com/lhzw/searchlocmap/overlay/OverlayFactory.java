@@ -3,7 +3,6 @@ package com.lhzw.searchlocmap.overlay;
 import android.content.Context;
 
 import com.gtmap.views.overlay.Overlay;
-import com.lhzw.searchlocmap.MeasureOriginDistanceOverlay;
 
 /**
  * Created by jiangyang on 2019/3/6.

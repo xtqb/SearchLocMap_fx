@@ -1,4 +1,4 @@
-package com.lhzw.searchlocmap;
+package com.lhzw.searchlocmap.overlay;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -16,7 +16,7 @@ import com.gtmap.api.IGeoPoint;
 import com.gtmap.common.GT_GeoArithmetic;
 import com.gtmap.util.GeoPoint;
 import com.gtmap.views.MapView;
-import com.lhzw.searchlocmap.overlay.OverlayController;
+import com.lhzw.searchlocmap.R;
 
 import java.io.InputStream;
 import java.text.NumberFormat;

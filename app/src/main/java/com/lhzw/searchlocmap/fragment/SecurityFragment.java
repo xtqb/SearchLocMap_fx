@@ -81,7 +81,6 @@ import com.gtmap.views.overlay.ItemizedOverlayWithFocus;
 import com.gtmap.views.overlay.OverlayItem;
 import com.gtmap.views.overlay.ScaleBarOverlay;
 import com.j256.ormlite.dao.Dao;
-import com.lhzw.searchlocmap.MeasureOriginDistanceOverlay;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.adapter.CommandAdapter;
 import com.lhzw.searchlocmap.adapter.PlotHorizonAdapter;
@@ -110,6 +109,7 @@ import com.lhzw.searchlocmap.interfaces.OnHoriItemClickListener;
 import com.lhzw.searchlocmap.overlay.DEMPointOverlay;
 import com.lhzw.searchlocmap.overlay.MeasureAreaOverlay;
 import com.lhzw.searchlocmap.overlay.MeasureDistanceOverlay;
+import com.lhzw.searchlocmap.overlay.MeasureOriginDistanceOverlay;
 import com.lhzw.searchlocmap.overlay.MeasureOverlayManager;
 import com.lhzw.searchlocmap.overlay.OverlayFactory;
 import com.lhzw.searchlocmap.overlay.P2pviewAnalysisOverlay;
@@ -1789,9 +1789,10 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             mdOverlay = (MeasureOriginDistanceOverlay) OverlayFactory.createOverlayInstance(OverlayFactory.MEASUREORIGINDISTANCE, getContext());
             mdOverlay.setCenter(new GeoPoint(lat, lon));
             mMapView.getOverlayManager().add(mdOverlay);
-            overlayManager.addOverlay(OverlayFactory.MEASUREDISTANCE, mdOverlay);
+            overlayManager.addOverlay(OverlayFactory.MEASUREORIGINDISTANCE, mdOverlay);
         }
-        overlayManager.setOverlays(OverlayFactory.MEASUREDISTANCE);
+        overlayManager.setOverlays(OverlayFactory.MEASUREORIGINDISTANCE);
+//        mdOverlay.closeOverlay();
         mMapView.postInvalidate();
     }
 
