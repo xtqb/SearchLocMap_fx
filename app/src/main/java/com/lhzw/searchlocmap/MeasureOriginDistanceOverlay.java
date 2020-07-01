@@ -1,4 +1,4 @@
-package com.lhzw.searchlocmap.overlay;
+package com.lhzw.searchlocmap;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -16,22 +16,27 @@ import com.gtmap.api.IGeoPoint;
 import com.gtmap.common.GT_GeoArithmetic;
 import com.gtmap.util.GeoPoint;
 import com.gtmap.views.MapView;
-import com.lhzw.searchlocmap.R;
+import com.lhzw.searchlocmap.overlay.OverlayController;
 
 import java.io.InputStream;
 import java.text.NumberFormat;
 
 /**
- * Created by jiangyang on 2019/3/6.
+ * Created by xtqb on 2019/3/6.
  */
-public class MeasureDistanceOverlay extends OverlayController {
+public class MeasureOriginDistanceOverlay extends OverlayController {
     private double distance;
     private double totalDistance;
     private Context context;
+    private GeoPoint center;
 
-    public MeasureDistanceOverlay(Context ctx) {
+    public MeasureOriginDistanceOverlay(Context ctx) {
         super(ctx);
         this.context = ctx;
+    }
+
+    public void setCenter(GeoPoint center) {
+        this.center = center;
     }
 
     @Override
@@ -69,8 +74,9 @@ public class MeasureDistanceOverlay extends OverlayController {
             Path path = new Path();
             MapView.Projection proj = mapView.getProjection();
             Point shapePoint = new Point();
-            proj.CGCS2000toPixels(touchGps.get(0), shapePoint);
-            path.moveTo(shapePoint.x, shapePoint.y);
+            Point centerPoint = new Point();
+            proj.CGCS2000toPixels(center, centerPoint);
+            path.moveTo(centerPoint.x, centerPoint.y);
             //画起点
             String text = "起点";
             drawRectText(canvas, shapePoint, text);
@@ -83,19 +89,12 @@ public class MeasureDistanceOverlay extends OverlayController {
                 Bitmap pic = BitmapFactory.decodeStream(ioStream);
                 canvas.drawBitmap(pic, mPoint.x - pic.getWidth() / 2, mPoint.y - pic.getHeight() / 2, paint);
 
-                if (i > 0) {
-                    proj.CGCS2000toPixels(touchGps.get(i), shapePoint);
-                    path.lineTo(shapePoint.x, shapePoint.y);
-                    distance = GT_GeoArithmetic.ComputeDistanceOfTwoPoints((GeoPoint) touchGps.get(i), (GeoPoint) touchGps.get(i - 1));
-                    totalDistance = GT_GeoArithmetic.ComputeDistanceOfPoints(touchGps.toArray(new GeoPoint[touchGps.size()]), touchGps.size());//总距离
-                    if (i == touchGps.size() - 1) {
-                        String distanceText = "直线总长：" + formatShow(totalDistance);
-                        drawRectText(canvas, shapePoint, distanceText);
-                    } else {
-                        String distanceText = "直线：" + formatShow(distance);
-                        drawRectText(canvas, shapePoint, distanceText);
-                    }
-                }
+                proj.CGCS2000toPixels(touchGps.get(i), shapePoint);
+                path.lineTo(shapePoint.x, shapePoint.y);
+                distance = GT_GeoArithmetic.ComputeDistanceOfTwoPoints((GeoPoint) touchGps.get(i), center);
+                String distanceText = "直线：" + formatShow(distance);
+                drawRectText(canvas, shapePoint, distanceText);
+                path.moveTo(centerPoint.x, centerPoint.y);
             }
             canvas.drawPath(path, paint);
         }

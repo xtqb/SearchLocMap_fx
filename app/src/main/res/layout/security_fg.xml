@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/rl_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+    android:id="@+id/rl_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <!--以下是右边的======================================================侧边栏-->
 
@@ -14,7 +14,7 @@
 
         <include
             android:id="@+id/security_main"
-            layout="@layout/security_main"/>
+            layout="@layout/security_main" />
 
         <ScrollView
             android:layout_width="240dp"
@@ -42,7 +42,7 @@
                         android:layout_height="40dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_setting_top"/>
+                        android:background="@drawable/icon_setting_top" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -51,7 +51,35 @@
                         android:gravity="center_vertical"
                         android:text="@string/function_list"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rl_mesure_origin"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:background="@drawable/bg_selector_drawlayout_rl"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="20dp"
+                        android:background="@drawable/icon_distance_origin" />
+
+                    <TextView
+                        android:id="@+id/tv_mesure_origin"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginRight="3dp"
+                        android:gravity="center_vertical"
+                        android:text="@string/mesure_distance"
+                        android:textColor="#0B0B0B"
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -67,19 +95,19 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_distance"/>
+                        android:background="@drawable/icon_distance" />
 
                     <TextView
                         android:id="@+id/tv_mesure_distance"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginRight="3dp"
                         android:layout_marginTop="3dp"
+                        android:layout_marginRight="3dp"
                         android:gravity="center_vertical"
-                        android:text="@string/mesure_distance"
+                        android:text="@string/mesure_distance_free"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -94,9 +122,8 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
-
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_area"/>
+                        android:background="@drawable/icon_area" />
 
                     <TextView
                         android:id="@+id/tv_mesure_area"
@@ -106,7 +133,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/mesure_area"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -122,7 +149,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_heiht"/>
+                        android:background="@drawable/icon_heiht" />
 
                     <TextView
                         android:id="@+id/tv_mesure_height"
@@ -132,7 +159,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/mesure_height"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -149,7 +176,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_scan"/>
+                        android:background="@drawable/icon_scan" />
 
                     <TextView
                         android:id="@+id/tv_mesure_p2p"
@@ -159,7 +186,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/mesure_p2p"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -175,7 +202,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_plot"/>
+                        android:background="@drawable/icon_plot" />
 
                     <TextView
                         android:id="@+id/tv_plot"
@@ -185,7 +212,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/plot_func"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -201,7 +228,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_plot_manager"/>
+                        android:background="@drawable/icon_plot_manager" />
 
                     <TextView
                         android:id="@+id/tv_plot_list"
@@ -211,7 +238,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/plot_manager"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -227,7 +254,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_track"/>
+                        android:background="@drawable/icon_track" />
 
                     <TextView
                         android:id="@+id/tv_loc_track"
@@ -237,7 +264,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/track_location"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -253,7 +280,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_track_list"/>
+                        android:background="@drawable/icon_track_list" />
 
                     <TextView
                         android:id="@+id/tv_track_list"
@@ -263,7 +290,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/track_list"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
 
@@ -280,7 +307,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_location"/>
+                        android:background="@drawable/icon_location" />
 
                     <TextView
                         android:id="@+id/tv_quick_loc"
@@ -290,7 +317,7 @@
                         android:gravity="center_vertical"
                         android:text="@string/quick_location"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -306,7 +333,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/icon_sync"/>
+                        android:background="@drawable/icon_sync" />
 
                     <TextView
                         android:id="@+id/tv_sync_fire_line"
@@ -316,12 +343,12 @@
                         android:gravity="center_vertical"
                         android:text="@string/sync_fire_line"
                         android:textColor="#0B0B0B"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="2dp"/>
+                    android:layout_height="2dp" />
             </LinearLayout>
         </ScrollView>
 
@@ -346,7 +373,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/icon_plot_list_title"/>
+                    android:background="@drawable/icon_plot_list_title" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -354,14 +381,14 @@
                     android:gravity="center"
                     android:text="@string/plot_list_top"
                     android:textColor="#0B0B0B"
-                    android:textSize="16sp"/>
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <ListView
                 android:id="@+id/plot_listView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scrollbars="none"/>
+                android:scrollbars="none" />
         </LinearLayout>
     </com.lhzw.searchlocmap.view.MyDrawerLayout>
     <!--<RelativeLayout-->
@@ -555,7 +582,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="@drawable/touch_ic"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <FrameLayout
         android:id="@+id/fl_menu_container"
@@ -588,7 +615,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:duplicateParentState="true"
-                        android:src="@drawable/selector_sf_draw_bg"/>
+                        android:src="@drawable/selector_sf_draw_bg" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -596,15 +623,15 @@
                         android:duplicateParentState="true"
                         android:text="标绘列表"
                         android:textColor="@color/selector_text_color_white_green"
-                        android:textSize="10sp"/>
+                        android:textSize="10sp" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1px"
                         android:layout_marginLeft="3dp"
-                        android:layout_marginRight="3dp"
                         android:layout_marginTop="6dp"
-                        android:background="#4DFFFFFF"/>
+                        android:layout_marginRight="3dp"
+                        android:background="#4DFFFFFF" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -622,22 +649,22 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:duplicateParentState="true"
-                            android:src="@drawable/selector_sf_sms_bg"/>
+                            android:src="@drawable/selector_sf_sms_bg" />
 
                         <TextView
                             android:id="@+id/tv_conmnication_num"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="right"
-                            android:layout_marginRight="2dp"
                             android:layout_marginTop="2dp"
+                            android:layout_marginRight="2dp"
                             android:background="@drawable/bg_round_rect"
                             android:gravity="center"
                             android:paddingLeft="2dp"
                             android:paddingRight="2dp"
                             android:textColor="@color/white"
                             android:textSize="10sp"
-                            android:visibility="gone"/>
+                            android:visibility="gone" />
                     </FrameLayout>
 
 
@@ -647,15 +674,15 @@
                         android:duplicateParentState="true"
                         android:text="消息通信"
                         android:textColor="@color/selector_text_color_white_green"
-                        android:textSize="10sp"/>
+                        android:textSize="10sp" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1px"
                         android:layout_marginLeft="3dp"
-                        android:layout_marginRight="3dp"
                         android:layout_marginTop="6dp"
-                        android:background="#4DFFFFFF"/>
+                        android:layout_marginRight="3dp"
+                        android:background="#4DFFFFFF" />
                 </LinearLayout>
 
 
@@ -671,7 +698,7 @@
                         android:layout_height="wrap_content"
                         android:duplicateParentState="true"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/selector_sf_search_bg"/>
+                        android:src="@drawable/selector_sf_search_bg" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -679,16 +706,17 @@
                         android:duplicateParentState="true"
                         android:text="搜索功能"
                         android:textColor="@color/selector_text_color_white_green"
-                        android:textSize="10sp"/>
+                        android:textSize="10sp" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1px"
                         android:layout_marginLeft="3dp"
-                        android:layout_marginRight="3dp"
                         android:layout_marginTop="6dp"
-                        android:background="#4DFFFFFF"/>
+                        android:layout_marginRight="3dp"
+                        android:background="#4DFFFFFF" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/ll_btn_location"
                     android:layout_width="wrap_content"
@@ -701,7 +729,7 @@
                         android:layout_height="wrap_content"
                         android:duplicateParentState="true"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/selector_sf_location_bg"/>
+                        android:src="@drawable/selector_sf_location_bg" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -709,15 +737,15 @@
                         android:duplicateParentState="true"
                         android:text="本机定位"
                         android:textColor="@color/selector_text_color_white_green"
-                        android:textSize="10sp"/>
+                        android:textSize="10sp" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1px"
                         android:layout_marginLeft="3dp"
-                        android:layout_marginRight="3dp"
                         android:layout_marginTop="6dp"
-                        android:background="#4DFFFFFF"/>
+                        android:layout_marginRight="3dp"
+                        android:background="#4DFFFFFF" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -730,7 +758,7 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/selector_sf_service_bg"/>
+                        android:src="@drawable/selector_sf_service_bg" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -738,15 +766,15 @@
                         android:duplicateParentState="true"
                         android:text="通信服务"
                         android:textColor="@color/selector_text_color_white_green"
-                        android:textSize="10sp"/>
+                        android:textSize="10sp" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1px"
                         android:layout_marginLeft="3dp"
-                        android:layout_marginRight="3dp"
                         android:layout_marginTop="6dp"
-                        android:duplicateParentState="true"/>
+                        android:layout_marginRight="3dp"
+                        android:duplicateParentState="true" />
                 </LinearLayout>
 
 
@@ -766,7 +794,7 @@
                     android:id="@+id/iv_open"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/icon_sf_close2"/>
+                    android:src="@drawable/icon_sf_close2" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -774,14 +802,14 @@
                     android:duplicateParentState="true"
                     android:text="信号模式"
                     android:textColor="#33c442"
-                    android:textSize="10sp"/>
+                    android:textSize="10sp" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1px"
                     android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginTop="6dp"/>
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="3dp" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -790,8 +818,8 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_marginRight="60dp"
             android:layout_marginTop="383dp"
+            android:layout_marginRight="60dp"
             android:background="@drawable/shape_black_circle_bg"
             android:gravity="center"
             android:orientation="horizontal"
@@ -807,11 +835,11 @@
                 android:checked="true"
                 android:drawableTop="@drawable/selector_bg_rg_bd"
                 android:gravity="center"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="北斗"
                 android:textColor="@color/selector_radio_btn"
-                android:textSize="10sp"/>
+                android:textSize="10sp" />
 
             <RadioButton
                 android:id="@+id/rg_btn_net"
@@ -822,11 +850,11 @@
                 android:button="@null"
                 android:drawableTop="@drawable/selector_bg_rg_net"
                 android:gravity="center"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="网络"
                 android:textColor="@color/selector_radio_btn"
-                android:textSize="10sp"/>
+                android:textSize="10sp" />
 
             <RadioButton
                 android:id="@+id/rg_btn_auto"
@@ -837,11 +865,11 @@
                 android:button="@null"
                 android:drawableTop="@drawable/selector_bg_rg_auto"
                 android:gravity="center"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="自动"
                 android:textColor="@color/selector_radio_btn"
-                android:textSize="10sp"/>
+                android:textSize="10sp" />
         </RadioGroup>
 
         <!--<ImageView-->

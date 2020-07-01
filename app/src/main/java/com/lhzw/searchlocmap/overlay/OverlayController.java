@@ -1,7 +1,6 @@
 package com.lhzw.searchlocmap.overlay;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Point;
 
 import com.gtmap.api.IGeoPoint;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
  */
 public abstract class OverlayController extends Overlay {
     protected ArrayList<IGeoPoint> touchGps= new ArrayList<>();
-    boolean open = false;
+    protected boolean open = false;
     public OverlayController(Context ctx) {
         super(ctx);
     }

@@ -229,7 +229,8 @@
     <string name="mms_send_data">发送短消息数据</string>
 
     <string name="function_list">功能列表</string>
-    <string name="mesure_distance">距离测量</string>
+    <string name="mesure_distance">原点距离</string>
+    <string name="mesure_distance_free">距离</string>
     <string name="mesure_area">面积测量</string>
     <string name="mesure_height">测量海拔</string>
     <string name="mesure_p2p">两点通视</string>

@@ -81,6 +81,7 @@ import com.gtmap.views.overlay.ItemizedOverlayWithFocus;
 import com.gtmap.views.overlay.OverlayItem;
 import com.gtmap.views.overlay.ScaleBarOverlay;
 import com.j256.ormlite.dao.Dao;
+import com.lhzw.searchlocmap.MeasureOriginDistanceOverlay;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.adapter.CommandAdapter;
 import com.lhzw.searchlocmap.adapter.PlotHorizonAdapter;
@@ -168,6 +169,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private PlotHorizonAdapter plotHAdapter;
     private final int PERSTATE_REQCODE = 0x101;
     private LinearLayout ll_plot_tools;
+    private LinearLayout ll_measure_tools;
     private LinearLayout ll_plot_function;
     private MeasureOverlayManager overlayManager = new MeasureOverlayManager();
     private MapView mMapView;
@@ -780,6 +782,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 drawer.closeDrawer(Gravity.LEFT);
                 measureDistance();
                 break;
+            case R.id.rl_mesure_origin:
+                isSettingEnable = true;
+                startLeftMeasureAnimation(false);
+                drawer.closeDrawer(Gravity.LEFT);
+                measureOriginDistance();
+                break;
             case R.id.rl_mesure_area:
                 isSettingEnable = true;
                 startLeftAnimation(false);
@@ -1183,6 +1191,20 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 tv_upload_state.setText(getString(R.string.upload_search_ing));
                 new Thread(new Action()).start();
                 break;
+            case R.id.bt_measure_back:
+                Log.e("Tag", "bt_measure_origin_back");
+                int type1 = overlayManager.getType();
+                if (type1 != -1) {
+                    overlayManager.getOverlay(type1).repealLastPoint();
+                    mMapView.postInvalidate();
+                }
+                break;
+            case R.id.bt_measure_complete:
+                isSettingEnable = false;
+                startLeftMeasureAnimation(true);
+                overlayManager.removeOverlays(mMapView.getOverlayManager());
+                mMapView.postInvalidate();
+                break;
         }
     }
 
@@ -1331,6 +1353,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         LinearLayout rl_mesure_distance = (LinearLayout) view.findViewById(R.id.rl_mesure_distance);
         rl_mesure_distance.setOnClickListener(this);
 
+        LinearLayout rl_mesure_origin = (LinearLayout) view.findViewById(R.id.rl_mesure_origin);
+        rl_mesure_origin.setOnClickListener(this);
+
         LinearLayout rl_mesure_area = (LinearLayout) view.findViewById(R.id.rl_mesure_area);
         rl_mesure_area.setOnClickListener(this);
 
@@ -1375,6 +1400,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         bt_track_complete = (Button) view.findViewById(R.id.bt_track_complete);
         bt_track_complete.setOnClickListener(this);
         ll_plot_tools = (LinearLayout) view.findViewById(R.id.ll_plot_tools);
+        ll_measure_tools = (LinearLayout) view.findViewById(R.id.ll_measure_tools);
         rl_h_list = (HorizontalListView) view.findViewById(R.id.rl_h_list);
         ll_animation = (RelativeLayout) view.findViewById(R.id.ll_animation);
         im_animation = (ImageView) view.findViewById(R.id.im_animation);
@@ -1382,6 +1408,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         Button bt_plot_back = (Button) view.findViewById(R.id.bt_plot_back);
         note_content_tv = (TextView) view.findViewById(R.id.note_content_tv);
         bt_plot_back.setOnClickListener(this);
+
+        Button bt_measure_back = (Button) view.findViewById(R.id.bt_measure_back);
+        bt_measure_back.setOnClickListener(this);
+
+        Button bt_measure_complete = (Button) view.findViewById(R.id.bt_measure_complete);
+        bt_measure_complete.setOnClickListener(this);
 
         Button bt_plot_complete = (Button) view.findViewById(R.id.bt_plot_complete);
         bt_plot_complete.setOnClickListener(this);
@@ -1751,6 +1783,18 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         mMapView.postInvalidate();
     }
 
+    private void measureOriginDistance() {
+        MeasureOriginDistanceOverlay mdOverlay = (MeasureOriginDistanceOverlay) overlayManager.getOverlay(OverlayFactory.MEASUREORIGINDISTANCE);
+        if (mdOverlay == null) {
+            mdOverlay = (MeasureOriginDistanceOverlay) OverlayFactory.createOverlayInstance(OverlayFactory.MEASUREORIGINDISTANCE, getContext());
+            mdOverlay.setCenter(new GeoPoint(lat, lon));
+            mMapView.getOverlayManager().add(mdOverlay);
+            overlayManager.addOverlay(OverlayFactory.MEASUREDISTANCE, mdOverlay);
+        }
+        overlayManager.setOverlays(OverlayFactory.MEASUREDISTANCE);
+        mMapView.postInvalidate();
+    }
+
     private void startBottomAnimation(boolean state) {
         if (state) {
             rl_h_list.startAnimation(am1);
@@ -1775,6 +1819,20 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             am.setInterpolator(new LinearInterpolator());
             ll_plot_tools.startAnimation(am);
             ll_plot_tools.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void startLeftMeasureAnimation(boolean state) {
+        if (state) {
+            Animation am = AnimationUtils.loadAnimation(mContext, R.anim.anima_dimss);
+            am.setInterpolator(new LinearInterpolator());
+            ll_measure_tools.startAnimation(am);
+            ll_measure_tools.setVisibility(View.GONE);
+        } else {
+            Animation am = AnimationUtils.loadAnimation(mContext, R.anim.anima_out);
+            am.setInterpolator(new LinearInterpolator());
+            ll_measure_tools.startAnimation(am);
+            ll_measure_tools.setVisibility(View.VISIBLE);
         }
     }
 
