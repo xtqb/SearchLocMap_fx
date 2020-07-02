@@ -111,8 +111,8 @@
             android:layout_width="match_parent"
             android:layout_height="62dp"
             android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
             android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
             android:focusable="false" />
     </LinearLayout>
 
@@ -128,8 +128,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/ll_undetermine"
-        android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
         android:background="@color/green_dark"
         android:orientation="vertical"
         android:visibility="gone">
@@ -158,10 +158,10 @@
         android:id="@+id/setting_btn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="15dp"
+        android:layout_alignParentBottom="true"
         android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
         android:background="@drawable/my_work"
         android:visibility="gone" />
 
@@ -169,8 +169,8 @@
         android:id="@+id/bt_plot_btn"
         android:layout_width="55dp"
         android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="370dp"
         android:background="@drawable/btn_plot_state"
         android:gravity="right"
@@ -180,8 +180,8 @@
         android:id="@+id/tv_plot_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="350dp"
         android:text="@string/fuzzy_plot_search"
         android:textColor="@color/yellow"
@@ -189,22 +189,22 @@
         android:visibility="gone" />
 
     <Button
-        android:visibility="gone"
         android:id="@+id/communication_btn"
         android:layout_width="55dp"
         android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="370dp"
         android:background="@drawable/bg_selector_communication"
-        android:gravity="right" />
+        android:gravity="right"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tv_communication_num"
         android:layout_width="17dp"
         android:layout_height="17dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="393dp"
         android:background="@drawable/msg_circle_bg"
         android:gravity="center"
@@ -214,112 +214,114 @@
         android:visibility="gone" />
 
     <TextView
-        android:visibility="gone"
         android:id="@+id/tv_communication_counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="350dp"
         android:text="@string/custom_report"
         android:textColor="@color/yellow"
-        android:textSize="13sp" />
+        android:textSize="13sp"
+        android:visibility="gone" />
 
     <!--<TextView-->
-        <!--android:id="@+id/tv_conmnication_num"-->
-        <!--android:visibility="gone"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="16dp"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_marginRight="2dp"-->
-        <!--android:layout_marginTop="107dp"-->
-        <!--android:background="@drawable/bg_round_rect"-->
-        <!--android:gravity="center"-->
-        <!--android:paddingLeft="2dp"-->
-        <!--android:paddingRight="2dp"-->
-        <!--android:textColor="@color/white"-->
-        <!--android:textSize="10sp" />-->
+    <!--android:id="@+id/tv_conmnication_num"-->
+    <!--android:visibility="gone"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="16dp"-->
+    <!--android:layout_alignParentRight="true"-->
+    <!--android:layout_marginRight="2dp"-->
+    <!--android:layout_marginTop="107dp"-->
+    <!--android:background="@drawable/bg_round_rect"-->
+    <!--android:gravity="center"-->
+    <!--android:paddingLeft="2dp"-->
+    <!--android:paddingRight="2dp"-->
+    <!--android:textColor="@color/white"-->
+    <!--android:textSize="10sp" />-->
 
     <Button
-        android:visibility="gone"
         android:id="@+id/bt_plot_list"
         android:layout_width="55dp"
         android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="290dp"
         android:background="@drawable/btn_plot_state"
-        android:gravity="right" />
+        android:gravity="right"
+        android:visibility="gone" />
 
     <TextView
-        android:visibility="gone"
         android:id="@+id/tv_plot_list_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="270dp"
         android:text="@string/plot_list"
         android:textColor="@color/yellow"
-        android:textSize="13sp" />
+        android:textSize="13sp"
+        android:visibility="gone" />
 
     <Button
-        android:visibility="gone"
         android:id="@+id/total_search_btn"
         android:layout_width="55dp"
         android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="210dp"
         android:background="@drawable/btn_search_state"
-        android:gravity="right" />
+        android:gravity="right"
+        android:visibility="gone" />
 
     <TextView
-        android:visibility="gone"
         android:id="@+id/tv_total_search_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="190dp"
         android:text="@string/total_persons_search"
         android:textColor="@color/yellow"
-        android:textSize="13sp" />
+        android:textSize="13sp"
+        android:visibility="gone" />
 
     <Button
-        android:visibility="gone"
         android:id="@+id/switch_location_btn"
         android:layout_width="55dp"
         android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="130dp"
+        android:layout_alignParentBottom="true"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="130dp"
         android:background="@drawable/btn_swicht_loc"
-        android:gravity="right" />
+        android:gravity="right"
+        android:visibility="gone" />
 
     <TextView
-        android:visibility="gone"
         android:id="@+id/tv_person_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="110dp"
         android:text="@string/curr_location"
         android:textColor="@color/yellow"
-        android:textSize="13sp" />
+        android:textSize="13sp"
+        android:visibility="gone" />
+
     <Button
-        android:visibility="gone"
         android:id="@+id/bd_service_btn"
         android:layout_width="55dp"
         android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="60dp"
+        android:layout_alignParentBottom="true"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/selector_btn_service"
-        android:gravity="right" />
+        android:gravity="right"
+        android:visibility="gone" />
+
     <com.lhzw.searchlocmap.scrolllayout.ScrollLayout
         android:id="@+id/scrolllayout"
         android:layout_width="match_parent"
@@ -360,9 +362,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="40dp"
                         android:layout_centerVertical="true"
-                        android:layout_marginBottom="4dp"
                         android:layout_marginLeft="10dp"
                         android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"
                         android:layout_toRightOf="@+id/tv_bd_signal" />
 
                     <TextView
@@ -669,6 +671,7 @@
                         android:text="@string/upload_state_sending"
                         android:textColor="@color/white"
                         android:textSize="11sp" />
+
                     <Button
                         android:id="@+id/im_upload_state_cancel"
                         android:layout_width="130dp"
@@ -789,6 +792,28 @@
 
     <Button
         android:id="@+id/bt_track_complete"
+        android:layout_width="55dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:background="@drawable/bg_selector_plots_tools"
+        android:text="@string/plot_tools_complete"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/bt_loc_center_complete"
+        android:layout_width="55dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:background="@drawable/bg_selector_plots_tools"
+        android:text="@string/plot_tools_complete"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/bt_his_track_complete"
         android:layout_width="55dp"
         android:layout_height="40dp"
         android:layout_centerVertical="true"

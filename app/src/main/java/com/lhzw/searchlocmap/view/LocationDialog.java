@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -37,12 +36,14 @@ public class LocationDialog extends AlertDialog implements
 	private EditText et_lat_degree;
 	private EditText et_lat_minute;
 	private EditText et_lat_second;
+	private OnQuickLocClickListener listener;
 
-	public LocationDialog(Activity context, MapView mMapView) {
+	public LocationDialog(Activity context, MapView mMapView, OnQuickLocClickListener listener) {
 		super(context);
 		// TODO Auto-generated constructor stub
 		this.mContext = context;
 		this.mMapView = mMapView;
+		this.listener = listener;
 		setCanceledOnTouchOutside(false);
 	}
 
@@ -107,7 +108,11 @@ public class LocationDialog extends AlertDialog implements
 			double lat = Double.valueOf(et_lat_degree.getText().toString()) + Double.valueOf(et_lat_minute.getText().toString()) / 60 + Double.valueOf(et_lat_second.getText().toString())/ 3600;
 			MapController mapController = mMapView.getController();
 			mapController.setZoom(16);
-			mapController.setCenter(new GeoPoint(lat, lon));
+			GeoPoint geoPoint = new GeoPoint(lat, lon);
+			mapController.setCenter(geoPoint);
+			if(listener != null) {
+				listener.onQuickClick(geoPoint);
+			}
 			this.dismiss();
 			break;
 		case R.id.tv_back:
@@ -261,5 +266,9 @@ public class LocationDialog extends AlertDialog implements
 				viewId = R.id.et_lat_second;
 				break;
 		}
+	}
+
+	public interface OnQuickLocClickListener{
+		void onQuickClick(GeoPoint geoPoint);
 	}
 }

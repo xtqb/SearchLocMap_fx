@@ -26,6 +26,7 @@ import android.os.RemoteException;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -159,7 +160,8 @@ import java.util.Vector;
 public class SecurityFragment extends BaseFragment implements IGT_Observer,
         LocationListener, OnHoriItemClickListener, ShowTimerDialog.onTimeItemClickListener,
         PopupWindow.OnDismissListener, PortaitAdapter.OnItemSelectedListener, AdapterView.OnItemLongClickListener,
-        ShowStateTreeDialog.OnSearchCancelListener, MapListener, ScrollLayout.OnScrollChangedListener, SrollAdapter.OnClickScrollItemListener {
+        ShowStateTreeDialog.OnSearchCancelListener, MapListener, ScrollLayout.OnScrollChangedListener, SrollAdapter.OnClickScrollItemListener,
+        LocationDialog.OnQuickLocClickListener {
     private DrawerLayout drawer;
     private boolean list_h_state;
     private Animation am1;
@@ -211,10 +213,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private final int TIMER_REPORT = 0x0021;
     private byte[] codeArr;
     private Button bt_track_complete;
+    private Button bt_loc_center_complete;
+    private Button bt_his_track_complete;
     private boolean isTrackState;
     private List<GeoPoint> trackList;
     private final int SYNC_DELAY = 2 * 60 * 1000;
     private final int SYNC_DELAY_SIGNAL = 0x0031;
+    private final int RESULTCODE = 0x673435;
     private Boolean isSyncState;
     private TextView tv_search_note;
     private Map<Integer, PersonalInfo> tatolMap;
@@ -299,6 +304,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private ImageView mIvOpen;
     private boolean isTimer;
     private int uploadCounter;
+    private boolean isNavigation = false;
+    private int hisTrackId = -1;
+    private String naviItemId;
 
 
     private void initScrollView() {
@@ -498,6 +506,26 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             initMessageNum();
         } else if (resultCode == 7) {
             //结束搜索
+        } else if (resultCode == RESULTCODE) {
+            //历史轨迹显示
+            String path = data.getStringExtra("path");
+            if (!TextUtils.isEmpty(path)) {
+                String[] values = path.split("-");
+                GeoPoint[] geoPoints = new GeoPoint[values.length];
+                int counter = 0;
+                for (String value : values) {
+                    String[] point = value.split(",");
+                    geoPoints[counter] = new GeoPoint(Double.valueOf(point[0]), Double.valueOf(point[1]));
+                    counter++;
+                }
+
+                if (geoPoints.length > 0) {
+                    // 绘制历史轨迹
+                    isSettingEnable = true;
+                    startHisTrackAnimation(false);
+                    hisTrackId = drawSyncFireLine(geoPoints);
+                }
+            }
         }
     }
 
@@ -606,11 +634,13 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     }
 
     // 获取在线人员和离线人员的list
+    GeoPoint watchBean = null;
 
     public void perStateList() {
         sucess = 0;
         fail = 0;
         total = 0;
+
         if (undetermined_List != null) {
             undetermined_List.clear();
         }
@@ -625,13 +655,25 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             commonList.addAll(tmpCommonList);
             sucess += commonList.size();
             tmpCommonList.clear();
+            for (PersonalInfo bean : commonList) {
+                if (bean.getNum().equals(naviItemId)) {
+                    watchBean = new GeoPoint(Double.parseDouble(bean.getLatitude()), Double.parseDouble(bean.getLongitude()));
+                }
+            }
         }
+
         List<PersonalInfo> tmpSosList = CommonDBOperator.queryByKeysOrderByTime(persondao, "state", Constants.PERSON_SOS, "time");
         if (tmpSosList != null && tmpSosList.size() > 0) {
             sosList.addAll(tmpSosList);
             sucess += sosList.size();
             tmpSosList.clear();
+            for (PersonalInfo bean : sosList) {
+                if (bean.getNum().equals(naviItemId)) {
+                    watchBean = new GeoPoint(Double.parseDouble(bean.getLatitude()), Double.parseDouble(bean.getLongitude()));
+                }
+            }
         }
+
         // 初始化待定区域
         List<PersonalInfo> undermined_sos_list = CommonDBOperator.queryByMultiKeys(persondao, map_sos);
         if (undermined_sos_list != null && undermined_sos_list.size() > 0) {
@@ -719,6 +761,28 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 CommonDBOperator.updateItem(persondao, item);
             }
         }
+
+        if (isNavigation) {
+            if (watchBean == null) {
+                isSettingEnable = false;
+                isNavigation = false;
+                startLacNadineAnimation(true);
+                overlayManager.removeOverlays(mMapView.getOverlayManager());
+                mMapView.postInvalidate();
+            } else {
+                MeasureOriginDistanceOverlay mdOverlay = (MeasureOriginDistanceOverlay) overlayManager.getOverlay(OverlayFactory.MEASUREORIGINDISTANCE);
+                if (mdOverlay != null) {
+                    Log.e("isNavigation", "-----------------------------------------------------");
+                    mdOverlay.repealLastPoint();
+                    mdOverlay.addGeoPoint(watchBean);
+                    overlayManager.setOverlays(OverlayFactory.MEASUREORIGINDISTANCE);
+                    mdOverlay.closeOverlay();
+                    mMapView.postInvalidate();
+                }
+            }
+        }
+
+
         mGraphicOverlay.setModified();
         mMapView.postInvalidate();
     }
@@ -784,6 +848,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 break;
             case R.id.rl_mesure_origin:
                 isSettingEnable = true;
+                isCurrentApp = false;
                 startLeftMeasureAnimation(false);
                 drawer.closeDrawer(Gravity.LEFT);
                 measureOriginDistance();
@@ -842,7 +907,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 if (drawer.isDrawerOpen(Gravity.LEFT)) {
                     drawer.closeDrawer(Gravity.LEFT);
                 }
-                LocationDialog locationDialog = new LocationDialog(mContext, mMapView);
+                LocationDialog locationDialog = new LocationDialog(mContext, mMapView, this);
                 Window window1 = locationDialog.getWindow();
                 window1.setGravity(Gravity.BOTTOM);
                 window1.setWindowAnimations(R.style.dialog_animation);
@@ -1201,9 +1266,23 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 break;
             case R.id.bt_measure_complete:
                 isSettingEnable = false;
+                isCurrentApp = true;
                 startLeftMeasureAnimation(true);
                 overlayManager.removeOverlays(mMapView.getOverlayManager());
                 mMapView.postInvalidate();
+                break;
+            case R.id.bt_loc_center_complete:
+                isSettingEnable = false;
+                isNavigation = false;
+                startLacNadineAnimation(true);
+                overlayManager.removeOverlays(mMapView.getOverlayManager());
+                mMapView.postInvalidate();
+                break;
+            case R.id.bt_his_track_complete:
+                isSettingEnable = false;
+                startHisTrackAnimation(true);
+                // 删除历史轨迹
+                deleteSyncFireLine(hisTrackId);
                 break;
         }
     }
@@ -1399,6 +1478,11 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
         bt_track_complete = (Button) view.findViewById(R.id.bt_track_complete);
         bt_track_complete.setOnClickListener(this);
+        bt_loc_center_complete = (Button) view.findViewById(R.id.bt_loc_center_complete);
+        bt_loc_center_complete.setOnClickListener(this);
+        bt_his_track_complete = (Button) view.findViewById(R.id.bt_his_track_complete);
+        bt_his_track_complete.setOnClickListener(this);
+
         ll_plot_tools = (LinearLayout) view.findViewById(R.id.ll_plot_tools);
         ll_measure_tools = (LinearLayout) view.findViewById(R.id.ll_measure_tools);
         rl_h_list = (HorizontalListView) view.findViewById(R.id.rl_h_list);
@@ -1787,12 +1871,11 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         MeasureOriginDistanceOverlay mdOverlay = (MeasureOriginDistanceOverlay) overlayManager.getOverlay(OverlayFactory.MEASUREORIGINDISTANCE);
         if (mdOverlay == null) {
             mdOverlay = (MeasureOriginDistanceOverlay) OverlayFactory.createOverlayInstance(OverlayFactory.MEASUREORIGINDISTANCE, getContext());
-            mdOverlay.setCenter(new GeoPoint(lat, lon));
             mMapView.getOverlayManager().add(mdOverlay);
             overlayManager.addOverlay(OverlayFactory.MEASUREORIGINDISTANCE, mdOverlay);
         }
+        mdOverlay.setCenter(new GeoPoint(lat, lon));
         overlayManager.setOverlays(OverlayFactory.MEASUREORIGINDISTANCE);
-//        mdOverlay.closeOverlay();
         mMapView.postInvalidate();
     }
 
@@ -1852,6 +1935,39 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             bt_track_complete.setVisibility(View.VISIBLE);
         }
     }
+
+    private void startLacNadineAnimation(boolean state) {
+        if (state) {
+            Animation am = AnimationUtils.loadAnimation(mContext, R.anim.anima_dimss);
+            am.setInterpolator(new LinearInterpolator());
+            bt_loc_center_complete.startAnimation(am);
+            bt_loc_center_complete.setVisibility(View.GONE);
+            bt_loc_center_complete.clearAnimation();
+            bt_loc_center_complete.invalidate();
+        } else {
+            Animation am = AnimationUtils.loadAnimation(mContext, R.anim.anima_out);
+            am.setInterpolator(new LinearInterpolator());
+            bt_loc_center_complete.startAnimation(am);
+            bt_loc_center_complete.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void startHisTrackAnimation(boolean state) {
+        if (state) {
+            Animation am = AnimationUtils.loadAnimation(mContext, R.anim.anima_dimss);
+            am.setInterpolator(new LinearInterpolator());
+            bt_his_track_complete.startAnimation(am);
+            bt_his_track_complete.setVisibility(View.GONE);
+            bt_his_track_complete.clearAnimation();
+            bt_his_track_complete.invalidate();
+        } else {
+            Animation am = AnimationUtils.loadAnimation(mContext, R.anim.anima_out);
+            am.setInterpolator(new LinearInterpolator());
+            bt_his_track_complete.startAnimation(am);
+            bt_his_track_complete.setVisibility(View.VISIBLE);
+        }
+    }
+
 
     private void startPlotLeftAnimation(boolean state) {
         if (state) {
@@ -2115,6 +2231,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     @Override
     public void Update(int iMessage, Object oValue, Object pValue) {
+        if (isNavigation) return;
         if (!ll_zoom_tools.isShown()) {
             ll_zoom_tools.setVisibility(View.VISIBLE);
             mHandler.sendEmptyMessageDelayed(ZOOM_DIMISS, 3000);
@@ -2269,9 +2386,29 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         pop_urgency_phone_tv2.setText(item.getContact2());
         ImageView distance_bt = (ImageView) contentView
                 .findViewById(R.id.distanceinfer);
-        distance_bt.setOnClickListener(this);
         TextView distance_tv = (TextView) contentView
                 .findViewById(R.id.distancetv);
+
+        distance_bt.setOnClickListener(v -> {
+            if (isNavigation) return;
+            isSettingEnable = true;
+            startLacNadineAnimation(false);
+            MeasureOriginDistanceOverlay mdOverlay = (MeasureOriginDistanceOverlay) overlayManager.getOverlay(OverlayFactory.MEASUREORIGINDISTANCE);
+            if (mdOverlay == null) {
+                mdOverlay = (MeasureOriginDistanceOverlay) OverlayFactory.createOverlayInstance(OverlayFactory.MEASUREORIGINDISTANCE, getContext());
+                mMapView.getOverlayManager().add(mdOverlay);
+                overlayManager.addOverlay(OverlayFactory.MEASUREORIGINDISTANCE, mdOverlay);
+            }
+            naviItemId = item.getNum();
+            mdOverlay.setCenter(new GeoPoint(lat, lon));
+            mdOverlay.addGeoPoint(new GeoPoint(Double.parseDouble(item.getLatitude()), Double.parseDouble(item.getLongitude())));
+            overlayManager.setOverlays(OverlayFactory.MEASUREORIGINDISTANCE);
+            isNavigation = true;
+            mdOverlay.closeOverlay();
+            mMapView.postInvalidate();
+            mPopWindow.dismiss();
+        });
+
         try {
             if (item.getLatitude() == null || item.getLatitude().isEmpty() || item.getLongitude() == null || item.getLongitude().isEmpty()) {
                 distance_tv.setText("距离您：" + "0m");
@@ -2303,6 +2440,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     // 显示normal的popwindow
     private void showNormalPopupWindow(final PersonalInfo item) {
         if (isShowing) return;
+        if (isNavigation) return;
         View contentView = LayoutInflater.from(mContext).inflate(
                 R.layout.popup_normal_command, null);
         mPopWindow = new PopupWindow(contentView, RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -2336,6 +2474,27 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
         TextView distance_tv = (TextView) contentView
                 .findViewById(R.id.normal_distancetv);
+        ImageView normal_distanceinfer = (ImageView) contentView.findViewById(R.id.normal_distanceinfer);
+
+        normal_distanceinfer.setOnClickListener(v -> {
+            isSettingEnable = true;
+            startLacNadineAnimation(false);
+            MeasureOriginDistanceOverlay mdOverlay = (MeasureOriginDistanceOverlay) overlayManager.getOverlay(OverlayFactory.MEASUREORIGINDISTANCE);
+            if (mdOverlay == null) {
+                mdOverlay = (MeasureOriginDistanceOverlay) OverlayFactory.createOverlayInstance(OverlayFactory.MEASUREORIGINDISTANCE, getContext());
+                mMapView.getOverlayManager().add(mdOverlay);
+                overlayManager.addOverlay(OverlayFactory.MEASUREORIGINDISTANCE, mdOverlay);
+            }
+            naviItemId = item.getNum();
+            mdOverlay.setCenter(new GeoPoint(lat, lon));
+            mdOverlay.addGeoPoint(new GeoPoint(Double.parseDouble(item.getLatitude()), Double.parseDouble(item.getLongitude())));
+            overlayManager.setOverlays(OverlayFactory.MEASUREORIGINDISTANCE);
+            isNavigation = true;
+            mdOverlay.closeOverlay();
+            mMapView.postInvalidate();
+            mPopWindow.dismiss();
+        });
+
         try {
             if (item.getLatitude() == null || item.getLatitude().isEmpty() || item.getLongitude() == null || item.getLongitude().isEmpty()) {
                 distance_tv.setText("距离您：" + "0m");
@@ -2372,7 +2531,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             double distance = GT_GeoArithmetic.ComputeDistanceOfTwoPoints(gPoint,
                     new GeoPoint(lat, lon));
             SpUtils.putLong(SPConstants.LOC_TIME, System.currentTimeMillis());
-            if (distance > 10) {
+            if (distance > 5) {
                 //更新地图手持机的相对位置
                 lon = location.getLongitude();
                 lat = location.getLatitude();
@@ -2385,6 +2544,18 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                         drawTrackLine(BaseUtils.listToGeoPointArr(trackList));
                     }
                 }
+
+                if (isNavigation) {
+                    MeasureOriginDistanceOverlay mdOverlay = (MeasureOriginDistanceOverlay) overlayManager.getOverlay(OverlayFactory.MEASUREORIGINDISTANCE);
+                    if (mdOverlay != null) {
+                        Log.e("isNavigation", "-----------------------------------------------------");
+                        mdOverlay.setCenter(new GeoPoint(lat, lon));
+                        overlayManager.setOverlays(OverlayFactory.MEASUREORIGINDISTANCE);
+                        mdOverlay.closeOverlay();
+                        mMapView.postInvalidate();
+                    }
+                }
+
                 createMarker(gPoint);
                 if (isFisre) {
                     isFisre = false;
@@ -2737,6 +2908,25 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         }
     }
 
+    @Override
+    public void onQuickClick(GeoPoint geoPoint) {
+        //
+        isSettingEnable = true;
+        startLacNadineAnimation(false);
+        MeasureOriginDistanceOverlay mdOverlay = (MeasureOriginDistanceOverlay) overlayManager.getOverlay(OverlayFactory.MEASUREORIGINDISTANCE);
+        if (mdOverlay == null) {
+            mdOverlay = (MeasureOriginDistanceOverlay) OverlayFactory.createOverlayInstance(OverlayFactory.MEASUREORIGINDISTANCE, getContext());
+            mMapView.getOverlayManager().add(mdOverlay);
+            overlayManager.addOverlay(OverlayFactory.MEASUREORIGINDISTANCE, mdOverlay);
+        }
+        mdOverlay.setCenter(new GeoPoint(lat, lon));
+        mdOverlay.addGeoPoint(geoPoint);
+        overlayManager.setOverlays(OverlayFactory.MEASUREORIGINDISTANCE);
+        isNavigation = true;
+        mdOverlay.closeOverlay();
+        mMapView.postInvalidate();
+    }
+
     private class Action implements Runnable {
         @Override
         public void run() {
@@ -3071,12 +3261,17 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         refreshMap();
     }
 
-    private void drawSyncFireLine(GeoPoint[] gPointArr) {
-        if (syncFLId != -1) {
-            mGraphicOverlay.DeleteFeature(pathId, DEFAULT_LAYER_NAME);
-        }
-        syncFLId = mGraphicOverlay.AddPolyline(gPointArr, Color.RED, DEFAULT_LAYER_NAME);
+    private int drawSyncFireLine(GeoPoint[] gPointArr) {
+        int tackId = mGraphicOverlay.AddPolyline(gPointArr, Color.RED, DEFAULT_LAYER_NAME);
         refreshMap();
+        return tackId;
+    }
+
+    private void deleteSyncFireLine(int trackId) {
+        if (trackId != -1) {
+            mGraphicOverlay.DeleteFeature(trackId, DEFAULT_LAYER_NAME);
+            refreshMap();
+        }
     }
 
     //根据坐标绘制火点

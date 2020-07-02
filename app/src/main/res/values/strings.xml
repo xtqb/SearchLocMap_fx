@@ -230,7 +230,7 @@
 
     <string name="function_list">功能列表</string>
     <string name="mesure_distance">原点距离</string>
-    <string name="mesure_distance_free">距离</string>
+    <string name="mesure_distance_free">多点距离</string>
     <string name="mesure_area">面积测量</string>
     <string name="mesure_height">测量海拔</string>
     <string name="mesure_p2p">两点通视</string>
