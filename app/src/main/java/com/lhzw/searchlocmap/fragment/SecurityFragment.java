@@ -1283,6 +1283,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 startHisTrackAnimation(true);
                 // 删除历史轨迹
                 deleteSyncFireLine(hisTrackId);
+                hisTrackId = -1;
                 break;
         }
     }
