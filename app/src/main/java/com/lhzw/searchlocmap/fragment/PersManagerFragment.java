@@ -82,6 +82,13 @@ public class PersManagerFragment extends Fragment implements
     private RelativeLayout relativeLayout1;
     private boolean isOnClick = false;
     private ArrayList<CheckBoxState> mSelectedList = new ArrayList<>();//选中的人
+    private Context mContext;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -339,7 +346,9 @@ public class PersManagerFragment extends Fragment implements
         @Override
         public void onCheckedChanged(CompoundButton buttonView,
                                      boolean isChecked) {
-            // TODO Auto-generated method stub
+            if(peradapter.getCheckStateList() != null && peradapter.getCheckStateList().size() > 10) {
+                buttonView.setChecked(false);
+            }
             if (isOnClick) {
                 isOnClick = false;
                 peradapter.setCheckStateList(isChecked);
@@ -374,5 +383,10 @@ public class PersManagerFragment extends Fragment implements
         return false;
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mContext = null;
+    }
 }
 

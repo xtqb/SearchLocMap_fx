@@ -307,6 +307,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private boolean isNavigation = false;
     private int hisTrackId = -1;
     private String naviItemId;
+    private boolean isHisShow = false;
 
 
     private void initScrollView() {
@@ -509,6 +510,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         } else if (resultCode == RESULTCODE) {
             //历史轨迹显示
             String path = data.getStringExtra("path");
+            Log.e("GeoPoint", path);
             if (!TextUtils.isEmpty(path)) {
                 String[] values = path.split("-");
                 GeoPoint[] geoPoints = new GeoPoint[values.length];
@@ -521,7 +523,8 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
                 if (geoPoints.length > 0) {
                     // 绘制历史轨迹
-                    isSettingEnable = true;
+//                    isSettingEnable = true;
+                    isHisShow = true;
                     startHisTrackAnimation(false);
                     hisTrackId = drawSyncFireLine(geoPoints);
                 }
@@ -896,10 +899,14 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 showToast(getString(R.string.track_start));
                 break;
             case R.id.rl_track_list:
+                if(isHisShow) {
+                    showToast("请先退出轨迹查看");
+                    return;
+                }
                 if (drawer.isDrawerOpen(Gravity.LEFT)) {
                     drawer.closeDrawer(Gravity.LEFT);
                 }
-                startActivity(new Intent(mContext, LocationTrackActivity.class));
+                startActivityForResult(new Intent(mContext, LocationTrackActivity.class), 0x000678);
                 Log.e("Tag", "tv_track_list");
                 break;
             case R.id.rl_quick_loc:
@@ -951,7 +958,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             case R.id.bt_plot_back:
                 Log.e("Tag", "bt_plot_back");
                 int type = overlayManager.getType();
-                if (type != -1) {
+                if (type != -1 && overlayManager.getOverlay(type) != null) {
                     overlayManager.getOverlay(type).repealLastPoint();
                     mMapView.postInvalidate();
                 }
@@ -1279,7 +1286,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
                 mMapView.postInvalidate();
                 break;
             case R.id.bt_his_track_complete:
-                isSettingEnable = false;
+                isHisShow = false;
                 startHisTrackAnimation(true);
                 // 删除历史轨迹
                 deleteSyncFireLine(hisTrackId);
@@ -3263,7 +3270,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     }
 
     private int drawSyncFireLine(GeoPoint[] gPointArr) {
-        int tackId = mGraphicOverlay.AddPolyline(gPointArr, Color.RED, DEFAULT_LAYER_NAME);
+        int tackId = mGraphicOverlay.AddPolyline(gPointArr, Color.GREEN, DEFAULT_LAYER_NAME);
         refreshMap();
         return tackId;
     }

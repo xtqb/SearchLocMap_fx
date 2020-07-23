@@ -11,6 +11,7 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import com.gtmap.api.IGeoPoint;
 import com.gtmap.common.GT_GeoArithmetic;
@@ -52,9 +53,11 @@ public class MeasureOriginDistanceOverlay extends OverlayController {
         }
     }
 
-    public void addGeoPoint(GeoPoint geoPoint){
-        if(touchGps!= null) {
+    public void addGeoPoint(IGeoPoint geoPoint) {
+        if (touchGps != null && touchGps.size() < 6) {
             touchGps.add(geoPoint);
+        } else {
+            Toast.makeText(context, "已经达到上限", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -165,6 +168,10 @@ public class MeasureOriginDistanceOverlay extends OverlayController {
     @Override
     public boolean onSingleTapUp(MotionEvent e, MapView mapView) {
         if (!open) {
+            return super.onSingleTapUp(e, mapView);
+        }
+        if(touchGps != null && touchGps.size() > 5) {
+            Toast.makeText(context, "已经达到上限", Toast.LENGTH_SHORT).show();
             return super.onSingleTapUp(e, mapView);
         }
         MapView.Projection proj = mapView.getProjection();

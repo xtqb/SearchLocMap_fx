@@ -15,9 +15,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.j256.ormlite.dao.Dao;
 import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.adapter.LocTrackAdapter;
@@ -25,6 +25,7 @@ import com.lhzw.searchlocmap.bean.LocTrackBean;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 import com.lhzw.searchlocmap.utils.CheckBoxTrack;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -170,7 +171,6 @@ public class LocationTrackActivity extends Activity implements OnClickListener, 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
                             long id) {
-        // TODO Auto-generated method stub
         Log.e("Tag", "position = " + position);
         Intent intent = new Intent();
         intent.putExtra("path", trackList.get(position).getPaths());
