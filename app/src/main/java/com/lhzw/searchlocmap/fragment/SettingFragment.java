@@ -373,7 +373,11 @@ public class SettingFragment extends Fragment implements OnClickListener,
                     syncBindingWatch(list.get(0).getOrg());
                     list.clear();
                 } else {
+                    new Handler().postDelayed(() -> {
+                        toggle_rescue_pattern.setSliderState(isRescueFlood);
+                    }, 500);
                     showToast("该手持MAC未在平台录入");
+
                 }
 
                 break;
@@ -426,7 +430,10 @@ public class SettingFragment extends Fragment implements OnClickListener,
                         @Override
                         protected void onFailed() {
                             //获取数据失败
-                            updateRescueState();
+                            new Handler().postDelayed(() -> {
+                                toggle_rescue_pattern.setSliderState(isRescueFlood);
+                            }, 500);
+                            showToast("网络异常");
                             loadingView.dismiss();
                             loadingView.cancel();
                         }
