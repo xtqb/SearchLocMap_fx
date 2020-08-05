@@ -24,6 +24,7 @@ import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bean.AllBDInfosBean;
 import com.lhzw.searchlocmap.bean.AllPersonInfoBean;
 import com.lhzw.searchlocmap.bean.BaseBean;
+import com.lhzw.searchlocmap.bean.BindingOfWatchBean;
 import com.lhzw.searchlocmap.bean.BindingWatchBean;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.HttpRequstInfo;
@@ -69,6 +70,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     private String mLoginName;
     private String mPassword;
     private List<HttpRequstInfo> mHttpRequstInfos;
+    private Dao<BindingOfWatchBean, Integer> bindDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,8 +128,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
 
-
-
     private void setListener() {
         bt_login.setOnClickListener(this);
     }
@@ -139,6 +139,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         mBdNumDao = helper.getBdNumDao();
         mLocPersonDao = helper.getLocPersonDao();
         mPersonalInfoDao = helper.getPersonalInfoDao();
+        bindDao = helper.getBindingOfWatchDao();
     }
 
     private void initView() {
@@ -218,7 +219,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     if (mHttpRequstInfos != null && mHttpRequstInfos.size() > 0) {
                         // 执行数据库写入操作
                         new ProgressTask().execute();
-                    }else {
+                    } else {
                         showToast("获取人员数据为空");
                     }
                 } else {
@@ -249,7 +250,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             Integer[] values = new Integer[2];
             values[0] = mHttpRequstInfos.size() + mLocalBDNums.size();
             publishProgress(values);
-            int delay = 50;
+            int delay = 30;
             int counter = 0;
             for (HttpRequstInfo info : mHttpRequstInfos) {
                 counter++;
@@ -280,6 +281,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             }
             mHttpRequstInfos.clear();
             mLocalBDNums.clear();
+            downloadBindWatch();
             return isSuccess;
         }
 
@@ -413,6 +415,53 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 //        }
 //    }
 
+    private void downloadBindWatch() {
+        Dao<HttpPersonInfo, Integer> httpDao = helper.getHttpPerDao();
+        List<HttpPersonInfo> list = CommonDBOperator.queryByKeys(httpDao, "deviceNumbers", BaseUtils.getMacFromHardware());
+        if (list != null && list.size() > 0) {
+            syncBindingWatch(list.get(0).getOrg());
+            list.clear();
+        }
+    }
+
+
+    private void syncBindingWatch(String org) {
+        try {
+            int orgnization = Integer.parseInt(org);
+            Observable<BaseBean<List<BindingOfWatchBean>>> observable = SLMRetrofit.getInstance().getApi().getBindingWatchs(orgnization);
+            observable.compose(new ThreadSwitchTransformer<>()) //从数据流中得到原始Observable<T>的操作符
+                    .subscribe(new CallbackListObserver<BaseBean<List<BindingOfWatchBean>>>() {
+
+                        @Override
+                        protected void onSucceed(BaseBean<List<BindingOfWatchBean>> baseBean) {
+                            // 获取数据成功 保存数据
+                            if ("0".equals(baseBean.getCode())) {
+                                //删除数据表
+                                List<BindingOfWatchBean> list = baseBean.getData();
+                                if (list != null && list.size() > 0) {
+
+                                    new Thread(() -> {
+                                        CommonDBOperator.deleteAllItems(bindDao);
+                                        for (BindingOfWatchBean bean : list) {
+                                            CommonDBOperator.saveToDB(bindDao, bean);
+                                        }
+                                    }).start();
+
+                                }
+                            }
+                        }
+
+                        @Override
+                        protected void onFailed() {
+                            //获取数据失败
+                        }
+                    });
+        } catch (Exception e) {
+            Log.e("UnBingingWatchFragment", "org parser exception");
+        }
+    }
+
+
     /**
      * 查找已绑定的手表   解决清除本地数据后登陆  无法解除绑定的问题
      */
@@ -439,10 +488,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                             List<HttpPersonInfo> httpPersonInfo = CommonDBOperator.queryByKeys(httpPerDao, "deviceNumbers", dataBean.getDeviceNumber());
                             String realName = "";
 
-                            if(httpPersonInfo!=null && httpPersonInfo.size()>0){
-                                realName = TextUtils.isEmpty(httpPersonInfo.get(0).getRealName())? "" : httpPersonInfo.get(0).getRealName();
-                            }else {
-                                LogUtil.e("httpPersonInfo=="+httpPersonInfo);
+                            if (httpPersonInfo != null && httpPersonInfo.size() > 0) {
+                                realName = TextUtils.isEmpty(httpPersonInfo.get(0).getRealName()) ? "" : httpPersonInfo.get(0).getRealName();
+                            } else {
+                                LogUtil.e("httpPersonInfo==" + httpPersonInfo);
                             }
                             LocPersonalInfo perInfo = new LocPersonalInfo();
                             perInfo.setNum(dataBean.getDeviceNumber());
@@ -454,9 +503,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                             personalInfo.setNum(dataBean.getDeviceNumber());
                             personalInfo.setSex("0");
                             personalInfo.setState(Constants.PERSON_OFFLINE);
-                            LogUtil.e("new = = "+personalInfo.getSex());
+                            LogUtil.e("new = = " + personalInfo.getSex());
                             boolean saveToDB = CommonDBOperator.saveToDB(mPersonalInfoDao, personalInfo);
-                            LogUtil.e("保存到mPersonalInfoDao=="+saveToDB);
+                            LogUtil.e("保存到mPersonalInfoDao==" + saveToDB);
                             uploadOffset();
                         }
                     }
@@ -480,7 +529,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
      */
     private void uploadOffset() {
         List<PersonalInfo> PersonalInfo = CommonDBOperator.queryByOrderKey(mPersonalInfoDao, "num");
-        LogUtil.e("PersonalInfo表的大小=="+PersonalInfo.size());
+        LogUtil.e("PersonalInfo表的大小==" + PersonalInfo.size());
         for (int i = 0; i < PersonalInfo.size(); i++) {
             PersonalInfo.get(i).setOffset(i);
             CommonDBOperator.updateItem(mPersonalInfoDao, PersonalInfo.get(i));
@@ -626,10 +675,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
 
-    /** 判断登录是否是快速点击 */
-    private  long  lastClickTime;
+    /**
+     * 判断登录是否是快速点击
+     */
+    private long lastClickTime;
 
-    public  boolean isFastDoubleClick() {
+    public boolean isFastDoubleClick() {
         long time = System.currentTimeMillis();
         long timeD = time - lastClickTime;
         if (0 < timeD && timeD < 2000) {
@@ -639,7 +690,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         return false;
     }
 
-    /** 判断触摸时间派发间隔 */
+    /**
+     * 判断触摸时间派发间隔
+     */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {

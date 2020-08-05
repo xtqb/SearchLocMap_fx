@@ -21,6 +21,7 @@ public class BindingOfWatchBean implements Serializable {
     private String deviceType;
     @DatabaseField(columnName = "state")
     private int state;                             // 绑定状态 0 代表绑定 1 代表未绑定
+    @DatabaseField(columnName = "bound")
     private boolean bound;                        // 是否绑定
     @DatabaseField(columnName = "org")            // 机构编号
     private int org;

@@ -111,6 +111,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private Dao<PersonalInfo, Integer> dao;
     private List<Integer> offsetList = new ArrayList();
     private DatabaseHelper helper;
+    private Dao<BindingOfWatchBean, Integer> bindDao;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -186,6 +187,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
         if (helper == null) helper = DatabaseHelper.getHelper(getActivity());
         perdao = helper.getLocPersonDao();
         dao = helper.getPersonalInfoDao();
+        bindDao = helper.getBindingOfWatchDao();
     }
 
     private void setListener() {
@@ -358,6 +360,34 @@ public class SettingFragment extends Fragment implements OnClickListener,
                 }
                 break;
             case R.id.toggle_rescue_pattern:
+                List watchs = CommonDBOperator.getList(bindDao);
+                if (watchs != null && watchs.size() > 0) {
+                    if (loadingView == null) {
+                        loadingView = new LoadingView(getActivity());
+                    }
+                    loadingView.setLoadingTitle("更换腕表数据...");
+                    if (!loadingView.isShowing()) {
+                        loadingView.show();
+                    }
+                    updateRescueState();
+                    if (isRescueFlood) {
+                        iniOffset();
+                    }
+                    new Thread(() -> {
+                        dealgData(watchs);
+                        getActivity().runOnUiThread(() -> {
+                            loadingView.dismiss();
+                            loadingView.cancel();
+                            Toast.makeText(getActivity(), "切换成功，开始重启应用...", Toast.LENGTH_SHORT).show();
+                            new Handler().postDelayed(() -> {
+                                restartApplication(getActivity());
+                            }, 3000);
+                            watchs.clear();
+                        });
+                    }).start();
+                    return;
+                }
+
                 if (!BaseUtils.isNetConnected(getContext())) {
                     showToast("网络连接异常,请检查网络");
                     return;
@@ -500,7 +530,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
                     CommonDBOperator.deleteByKeys(dao, "num", bean.getDeviceNumber());
                 }
             }
-
+            CommonDBOperator.saveToDB(bindDao, bean);
         }
     }
 
