@@ -704,7 +704,7 @@ public class BaseUtils {
             numStr = getMacFromHardware().substring(4);
             SpUtils.putString(SPConstants.BINDING_NUM, numStr);
         }
-        int CHANNEL = SpUtils.getInt(SPConstants.CHANNEL_NUM, 0);
+        int CHANNEL = SpUtils.getBoolean(SPConstants.RESCUE_PATTERN_FLOOD,false) ? Constants.CHANNEL_DEF : SpUtils.getInt(SPConstants.CHANNEL_NUM, 0);
         String channel;
         if (CHANNEL == 10) {
             channel = "0" + "a";

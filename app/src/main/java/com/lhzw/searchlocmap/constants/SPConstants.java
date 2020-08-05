@@ -10,6 +10,7 @@ public class SPConstants {
 	public static String SLIDE_VIBRATOR = "SLIDE_VIBRATOR"; // 震动
 //	public static String COMMON_SWITCH = "COMMON_SWITCH";
 	public static String AUTO_REPORT = "REPORT_SWITCH";// 人员上报
+	public static String RESCUE_PATTERN_FLOOD = "RESCUE_PATTERN"; // 防御模式
 
 	public static String SETTING_HOUR = "SETTING_HOUR";// 小时
 	public static String SETTING_MINUTE = "SETTING_MINUTE";// 分钟

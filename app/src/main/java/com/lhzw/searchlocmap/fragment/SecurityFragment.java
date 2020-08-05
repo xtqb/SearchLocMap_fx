@@ -1636,7 +1636,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         startBottomAnimation(list_h_state);
         locManager = (LocationManager) mContext.getSystemService(Service.LOCATION_SERVICE);
         loRaManager = (LoRaManager) mContext.getSystemService(Context.LORA_SERVICE);
-        setBDType(SpUtils.getInt(SPConstants.CHANNEL_NUM, Constants.CHANNEL_DEF));
+        setBDType(SpUtils.getBoolean(SPConstants.RESCUE_PATTERN_FLOOD, false) ? Constants.CHANNEL_DEF :SpUtils.getInt(SPConstants.CHANNEL_NUM, Constants.CHANNEL_DEF));
         mBDManager = (BDManager) mContext.getSystemService(Context.BD_SERVICE);
         if (locManager != null) {
             intLoc();

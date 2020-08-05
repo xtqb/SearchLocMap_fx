@@ -138,9 +138,18 @@ public class PersManagerFragment extends Fragment implements
             case R.id.tv_add:
 //                Intent intent = new Intent(getActivity(), PerItemAddActivity.class);
 //                startActivityForResult(intent, 250);
+                if (SpUtils.getBoolean(SPConstants.RESCUE_PATTERN_FLOOD, false)) {
+                    showToast("已经进入防汛模式，无需绑定");
+                    return;
+                }
                 startActivityForResult(new Intent(getActivity(), BindingWatchActivity.class), 250);
                 break;
             case R.id.im_delete:
+                if (SpUtils.getBoolean(SPConstants.RESCUE_PATTERN_FLOOD, false)) {
+                    showToast("已经进入防汛模式，无需解绑");
+                    return;
+                }
+
                 if (perList == null || perList.size() == 0) {
                     Toast.makeText(getActivity(),
                             getString(R.string.person_manager_delete_note1),
@@ -185,8 +194,6 @@ public class PersManagerFragment extends Fragment implements
                 } else {
                     showToast("请选择删除的对象");
                 }
-
-
                 break;
         }
     }
@@ -346,7 +353,7 @@ public class PersManagerFragment extends Fragment implements
         @Override
         public void onCheckedChanged(CompoundButton buttonView,
                                      boolean isChecked) {
-            if(peradapter.getCheckStateList() != null && peradapter.getCheckStateList().size() > 10) {
+            if (peradapter.getCheckStateList() != null && peradapter.getCheckStateList().size() > 10) {
                 buttonView.setChecked(false);
             }
             if (isOnClick) {

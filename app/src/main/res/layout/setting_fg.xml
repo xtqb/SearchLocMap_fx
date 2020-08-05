@@ -52,8 +52,8 @@
                     android:id="@+id/tv_amc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/tv_name"
                     android:layout_below="@+id/tv_name"
+                    android:layout_alignLeft="@+id/tv_name"
                     android:text="mac地址：@"
                     android:textColor="@color/gray2"
                     android:textSize="14sp" />
@@ -601,6 +601,56 @@
                 android:background="#cccccc" />
 
             <RelativeLayout
+                android:id="@+id/rl_rescue_pattern"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@color/white"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/im_rescue_pattern"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="16dp"
+                    android:background="@drawable/icon_rescue_pattern" />
+
+                <TextView
+                    android:id="@+id/tv_rescue_pattern"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/im_rescue_pattern"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/im_rescue_pattern"
+                    android:text="@string/settings_rescue_pattern"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_type_pattern"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@+id/toggle_rescue_pattern"
+                    android:text="@string/rescue_pattern_fire"
+                    android:textSize="16sp" />
+
+                <com.lhzw.searchlocmap.view.ToggleButtonView
+                    android:id="@+id/toggle_rescue_pattern"
+                    android:layout_width="55dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#cccccc" />
+
+            <RelativeLayout
                 android:id="@+id/rl_sos_pattern"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -631,8 +681,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@+id/toggle_upload_pattern"
                     android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@+id/toggle_upload_pattern"
                     android:text="@string/upload_pattern_default"
                     android:textSize="16sp" />
 
@@ -681,8 +731,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@+id/toggle_statistics_postion"
                     android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@+id/toggle_statistics_postion"
                     android:text="@string/setting_upload_statistics_num"
                     android:textSize="16sp" />
 

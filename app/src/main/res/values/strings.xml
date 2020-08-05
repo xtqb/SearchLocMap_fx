@@ -115,8 +115,11 @@
     <string name="settings_online_map">离线地图</string>
     <string name="settings_bell">铃声</string>
     <string name="settings_vibrator">震动</string>
-    <string name="settings_sos_pattern">模式</string>
-    <string name="settings_position_statistics">位置统计</string>
+    <string name="settings_rescue_pattern">救援模式</string>
+    <string name="settings_sos_pattern">上报模式</string>
+    <string name="settings_position_statistics">上报统计</string>
+    <string name="rescue_pattern_flood">防汛预警</string>
+    <string name="rescue_pattern_fire">森林火警</string>
     <string name="upload_pattern_default">默认</string>
     <string name="upload_pattern_auto">自动，上限人数：@</string>
     <string name="upload_pattern_auto_input_et_fail">不能为空</string>

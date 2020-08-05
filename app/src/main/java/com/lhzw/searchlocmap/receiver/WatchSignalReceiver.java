@@ -91,6 +91,7 @@ public class WatchSignalReceiver extends BroadcastReceiver {
             switch (typeKey[0]) {
                 case (byte) 0xA3:// common
                 case (byte) 0x11: // search
+                case (byte) 0x02: // 防汛
                     sosflash.putExtra("has_sos", false);
                     if (Math.abs(lon) < 0.00001 && Math.abs(lat) < 0.00001) {
                         list.get(0).setState(Constants.PERSON_UNDETERMINED);

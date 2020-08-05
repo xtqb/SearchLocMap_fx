@@ -1,12 +1,16 @@
 package com.lhzw.searchlocmap.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.LoRaManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,9 +26,13 @@ import com.lhzw.searchlocmap.R;
 import com.lhzw.searchlocmap.application.SearchLocMapApplication;
 import com.lhzw.searchlocmap.bean.AllBDInfosBean;
 import com.lhzw.searchlocmap.bean.AllPersonInfoBean;
+import com.lhzw.searchlocmap.bean.BaseBean;
+import com.lhzw.searchlocmap.bean.BindingOfWatchBean;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.HttpRequstInfo;
+import com.lhzw.searchlocmap.bean.LocPersonalInfo;
 import com.lhzw.searchlocmap.bean.LocalBDNum;
+import com.lhzw.searchlocmap.bean.PersonalInfo;
 import com.lhzw.searchlocmap.constants.Constants;
 import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
@@ -48,6 +56,7 @@ import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.LogUtil;
 import com.lhzw.searchlocmap.utils.SpUtils;
 import com.lhzw.searchlocmap.utils.ToastUtil;
+import com.lhzw.searchlocmap.view.LoadingView;
 import com.lhzw.searchlocmap.view.ShowProgressDialog;
 import com.lhzw.searchlocmap.view.ShowUploadUpper;
 import com.lhzw.searchlocmap.view.ToggleButtonView;
@@ -66,6 +75,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private ToggleButtonView toggle_bell;
     private ToggleButtonView toggle_vibrator;
     private ToggleButtonView toggle_statistics_postion;
+    private ToggleButtonView toggle_rescue_pattern;
     private RelativeLayout rl_sos_upload;
     private RelativeLayout rl_person_upload;
     private RelativeLayout rl_time_setting;
@@ -77,6 +87,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private ToggleButtonView toggle_upload_pattern;
     private boolean isPlaySound;
     private boolean isVibrate;
+    private boolean isRescueFlood;
     private boolean isUpload;
     private boolean isStatistics;
     private AlerDialogshow alertdialog;
@@ -89,10 +100,17 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private Toast mGlobalToast;
     private RelativeLayout rl_net_setting;
     private TextView tv_name;
+    private TextView tv_type_pattern;
     private TextView tv_amc;
     private TextView tv_pattern_content;
     private TextView tv_statistics_postion_counter;
     private ShowUploadUpper uploadUpper;
+    private LoRaManager loRaManager;
+    private LoadingView loadingView;
+    private Dao<LocPersonalInfo, Integer> perdao;
+    private Dao<PersonalInfo, Integer> dao;
+    private List<Integer> offsetList = new ArrayList();
+    private DatabaseHelper helper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -122,6 +140,8 @@ public class SettingFragment extends Fragment implements OnClickListener,
                 .findViewById(R.id.rl_offline_map);
         rl_compass = (RelativeLayout) view.findViewById(R.id.rl_compass);
         toggle_bell = (ToggleButtonView) view.findViewById(R.id.toggle_bell);
+        toggle_rescue_pattern = (ToggleButtonView) view.findViewById(R.id.toggle_rescue_pattern);
+
         toggle_vibrator = (ToggleButtonView) view
                 .findViewById(R.id.toggle_vibrator);
         rl_bd_num_setting = (RelativeLayout) view.findViewById(R.id.rl_bd_num_setting);
@@ -134,37 +154,45 @@ public class SettingFragment extends Fragment implements OnClickListener,
         tv_statistics_postion_counter = (TextView) view.findViewById(R.id.tv_statistics_postion_counter);
         tv_name = (TextView) view.findViewById(R.id.tv_name);
         tv_amc = (TextView) view.findViewById(R.id.tv_amc);
+        tv_type_pattern = (TextView) view.findViewById(R.id.tv_type_pattern);
     }
 
+    @SuppressLint("WrongConstant")
     private void initData() {
         isPlaySound = SpUtils.getBoolean(SPConstants.SLIDE_SOUND, true);
         isVibrate = SpUtils.getBoolean(SPConstants.SLIDE_VIBRATOR, true);
         isUpload = SpUtils.getBoolean(SPConstants.UPLOAD_PATTERN, false);
         isStatistics = SpUtils.getBoolean(SPConstants.STATISTICS_REPORT_POISTION, false);
+        isRescueFlood = SpUtils.getBoolean(SPConstants.RESCUE_PATTERN_FLOOD, false);
         toggle_bell.setSliderState(isPlaySound);
         toggle_vibrator.setSliderState(isVibrate);
         toggle_upload_pattern.setSliderState(isUpload);
         toggle_statistics_postion.setSliderState(isStatistics);
-
+        toggle_rescue_pattern.setSliderState(isRescueFlood);
         tv_name.setText(SpUtils.getString(SPConstants.LOGIN_NAME, "lisi"));
         tv_amc.setText("mac地址：" + BaseUtils.getMacFromHardware());
         tv_pattern_content.setText(isUpload ? getString(R.string.upload_pattern_auto).replace("@",
                 SpUtils.getInt(SPConstants.UPLOAD_UPPER, Constants.UPLOAD_UPPER_DEAFAULT) + "")
                 : getString(R.string.upload_pattern_default));
-        if(isStatistics){
+        if (isStatistics) {
             tv_statistics_postion_counter.setText(getString(R.string.setting_upload_statistics_num).replace
                     ("@", SpUtils.getInt(SPConstants.STATISTICS_REPORT_NUM, 0) + ""));
         } else {
             tv_statistics_postion_counter.setVisibility(View.GONE);
             tv_statistics_postion_counter.setText("");
         }
-
+        tv_type_pattern.setText(getString(isRescueFlood ? R.string.rescue_pattern_flood : R.string.rescue_pattern_fire));
+        loRaManager = (LoRaManager) getActivity().getSystemService(Context.LORA_SERVICE);
+        if (helper == null) helper = DatabaseHelper.getHelper(getActivity());
+        perdao = helper.getLocPersonDao();
+        dao = helper.getPersonalInfoDao();
     }
 
     private void setListener() {
         tv_back.setOnClickListener(this);
         toggle_bell.setOnToggleClickListener(this);
         toggle_vibrator.setOnToggleClickListener(this);
+        toggle_rescue_pattern.setOnToggleClickListener(this);
         toggle_upload_pattern.setOnToggleClickListener(this);
         toggle_statistics_postion.setOnToggleClickListener(this);
         rl_sos_upload.setOnClickListener(this);
@@ -319,7 +347,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
                 isStatistics = !isStatistics;
                 SpUtils.putBoolean(SPConstants.STATISTICS_REPORT_POISTION,
                         isStatistics);
-                if(isStatistics) {
+                if (isStatistics) {
                     tv_statistics_postion_counter.setVisibility(View.VISIBLE);
                     tv_statistics_postion_counter.setText(getString(R.string.setting_upload_statistics_num).replace
                             ("@", SpUtils.getInt(SPConstants.STATISTICS_REPORT_NUM, 0) + ""));
@@ -329,8 +357,172 @@ public class SettingFragment extends Fragment implements OnClickListener,
                     tv_statistics_postion_counter.setText("");
                 }
                 break;
+            case R.id.toggle_rescue_pattern:
+                if (!BaseUtils.isNetConnected(getContext())) {
+                    showToast("网络连接异常,请检查网络");
+                    return;
+                }
+                Dao<HttpPersonInfo, Integer> httpDao = helper.getHttpPerDao();
+                Log.e("MAC", "mac  " + BaseUtils.getMacFromHardware());
+                List<HttpPersonInfo> list = CommonDBOperator.queryByKeys(httpDao, "deviceNumbers", BaseUtils.getMacFromHardware());
+                if (list != null && list.size() > 0) {
+                    updateRescueState();
+                    if (isRescueFlood) {
+                        iniOffset();
+                    }
+                    syncBindingWatch(list.get(0).getOrg());
+                    list.clear();
+                } else {
+                    showToast("该手持MAC未在平台录入");
+                }
+
+                break;
         }
     }
+
+    private void updateRescueState() {
+        isRescueFlood = !isRescueFlood;
+        SpUtils.putBoolean(SPConstants.RESCUE_PATTERN_FLOOD,
+                isRescueFlood);
+        setBDType(isRescueFlood ? Constants.CHANNEL_DEF : SpUtils.getInt(SPConstants.CHANNEL_NUM, Constants.CHANNEL_DEF));
+        tv_type_pattern.setText(getString(isRescueFlood ? R.string.rescue_pattern_flood : R.string.rescue_pattern_fire));
+    }
+
+    private void syncBindingWatch(String org) {
+        try {
+            int orgnization = Integer.parseInt(org);
+            if (loadingView == null) {
+                loadingView = new LoadingView(getActivity());
+            }
+            loadingView.setLoadingTitle("同步腕表数据...");
+            if (!loadingView.isShowing()) {
+                loadingView.show();
+            }
+
+            Observable<BaseBean<List<BindingOfWatchBean>>> observable = SLMRetrofit.getInstance().getApi().getBindingWatchs(orgnization);
+            observable.compose(new ThreadSwitchTransformer<>()) //从数据流中得到原始Observable<T>的操作符
+                    .subscribe(new CallbackListObserver<BaseBean<List<BindingOfWatchBean>>>() {
+
+                        @Override
+                        protected void onSucceed(BaseBean<List<BindingOfWatchBean>> baseBean) {
+                            // 获取数据成功 保存数据
+                            if ("0".equals(baseBean.getCode())) {
+                                //删除数据表
+                                List<BindingOfWatchBean> list = baseBean.getData();
+                                if (list != null && list.size() > 0) {
+                                    dealgData(list);
+                                }
+                            } else {
+                                updateRescueState();
+                            }
+                            loadingView.dismiss();
+                            loadingView.cancel();
+                            Toast.makeText(getActivity(), "切换成功，开始重启应用...", Toast.LENGTH_SHORT).show();
+                            new Handler().postDelayed(() -> {
+                                restartApplication(getActivity());
+                            }, 3000);
+                        }
+
+                        @Override
+                        protected void onFailed() {
+                            //获取数据失败
+                            updateRescueState();
+                            loadingView.dismiss();
+                            loadingView.cancel();
+                        }
+                    });
+        } catch (Exception e) {
+            Log.e("UnBingingWatchFragment", "org parser exception");
+            updateRescueState();
+        }
+    }
+
+    private void dealgData(List<BindingOfWatchBean> list) {
+        for (BindingOfWatchBean bean : list) {
+            // 处理数据 插入数据库
+            if (isRescueFlood) {
+                if (!bean.isBound()) {
+                    // 两个数据库连接
+                    List<LocPersonalInfo> infos = CommonDBOperator.queryByKeys(perdao,
+                            "num", bean.getDeviceNumber());
+                    if (null != infos && infos.size() > 0) {
+                        // 更新
+                        infos.get(0).setName(bean.getRealName() + "");
+                        CommonDBOperator.updateItem(perdao, infos.get(0));
+                        infos.clear();
+                        // 更新 personItem
+                        List<PersonalInfo> list1 = CommonDBOperator.queryByKeys(dao,
+                                "num", bean.getDeviceNumber());
+                        list1.get(0).setName(bean.getRealName());
+                        CommonDBOperator.updateItem(dao, list1.get(0));
+                        list1.clear();
+                    } else {
+                        // 保存
+                        int offset = 0;
+                        if (offsetList.size() > 0) {
+                            offset = offsetList.get(offsetList.size() - 1);
+                            offsetList.remove(offsetList.size() - 1);
+                        } else {
+                            List<LocPersonalInfo> pers = CommonDBOperator.getList(perdao);
+                            if (pers == null || pers.size() == 0) {
+                                offset = 1;
+                            } else {
+                                offset = pers.size() + 1;
+                            }
+                        }
+                        LocPersonalInfo perInfo = new LocPersonalInfo();
+                        perInfo.setNum(bean.getDeviceNumber());
+                        perInfo.setName(bean.getRealName());
+                        perInfo.setSex("男");
+                        perInfo.setOffset(offset);
+                        CommonDBOperator.saveToDB(perdao, perInfo);
+
+                        // 插入到 personItem
+                        PersonalInfo item = new PersonalInfo();
+                        item.setNum(bean.getDeviceNumber());
+                        item.setName(bean.getRealName());
+                        item.setSex("男");
+                        item.setOffset(offset);
+                        item.setState(Constants.PERSON_OFFLINE);
+                        CommonDBOperator.saveToDB(dao, item);
+                    }
+                }
+            } else {
+                if (!bean.isBound()) {
+                    CommonDBOperator.deleteByKeys(perdao, "num", bean.getDeviceNumber());
+                    CommonDBOperator.deleteByKeys(dao, "num", bean.getDeviceNumber());
+                }
+            }
+
+        }
+    }
+
+    private void restartApplication(Context context) {
+        final Intent intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        android.os.Process.killProcess(android.os.Process.myPid());
+    }
+
+
+    private void iniOffset() {
+        // 获取期间没有使用的ID
+        List<LocPersonalInfo> locList1 = CommonDBOperator.queryByOrderKey(perdao, "offset", true);
+        if (locList1 != null && locList1.size() > 0) {
+            int offset = 1;
+            for (LocPersonalInfo per : locList1) {
+                if (offset == per.getOffset()) {
+                    offset++;
+                } else {
+                    while (offset < per.getOffset()) {
+                        offsetList.add(offset);
+                        offset++;
+                    }
+                }
+            }
+        }
+    }
+
 
     private class AlerDialogshow extends AlertDialog {
         private TextView tv_content;
@@ -795,10 +987,29 @@ public class SettingFragment extends Fragment implements OnClickListener,
         }
     }
 
-    public void refleshStatistics(){
-        if(getActivity() != null && !getActivity().isFinishing()){
+    public void refleshStatistics() {
+        if (getActivity() != null && !getActivity().isFinishing()) {
             tv_statistics_postion_counter.setText(getString(R.string.setting_upload_statistics_num).replace
                     ("@", SpUtils.getInt(SPConstants.STATISTICS_REPORT_NUM, 0) + ""));
         }
+    }
+
+    private void setBDType(final int type) {
+        new Thread(() -> {
+            if (loRaManager != null) {
+                loRaManager.changeWatchType(type);
+            }
+        }).start();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        loRaManager = null;
+        loadingView = null;
+        offsetList.clear();
+        offsetList = null;
+
+        helper = null;
     }
 }
