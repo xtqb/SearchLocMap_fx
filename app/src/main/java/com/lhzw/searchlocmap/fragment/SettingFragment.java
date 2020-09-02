@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ import com.lhzw.searchlocmap.bean.AllBDInfosBean;
 import com.lhzw.searchlocmap.bean.AllPersonInfoBean;
 import com.lhzw.searchlocmap.bean.BaseBean;
 import com.lhzw.searchlocmap.bean.BindingOfWatchBean;
+import com.lhzw.searchlocmap.bean.BindingWatchBean;
 import com.lhzw.searchlocmap.bean.HttpPersonInfo;
 import com.lhzw.searchlocmap.bean.HttpRequstInfo;
 import com.lhzw.searchlocmap.bean.LocPersonalInfo;
@@ -112,6 +114,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private List<Integer> offsetList = new ArrayList();
     private DatabaseHelper helper;
     private Dao<BindingOfWatchBean, Integer> bindDao;
+    private Dao<HttpPersonInfo, Integer> httpDao;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -188,6 +191,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
         perdao = helper.getLocPersonDao();
         dao = helper.getPersonalInfoDao();
         bindDao = helper.getBindingOfWatchDao();
+        httpDao = helper.getHttpPerDao();
     }
 
     private void setListener() {
@@ -360,58 +364,155 @@ public class SettingFragment extends Fragment implements OnClickListener,
                 }
                 break;
             case R.id.toggle_rescue_pattern:
-                List watchs = CommonDBOperator.getList(bindDao);
-                if (watchs != null && watchs.size() > 0) {
-                    if (loadingView == null) {
-                        loadingView = new LoadingView(getActivity());
+                if (BaseUtils.isNetConnected(getContext())) {
+                    Dao<HttpPersonInfo, Integer> httpDao = helper.getHttpPerDao();
+                    Log.e("MAC", "mac  " + BaseUtils.getMacFromHardware());
+                    List<HttpPersonInfo> list = CommonDBOperator.queryByKeys(httpDao, "deviceNumbers", BaseUtils.getMacFromHardware());
+                    if (list != null && list.size() > 0) {
+                        updateRescueState();
+                        if (isRescueFlood) {
+                            iniOffset();
+                        }
+                        syncBindingWatch(list.get(0).getOrg());
+                        list.clear();
+                    } else {
+                        new Handler().postDelayed(() -> {
+                            toggle_rescue_pattern.setSliderState(isRescueFlood);
+                        }, 500);
+                        showToast("该手持MAC未在平台录入");
                     }
-                    loadingView.setLoadingTitle("更换腕表数据...");
-                    if (!loadingView.isShowing()) {
-                        loadingView.show();
-                    }
-                    updateRescueState();
-                    if (isRescueFlood) {
-                        iniOffset();
-                    }
-                    new Thread(() -> {
-                        dealgData(watchs);
-                        getActivity().runOnUiThread(() -> {
-                            loadingView.dismiss();
-                            loadingView.cancel();
-                            Toast.makeText(getActivity(), "切换成功，开始重启应用...", Toast.LENGTH_SHORT).show();
-                            new Handler().postDelayed(() -> {
-                                restartApplication(getActivity());
-                            }, 3000);
-                            watchs.clear();
-                        });
-                    }).start();
                     return;
-                }
-
-                if (!BaseUtils.isNetConnected(getContext())) {
-                    showToast("网络连接异常,请检查网络");
-                    return;
-                }
-                Dao<HttpPersonInfo, Integer> httpDao = helper.getHttpPerDao();
-                Log.e("MAC", "mac  " + BaseUtils.getMacFromHardware());
-                List<HttpPersonInfo> list = CommonDBOperator.queryByKeys(httpDao, "deviceNumbers", BaseUtils.getMacFromHardware());
-                if (list != null && list.size() > 0) {
-                    updateRescueState();
-                    if (isRescueFlood) {
-                        iniOffset();
-                    }
-                    syncBindingWatch(list.get(0).getOrg());
-                    list.clear();
                 } else {
-                    new Handler().postDelayed(() -> {
-                        toggle_rescue_pattern.setSliderState(isRescueFlood);
-                    }, 500);
-                    showToast("该手持MAC未在平台录入");
-
+                    List watchs = CommonDBOperator.getList(bindDao);
+                    if (watchs != null && watchs.size() > 0) {
+                        if (loadingView == null) {
+                            loadingView = new LoadingView(getActivity());
+                        }
+                        loadingView.setLoadingTitle("更换腕表数据...");
+                        if (!loadingView.isShowing()) {
+                            loadingView.show();
+                        }
+                        updateRescueState();
+                        if (isRescueFlood) {
+                            iniOffset();
+                        }
+                        new Thread(() -> {
+                            dealgData(watchs, false);
+                            getActivity().runOnUiThread(() -> {
+                                loadingView.dismiss();
+                                loadingView.cancel();
+                                Toast.makeText(getActivity(), "切换成功，开始重启应用...", Toast.LENGTH_SHORT).show();
+                                new Handler().postDelayed(() -> {
+                                    restartApplication(getActivity());
+                                }, 3000);
+                                watchs.clear();
+                            });
+                        }).start();
+                    }
                 }
-
                 break;
         }
+    }
+
+    /**
+     * 获取全部绑定腕表信息
+     */
+    private void downloadBindWatch() {
+        List<HttpPersonInfo> list = CommonDBOperator.queryByKeys(httpDao, "deviceNumbers", BaseUtils.getMacFromHardware());
+        if (list != null && list.size() > 0) {
+            Log.e("BINDING", "------------------------------  org : " + list.get(0).getOrg());
+            Observable<BaseBean<List<BindingOfWatchBean>>> observable = SLMRetrofit.getInstance().getApi().getBindingWatchs(Integer.parseInt(list.get(0).getOrg()));
+            observable.compose(new ThreadSwitchTransformer<>()) //从数据流中得到原始Observable<T>的操作符
+                    .subscribe(new CallbackListObserver<BaseBean<List<BindingOfWatchBean>>>() {
+
+                        @Override
+                        protected void onSucceed(BaseBean<List<BindingOfWatchBean>> baseBean) {
+                            // 获取数据成功 保存数据
+                            try {
+                                if ("0".equals(baseBean.getCode())) {
+                                    //删除数据表
+                                    CommonDBOperator.deleteAllItems(bindDao);
+                                    List<BindingOfWatchBean> list = baseBean.getData();
+                                    //保存数据
+                                    for (BindingOfWatchBean item : list) {
+                                        if (item.isBound()) {
+                                            item.setState(0);
+                                        } else {
+                                            item.setState(1);
+                                        }
+                                        CommonDBOperator.saveToDB(bindDao, item);
+                                    }
+                                    list.clear();
+                                    // 获取绑定腕表
+                                    updateBindPerson();
+                                }
+                            } catch (Exception e) {
+                                Log.e("TAG", "解析失败");
+                            }
+                        }
+
+                        @Override
+                        protected void onFailed() {
+                            //获取数据失败
+                        }
+                    });
+        } else {
+            //删除数据表
+            CommonDBOperator.deleteAllItems(bindDao);
+        }
+    }
+
+    /**
+     * 获取该mac下的已绑定腕表信息
+     */
+    //
+    private void updateBindPerson() {
+        String mac = BaseUtils.getMacFromHardware();
+        Observable<BindingWatchBean> observable = SLMRetrofit.getInstance().getApi().getBindingWatch(mac);
+        observable.compose(new ThreadSwitchTransformer<BindingWatchBean>()).subscribe(new CallbackListObserver<BindingWatchBean>() {
+            @Override
+            protected void onSucceed(BindingWatchBean bean) {
+                if (bean.getCode() == 0) {
+                    if (bean.getData() != null && bean.getData().size() > 0) {
+                        //有绑定数据   插入表中
+                        //删除数据
+                        CommonDBOperator.deleteAllItems(perdao);
+                        CommonDBOperator.deleteAllItems(dao);
+                        for (int i = 0; i < bean.getData().size(); i++) {
+                            BindingWatchBean.DataBean dataBean = bean.getData().get(i);
+                            List<HttpPersonInfo> httpPersonInfo = CommonDBOperator.queryByKeys(httpDao, "deviceNumbers", dataBean.getDeviceNumber());
+                            String realName = "perdao";
+
+                            if (httpPersonInfo != null && httpPersonInfo.size() > 0) {
+                                realName = TextUtils.isEmpty(httpPersonInfo.get(0).getRealName()) ? "" : httpPersonInfo.get(0).getRealName();
+                            } else {
+                                LogUtil.e("httpPersonInfo==" + httpPersonInfo);
+                            }
+                            LocPersonalInfo perInfo = new LocPersonalInfo();
+                            perInfo.setNum(dataBean.getDeviceNumber());
+                            perInfo.setName(realName);
+                            CommonDBOperator.saveToDB(perdao, perInfo);
+
+                            PersonalInfo personalInfo = new PersonalInfo();
+                            personalInfo.setName(realName);
+                            personalInfo.setNum(dataBean.getDeviceNumber());
+                            personalInfo.setSex("0");
+                            personalInfo.setState(Constants.PERSON_OFFLINE);
+                            personalInfo.setOffset(i);
+                            CommonDBOperator.saveToDB(dao, personalInfo);
+                        }
+
+                    }
+                } else {
+
+                }
+            }
+
+            @Override
+            protected void onFailed() {
+
+            }
+        });
     }
 
     private void updateRescueState() {
@@ -444,7 +545,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
                                 //删除数据表
                                 List<BindingOfWatchBean> list = baseBean.getData();
                                 if (list != null && list.size() > 0) {
-                                    dealgData(list);
+                                    dealgData(list, true);
                                 }
                             } else {
                                 updateRescueState();
@@ -474,7 +575,10 @@ public class SettingFragment extends Fragment implements OnClickListener,
         }
     }
 
-    private void dealgData(List<BindingOfWatchBean> list) {
+    private void dealgData(List<BindingOfWatchBean> list, boolean isUpdate) {
+        if (isUpdate) {
+            CommonDBOperator.deleteAllItems(bindDao);
+        }
         for (BindingOfWatchBean bean : list) {
             // 处理数据 插入数据库
             if (isRescueFlood) {
@@ -530,7 +634,9 @@ public class SettingFragment extends Fragment implements OnClickListener,
                     CommonDBOperator.deleteByKeys(dao, "num", bean.getDeviceNumber());
                 }
             }
-            CommonDBOperator.saveToDB(bindDao, bean);
+            if (isUpdate) {
+                CommonDBOperator.saveToDB(bindDao, bean);
+            }
         }
     }
 
@@ -705,10 +811,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
                                 getActivity().finish();
 
                             }
-
-
                             getAllPersonInfoBean();//获取人员基础信息
-
                         }
                     } else {
                         showToast(bean.getMessage() + "");
@@ -802,15 +905,17 @@ public class SettingFragment extends Fragment implements OnClickListener,
             mBdNumDao = helper.getBdNumDao();
             CommonDBOperator.deleteAllItems(httpPerDao);
             CommonDBOperator.deleteAllItems(mBdNumDao);
+            Log.e("BINDING", "------------------------------  1");
         }
 
         @Override
         protected Boolean doInBackground(Object[] params) {
+            downloadBindWatch();
             boolean isSuccess = false;
             Integer[] values = new Integer[2];
             values[0] = mHttpRequstInfos.size() + mLocalBDNums.size();
             publishProgress(values);
-            int delay = 50;
+            int delay = 20;
             int counter = 0;
             for (HttpRequstInfo info : mHttpRequstInfos) {
                 counter++;
@@ -839,6 +944,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
             if (counter == values[0]) {
                 isSuccess = true;
             }
+            Log.e("BINDING", "------------------------------  2");
             mHttpRequstInfos.clear();
             mLocalBDNums.clear();
             return isSuccess;
