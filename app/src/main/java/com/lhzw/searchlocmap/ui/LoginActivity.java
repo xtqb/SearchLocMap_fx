@@ -263,7 +263,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     e.printStackTrace();
                 }
             }
-
+            downloadBindWatch();
             for (LocalBDNum localBDNum : mLocalBDNums) {
                 counter++;
                 values[1] = counter;
@@ -281,7 +281,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             }
             mHttpRequstInfos.clear();
             mLocalBDNums.clear();
-            downloadBindWatch();
+
             return isSuccess;
         }
 

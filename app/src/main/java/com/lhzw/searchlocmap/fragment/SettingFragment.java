@@ -910,7 +910,6 @@ public class SettingFragment extends Fragment implements OnClickListener,
 
         @Override
         protected Boolean doInBackground(Object[] params) {
-            downloadBindWatch();
             boolean isSuccess = false;
             Integer[] values = new Integer[2];
             values[0] = mHttpRequstInfos.size() + mLocalBDNums.size();
@@ -928,7 +927,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
                     e.printStackTrace();
                 }
             }
-
+            downloadBindWatch();
             for (LocalBDNum localBDNum : mLocalBDNums) {
                 counter++;
                 values[1] = counter;
