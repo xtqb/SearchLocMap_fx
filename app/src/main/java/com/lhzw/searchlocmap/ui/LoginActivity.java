@@ -149,11 +149,16 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         bt_login.setClickable(true);
         im_name_del = (ImageView) findViewById(R.id.im_name_del);
     }
-
+    private boolean isLogin = true;
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bt_login:
+                if(isLogin) {
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    this.finish();
+                    return;
+                }
                 mLoginName = et_user_name.getText().toString();
                 mPassword = et_user_password.getText().toString();
                 if (!BaseUtils.isNetConnected(this)) {

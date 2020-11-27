@@ -47,7 +47,7 @@ public class SearchLocMapApplication extends Application implements View.OnClick
                 .build();
         Logger.addLogAdapter(new AndroidLogAdapter(strategy));
 
-        bindService();
+//        bindService();
     }
 
     public void bindService(){

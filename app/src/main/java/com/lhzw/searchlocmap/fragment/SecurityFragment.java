@@ -3,7 +3,6 @@ package com.lhzw.searchlocmap.fragment;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.BDManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.LoRaManager;
@@ -359,6 +358,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             Config.MAP_ROOT_PATH = mapPath;
             Log.e("Tag", "Path : " + mapPath);
         }
+        Config.MAP_ROOT_PATH = "/sdcard/gtmap";
         Config.MAX_LEVEL = 20;
     }
 
@@ -1635,9 +1635,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         plot_listView.setOnItemLongClickListener(this);
         startBottomAnimation(list_h_state);
         locManager = (LocationManager) mContext.getSystemService(Service.LOCATION_SERVICE);
-        loRaManager = (LoRaManager) mContext.getSystemService(Context.LORA_SERVICE);
-        setBDType(SpUtils.getBoolean(SPConstants.RESCUE_PATTERN_FLOOD, false) ? Constants.CHANNEL_DEF :SpUtils.getInt(SPConstants.CHANNEL_NUM, Constants.CHANNEL_DEF));
-        mBDManager = (BDManager) mContext.getSystemService(Context.BD_SERVICE);
+//        loRaManager = (LoRaManager) mContext.getSystemService(Context.LORA_SERVICE);
+//        setBDType(SpUtils.getBoolean(SPConstants.RESCUE_PATTERN_FLOOD, false) ? Constants.CHANNEL_DEF :SpUtils.getInt(SPConstants.CHANNEL_NUM, Constants.CHANNEL_DEF));
+//        mBDManager = (BDManager) mContext.getSystemService(Context.BD_SERVICE);
         if (locManager != null) {
             intLoc();
         }

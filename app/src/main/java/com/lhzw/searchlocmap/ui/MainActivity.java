@@ -98,7 +98,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     private void initBDChangeCheck() {
         LogUtil.e("MAC="+BaseUtils.getMacFromHardware());
-        String bdNum = BaseUtils.getDipperNum(this);
+//        String bdNum = BaseUtils.getDipperNum(this);
+        String bdNum = "12345678";
         LogUtil.e("初始化本机北斗号=="+bdNum);
         //本机北斗号为空  不处理
         if(TextUtils.isEmpty(bdNum)){
@@ -167,7 +168,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         SearchLocMapApplication.getInstance().bindService();
         super.onResume();
         if (SpUtils.getBoolean(SPConstants.ISJUMP, false)) {
-            if (Settings.Global.getInt(getContentResolver(), Settings.Global.BD_MODE_ON, 0) != 1) {
+            if (Settings.Global.getInt(getContentResolver(), Settings.Global.BD_MODE_ON, 0) != 1 ||
+                    Settings.Global.getInt(getContentResolver(), Settings.Global.BD_INLINK_MODE_ON, 0) != 1 ||
+                    Settings.Global.getInt(getContentResolver(), Settings.Global.BD_OUTLINK_MODE_ON, 0) != 1) {
                 SpUtils.putBoolean(SPConstants.AUTO_REPORT, false); //北斗开关已经打开
             } else {
                 if (BaseUtils.isStringEmpty(BaseUtils.getDipperNum(this))) {
@@ -178,7 +181,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             SpUtils.putBoolean(SPConstants.ISJUMP, false);
         }
 //        mBDManager.systemCheck(6 + "");
-        mBDManager.queryBDPower("6");
+//        mBDManager.queryBDPower("6");
        // LogUtil.e("mac = "+BaseUtils.getMacFromHardware());
     }
 
@@ -229,7 +232,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @SuppressLint("WrongConstant")
     private void initData() {
-        mBDManager = (BDManager) getSystemService(Context.BD_SERVICE);
+//        mBDManager = (BDManager) getSystemService(Context.BD_SERVICE);
         ComUtils.getInstance().registerBroadcastReceiver();
         if (SpUtils.getBoolean(SPConstants.AUTO_REPORT, true)) {
             if (Settings.Global.getInt(getContentResolver(), Settings.Global.BD_MODE_ON, 0) != 1) {// 北斗定位没开

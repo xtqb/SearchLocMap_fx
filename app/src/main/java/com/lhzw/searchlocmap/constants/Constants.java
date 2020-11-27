@@ -15,10 +15,10 @@ public class Constants {
 
 	// public static float CENTRE_LON = 120.19f;// 北京市区 经度
 	// public static float CENTRE_LAT = 30.26f; // 北京市区 纬度
-	public static float CENTRE_LON = 104.07f;// 北京市区 经度
-	public static float CENTRE_LAT = 30.67f; // 北京市区 纬度
-//	public static float CENTRE_LON = 127.2628f;// 黑河 经度
-//	public static float CENTRE_LAT = 50.1535f; // 黑河 纬度
+//	public static float CENTRE_LON = 104.07f;// 北京市区 经度
+//	public static float CENTRE_LAT = 30.67f; // 北京市区 纬度
+	public static float CENTRE_LON = 127.2628f;// 黑河 经度
+	public static float CENTRE_LAT = 50.1535f; // 黑河 纬度
 //	 public static float CENTRE_LON = 89.19f;// 北京市区 经度
 //	 public static float CENTRE_LAT = 42.91f; // 北京市区 纬度
 	public static int RADIUS = 800; // 默认安全半径

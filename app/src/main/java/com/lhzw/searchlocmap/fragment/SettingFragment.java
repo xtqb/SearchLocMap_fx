@@ -186,7 +186,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
             tv_statistics_postion_counter.setText("");
         }
         tv_type_pattern.setText(getString(isRescueFlood ? R.string.rescue_pattern_flood : R.string.rescue_pattern_fire));
-        loRaManager = (LoRaManager) getActivity().getSystemService(Context.LORA_SERVICE);
+//        loRaManager = (LoRaManager) getActivity().getSystemService(Context.LORA_SERVICE);
         if (helper == null) helper = DatabaseHelper.getHelper(getActivity());
         perdao = helper.getLocPersonDao();
         dao = helper.getPersonalInfoDao();
