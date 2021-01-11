@@ -462,7 +462,8 @@ public class BaseUtils {
             return null;
         }
         for (int i = 0; i < files.length; i++) {
-            if (!files[i].getAbsolutePath().equals("/storage/emulated") && !files[i].getAbsolutePath().equals("/storage/self")) {
+            if (!files[i].getAbsolutePath().equals("/storage/emulated") && !files[i].getAbsolutePath().equals("/storage/self")
+                    && !files[i].getAbsolutePath().equals("/storage/sdcard0") ) {
                 paths = files[i].getAbsolutePath();
                 break;
             }
@@ -713,6 +714,22 @@ public class BaseUtils {
         }
         numStr = numStr + channel;
         return BaseUtils.getPerRegisterByteArr(numStr);
+    }
+
+    /**
+     * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
+     */
+    public static int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
+
+    /**
+     * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
+     */
+    public static int px2dip(Context context, float pxValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
     }
 
 }

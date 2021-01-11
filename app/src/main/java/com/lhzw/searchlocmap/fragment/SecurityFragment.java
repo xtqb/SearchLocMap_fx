@@ -3,6 +3,7 @@ package com.lhzw.searchlocmap.fragment;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.BDManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.LoRaManager;
@@ -31,6 +32,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -307,6 +309,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     private int hisTrackId = -1;
     private String naviItemId;
     private boolean isHisShow = false;
+    public static String lastType = Constants.PERSON_OFFLINE;
 
 
     private void initScrollView() {
@@ -353,12 +356,17 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
 
     private void initMapConfig() {
         Config.DATA_CODE = "20190417";
-        String mapPath = BaseUtils.getStoragePath();
-        if (BaseUtils.isPathExist(mapPath)) {
-            Config.MAP_ROOT_PATH = mapPath;
-            Log.e("Tag", "Path : " + mapPath);
+        boolean isMapState = SpUtils.getBoolean(SPConstants.MAP_SWITCH, false);
+        if(isMapState) {
+            Config.MAP_ROOT_PATH = "/sdcard/gtmap";
+        } else {
+            String mapPath = BaseUtils.getStoragePath();
+            if (BaseUtils.isPathExist(mapPath)) {
+                Config.MAP_ROOT_PATH = mapPath;
+                Log.e("Tag", "Path : " + mapPath);
+            }
         }
-        Config.MAP_ROOT_PATH = "/sdcard/gtmap";
+//        Config.MAP_ROOT_PATH = "/sdcard/gtmap";
         Config.MAX_LEVEL = 20;
     }
 
@@ -665,7 +673,7 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             }
         }
 
-        List<PersonalInfo> tmpSosList = CommonDBOperator.queryByKeysOrderByTime(persondao, "state", Constants.PERSON_SOS, "time");
+        List<PersonalInfo> tmpSosList = CommonDBOperator.queryByKeys(persondao, "state", Constants.PERSON_SOS);
         if (tmpSosList != null && tmpSosList.size() > 0) {
             sosList.addAll(tmpSosList);
             sucess += sosList.size();
@@ -727,41 +735,122 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
             common_marker_id.clear();
         }
 
-        //绘制sos
-        if (sosList != null && sosList.size() > 0) {
-            for (PersonalInfo item : sosList) {
-                int plot_id = mGraphicOverlay.AddPicturePlaceMark(new GeoPoint(Double.valueOf(item.getLatitude()),
-                        Double.valueOf(item.getLongitude())), sos_bitmap, item.getName(), 20.0, SOILDERINFO_LAYER_NAME);
-                mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SpointAnnoFontSize, "8", SOILDERINFO_LAYER_NAME);
-                mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoFontColor, "" + Color.RED, SOILDERINFO_LAYER_NAME);
-                mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoTextPos, "0", SOILDERINFO_LAYER_NAME);
+
+        if(Constants.PERSON_COMMON.equals(lastType)) {
+            //绘制sos
+            if (sosList != null && sosList.size() > 0) {
+                for (PersonalInfo item : sosList) {
+                    int plot_id = mGraphicOverlay.AddPicturePlaceMark(new GeoPoint(Double.valueOf(item.getLatitude()),
+                            Double.valueOf(item.getLongitude())), sos_bitmap, item.getName(), 20.0, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SpointAnnoFontSize, "8", SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoFontColor, "" + Color.RED, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoTextPos, "0", SOILDERINFO_LAYER_NAME);
 //            mGraphicOverlay.setModified();
 //            mMapView.postInvalidate();
-                mGraphicOverlay.SetFeatureExtendPropString(plot_id, "String_PROP", Constants.PERSON_SOS, SOILDERINFO_LAYER_NAME);
-                sos_marker_id.add(plot_id);
-                tatolMap.put(plot_id, item);
+                    mGraphicOverlay.SetFeatureExtendPropString(plot_id, "String_PROP", Constants.PERSON_SOS, SOILDERINFO_LAYER_NAME);
+                    sos_marker_id.add(plot_id);
+                    tatolMap.put(plot_id, item);
 
-                item.setMarkerId(plot_id);
-                CommonDBOperator.updateItem(persondao, item);
+                    item.setMarkerId(plot_id);
+                    CommonDBOperator.updateItem(persondao, item);
+                }
             }
-        }
 
-        //绘制common
-        if (commonList != null && commonList.size() > 0) {
-            for (PersonalInfo item : commonList) {
-                int plot_id = mGraphicOverlay.AddPicturePlaceMark(new GeoPoint(Double.valueOf(item.getLatitude()),
-                        Double.valueOf(item.getLongitude())), common_bitmap, item.getName(), 20.0, SOILDERINFO_LAYER_NAME);
-                mGraphicOverlay.SetFeatureExtendPropString(plot_id, "String_PROP", Constants.PERSON_COMMON, SOILDERINFO_LAYER_NAME);
-                mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SpointAnnoFontSize, "8", SOILDERINFO_LAYER_NAME);
-                mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoFontColor, "" + Color.RED, SOILDERINFO_LAYER_NAME);
-                mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoTextPos, "0", SOILDERINFO_LAYER_NAME);
+            //绘制common
+            if (commonList != null && commonList.size() > 0) {
+                for (PersonalInfo item : commonList) {
+                    int plot_id = mGraphicOverlay.AddPicturePlaceMark(new GeoPoint(Double.valueOf(item.getLatitude()),
+                            Double.valueOf(item.getLongitude())), common_bitmap, item.getName(), 20.0, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureExtendPropString(plot_id, "String_PROP", Constants.PERSON_COMMON, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SpointAnnoFontSize, "8", SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoFontColor, "" + Color.RED, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoTextPos, "0", SOILDERINFO_LAYER_NAME);
 //            mGraphicOverlay.setModified();
 //            mMapView.postInvalidate();
-                common_marker_id.add(plot_id);
-                tatolMap.put(plot_id, item);
+                    common_marker_id.add(plot_id);
+                    tatolMap.put(plot_id, item);
 
-                item.setMarkerId(plot_id);
-                CommonDBOperator.updateItem(persondao, item);
+                    item.setMarkerId(plot_id);
+                    CommonDBOperator.updateItem(persondao, item);
+                }
+            }
+
+        } else if(Constants.PERSON_SOS.equals(lastType)) {
+            //绘制common
+            if (commonList != null && commonList.size() > 0) {
+                for (PersonalInfo item : commonList) {
+                    int plot_id = mGraphicOverlay.AddPicturePlaceMark(new GeoPoint(Double.valueOf(item.getLatitude()),
+                            Double.valueOf(item.getLongitude())), common_bitmap, item.getName(), 20.0, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureExtendPropString(plot_id, "String_PROP", Constants.PERSON_COMMON, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SpointAnnoFontSize, "8", SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoFontColor, "" + Color.RED, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoTextPos, "0", SOILDERINFO_LAYER_NAME);
+//            mGraphicOverlay.setModified();
+//            mMapView.postInvalidate();
+                    common_marker_id.add(plot_id);
+                    tatolMap.put(plot_id, item);
+
+                    item.setMarkerId(plot_id);
+                    CommonDBOperator.updateItem(persondao, item);
+                }
+            }
+
+            //绘制sos
+            if (sosList != null && sosList.size() > 0) {
+                for (PersonalInfo item : sosList) {
+                    int plot_id = mGraphicOverlay.AddPicturePlaceMark(new GeoPoint(Double.valueOf(item.getLatitude()),
+                            Double.valueOf(item.getLongitude())), sos_bitmap, item.getName(), 20.0, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SpointAnnoFontSize, "8", SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoFontColor, "" + Color.RED, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoTextPos, "0", SOILDERINFO_LAYER_NAME);
+//            mGraphicOverlay.setModified();
+//            mMapView.postInvalidate();
+                    mGraphicOverlay.SetFeatureExtendPropString(plot_id, "String_PROP", Constants.PERSON_SOS, SOILDERINFO_LAYER_NAME);
+                    sos_marker_id.add(plot_id);
+                    tatolMap.put(plot_id, item);
+
+                    item.setMarkerId(plot_id);
+                    CommonDBOperator.updateItem(persondao, item);
+                }
+            }
+
+        } else {
+            //绘制sos
+            if (sosList != null && sosList.size() > 0) {
+                for (PersonalInfo item : sosList) {
+                    int plot_id = mGraphicOverlay.AddPicturePlaceMark(new GeoPoint(Double.valueOf(item.getLatitude()),
+                            Double.valueOf(item.getLongitude())), sos_bitmap, item.getName(), 20.0, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SpointAnnoFontSize, "8", SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoFontColor, "" + Color.RED, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoTextPos, "0", SOILDERINFO_LAYER_NAME);
+//            mGraphicOverlay.setModified();
+//            mMapView.postInvalidate();
+                    mGraphicOverlay.SetFeatureExtendPropString(plot_id, "String_PROP", Constants.PERSON_SOS, SOILDERINFO_LAYER_NAME);
+                    sos_marker_id.add(plot_id);
+                    tatolMap.put(plot_id, item);
+
+                    item.setMarkerId(plot_id);
+                    CommonDBOperator.updateItem(persondao, item);
+                }
+            }
+
+            //绘制common
+            if (commonList != null && commonList.size() > 0) {
+                for (PersonalInfo item : commonList) {
+                    int plot_id = mGraphicOverlay.AddPicturePlaceMark(new GeoPoint(Double.valueOf(item.getLatitude()),
+                            Double.valueOf(item.getLongitude())), common_bitmap, item.getName(), 20.0, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureExtendPropString(plot_id, "String_PROP", Constants.PERSON_COMMON, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SpointAnnoFontSize, "8", SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoFontColor, "" + Color.RED, SOILDERINFO_LAYER_NAME);
+                    mGraphicOverlay.SetFeatureProp(plot_id, PROP_NAME.SPointAnnoTextPos, "0", SOILDERINFO_LAYER_NAME);
+//            mGraphicOverlay.setModified();
+//            mMapView.postInvalidate();
+                    common_marker_id.add(plot_id);
+                    tatolMap.put(plot_id, item);
+
+                    item.setMarkerId(plot_id);
+                    CommonDBOperator.updateItem(persondao, item);
+                }
             }
         }
 
@@ -1551,6 +1640,12 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         scroll_listview.setAdapter(mScrollAdapter);
         scroll_listview.setOnItemClickListener(mScrollAdapter);
         scroll_listview.setOnItemLongClickListener(mScrollAdapter);
+
+        // 动态设置高度
+        ViewGroup.LayoutParams params =  scroll_listview.getLayoutParams();
+        params.height = BaseUtils.px2dip(getActivity(),2300);
+
+        scroll_listview.setLayoutParams(params);
         mScrollAdapter.setOnClickScrollItemListener(this);
 
         initMenuBtnListener();
@@ -1635,9 +1730,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
         plot_listView.setOnItemLongClickListener(this);
         startBottomAnimation(list_h_state);
         locManager = (LocationManager) mContext.getSystemService(Service.LOCATION_SERVICE);
-//        loRaManager = (LoRaManager) mContext.getSystemService(Context.LORA_SERVICE);
-//        setBDType(SpUtils.getBoolean(SPConstants.RESCUE_PATTERN_FLOOD, false) ? Constants.CHANNEL_DEF :SpUtils.getInt(SPConstants.CHANNEL_NUM, Constants.CHANNEL_DEF));
-//        mBDManager = (BDManager) mContext.getSystemService(Context.BD_SERVICE);
+        loRaManager = (LoRaManager) mContext.getSystemService(Context.LORA_SERVICE);
+        setBDType(SpUtils.getBoolean(SPConstants.RESCUE_PATTERN_FLOOD, false) ? Constants.CHANNEL_DEF :SpUtils.getInt(SPConstants.CHANNEL_NUM, Constants.CHANNEL_DEF));
+        mBDManager = (BDManager) mContext.getSystemService(Context.BD_SERVICE);
         if (locManager != null) {
             intLoc();
         }
@@ -1738,6 +1833,9 @@ public class SecurityFragment extends BaseFragment implements IGT_Observer,
     }
 
     private void uploadItem() {
+
+
+
         UploadInfoBean bean = BaseUtils.getUploadInfo(firePlots.get(selectID));
         mComUtils.uploadBena(bean);
         firePlots.get(selectID).setUpload_state(Constants.UPLOAD_STATE_ON);

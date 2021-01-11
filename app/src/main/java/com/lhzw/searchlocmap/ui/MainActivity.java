@@ -168,14 +168,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         SearchLocMapApplication.getInstance().bindService();
         super.onResume();
         if (SpUtils.getBoolean(SPConstants.ISJUMP, false)) {
-            if (Settings.Global.getInt(getContentResolver(), Settings.Global.BD_MODE_ON, 0) != 1 ||
-                    Settings.Global.getInt(getContentResolver(), Settings.Global.BD_INLINK_MODE_ON, 0) != 1 ||
-                    Settings.Global.getInt(getContentResolver(), Settings.Global.BD_OUTLINK_MODE_ON, 0) != 1) {
-                SpUtils.putBoolean(SPConstants.AUTO_REPORT, false); //北斗开关已经打开
+            if (Settings.Global.getInt(getContentResolver(), Settings.Global.BD_MODE_ON, 0) == 0 &&
+                    Settings.Global.getInt(getContentResolver(), Settings.Global.BD_INLINK_MODE_ON, 0) == 0 &&
+                    Settings.Global.getInt(getContentResolver(), Settings.Global.BD_OUTLINK_MODE_ON, 0) == 0) {
+//                SpUtils.putBoolean(SPConstants.AUTO_REPORT, false); //北斗开关已经打开
             } else {
                 if (BaseUtils.isStringEmpty(BaseUtils.getDipperNum(this))) {
                     Toast.makeText(this, getString(R.string.dipper_card_check_note), Toast.LENGTH_LONG).show();
-                    SpUtils.putBoolean(SPConstants.AUTO_REPORT, false);
+//                    SpUtils.putBoolean(SPConstants.AUTO_REPORT, false);
                 }
             }
             SpUtils.putBoolean(SPConstants.ISJUMP, false);
@@ -235,7 +235,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 //        mBDManager = (BDManager) getSystemService(Context.BD_SERVICE);
         ComUtils.getInstance().registerBroadcastReceiver();
         if (SpUtils.getBoolean(SPConstants.AUTO_REPORT, true)) {
-            if (Settings.Global.getInt(getContentResolver(), Settings.Global.BD_MODE_ON, 0) != 1) {// 北斗定位没开
+            if (Settings.Global.getInt(getContentResolver(), Settings.Global.BD_MODE_ON, 0) == 0 &&
+                    Settings.Global.getInt(getContentResolver(), Settings.Global.BD_INLINK_MODE_ON, 0) == 0 &&
+                    Settings.Global.getInt(getContentResolver(), Settings.Global.BD_OUTLINK_MODE_ON, 0) == 0) {// 北斗定位没开
                 alertdialog = new ShowAlertDialog(MainActivity.this);
                 alertdialog.show();
                 alertdialog.setContent(getString(R.string.dipper_auto_upload_switch_note));
@@ -244,7 +246,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             } else {
                 if (BaseUtils.isStringEmpty(BaseUtils.getDipperNum(this))) {
                     Toast.makeText(this, getString(R.string.dipper_card_check_note), Toast.LENGTH_LONG).show();
-                    SpUtils.putBoolean(SPConstants.AUTO_REPORT, false);
+//                    SpUtils.putBoolean(SPConstants.AUTO_REPORT, false);
                 }
             }
         }
@@ -314,12 +316,13 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 alertdialog.dismiss();
                 alertdialog = null;
                 if (Settings.Global.getInt(getContentResolver(), Settings.Global.BD_MODE_ON, 0) != 1) {
-                    SpUtils.putBoolean(SPConstants.AUTO_REPORT, false);
+//                    SpUtils.putBoolean(SPConstants.AUTO_REPORT, false);
                 }
                 break;
             case R.id.tv_sure:
                 // 开启北斗
-                Intent intent_BDSetting = new Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+//                Intent intent_BDSetting = new Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+                Intent intent_BDSetting = new Intent("android.settings.action.DIPPER");
                 startActivity(intent_BDSetting);
                 SpUtils.putBoolean(SPConstants.ISJUMP, true);
                 alertdialog.dismiss();

@@ -79,6 +79,7 @@ public class SendMessageDialog extends AlertDialog implements View.OnClickListen
             }
             if (loRaManager != null && mask != null) {
                 loRaManager.sendMessage(mask, content.getBytes("GB2312"));
+                Toast.makeText(mContext, "发送成功", Toast.LENGTH_SHORT).show();
             }
             cancelDialog();
         } catch (UnsupportedEncodingException e) {

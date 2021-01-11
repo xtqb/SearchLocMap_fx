@@ -657,7 +657,7 @@ public class UnBingingWatchFragment extends BaseLazyFragment implements View.OnC
         super.onDestroy();
         tv_binding = null;
         loadingView = null;
-        bindingOfWatchDao = null;
+//        bindingOfWatchDao = null;
         helper = null;
         if (dataMap != null) {
             dataMap.clear();
@@ -714,13 +714,17 @@ public class UnBingingWatchFragment extends BaseLazyFragment implements View.OnC
         tv_channel.setText(CHANNEL + "");
         dialog.dismiss();
         bdByteArr = BaseUtils.obtainSearchBytes();
+        loRaManager.changeWatchType(CHANNEL);
+        showToast(getString(R.string.send_command_success_note));
     }
 
     public void onKeyDown() {
         backCounter++;
         if (backCounter == 2) {
             setBDType(CHANNEL);
-            mContext.finish();
+            if(mContext != null) {
+                mContext.finish();
+            }
         } else {
             showToast("再按一次退出");
             new Handler().postDelayed(new Runnable() {

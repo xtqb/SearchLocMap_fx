@@ -110,7 +110,8 @@
                 android:id="@+id/rl_bd_setting"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="@drawable/rl_background">
+                android:background="@drawable/rl_background"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/im_bg_setting"
@@ -144,13 +145,15 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#cccccc" />
+                android:background="#cccccc"
+                android:visibility="gone" />
 
             <RelativeLayout
                 android:id="@+id/rl_bd_num_setting"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="@drawable/rl_background">
+                android:background="@drawable/rl_background"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/im_bg_num_setting"
@@ -184,7 +187,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#cccccc" />
+                android:background="#cccccc"
+                android:visibility="gone" />
 
             <RelativeLayout
                 android:id="@+id/rl_bd_service"
@@ -517,8 +521,8 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="16dp"
-                android:background="#EBEBEB" />
+                android:layout_height="1dp"
+                android:background="#cccccc" />
 
             <RelativeLayout
                 android:id="@+id/rl_bell"
@@ -738,6 +742,56 @@
 
                 <com.lhzw.searchlocmap.view.ToggleButtonView
                     android:id="@+id/toggle_statistics_postion"
+                    android:layout_width="55dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#cccccc" />
+
+            <RelativeLayout
+                android:id="@+id/rl_storage_pattern"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@color/white"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/im_storage_pattern"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="16dp"
+                    android:background="@drawable/icon_map_switch" />
+
+                <TextView
+                    android:id="@+id/tv_storage_pattern"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/im_storage_pattern"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/im_storage_pattern"
+                    android:text="@string/settings_storage_pattern"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_storage_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@+id/toggle_storage_pattern"
+                    android:text="@string/settings_storage_type_outer"
+                    android:textSize="16sp" />
+
+                <com.lhzw.searchlocmap.view.ToggleButtonView
+                    android:id="@+id/toggle_storage_pattern"
                     android:layout_width="55dp"
                     android:layout_height="35dp"
                     android:layout_alignParentRight="true"

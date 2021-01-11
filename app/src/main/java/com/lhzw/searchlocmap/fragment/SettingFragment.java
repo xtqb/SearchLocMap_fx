@@ -77,6 +77,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private ToggleButtonView toggle_bell;
     private ToggleButtonView toggle_vibrator;
     private ToggleButtonView toggle_statistics_postion;
+    private ToggleButtonView toggle_storage_pattern;
     private ToggleButtonView toggle_rescue_pattern;
     private RelativeLayout rl_sos_upload;
     private RelativeLayout rl_person_upload;
@@ -90,6 +91,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private boolean isPlaySound;
     private boolean isVibrate;
     private boolean isRescueFlood;
+    private boolean isMapState;
     private boolean isUpload;
     private boolean isStatistics;
     private AlerDialogshow alertdialog;
@@ -103,6 +105,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
     private RelativeLayout rl_net_setting;
     private TextView tv_name;
     private TextView tv_type_pattern;
+    private TextView tv_storage_type;
     private TextView tv_amc;
     private TextView tv_pattern_content;
     private TextView tv_statistics_postion_counter;
@@ -154,11 +157,13 @@ public class SettingFragment extends Fragment implements OnClickListener,
         rl_net_setting = (RelativeLayout) view.findViewById(R.id.rl_net_setting);
         toggle_upload_pattern = (ToggleButtonView) view.findViewById(R.id.toggle_upload_pattern);
         toggle_statistics_postion = (ToggleButtonView) view.findViewById(R.id.toggle_statistics_postion);
+        toggle_storage_pattern = (ToggleButtonView) view.findViewById(R.id.toggle_storage_pattern);
         tv_pattern_content = (TextView) view.findViewById(R.id.tv_pattern_content);
         tv_statistics_postion_counter = (TextView) view.findViewById(R.id.tv_statistics_postion_counter);
         tv_name = (TextView) view.findViewById(R.id.tv_name);
         tv_amc = (TextView) view.findViewById(R.id.tv_amc);
         tv_type_pattern = (TextView) view.findViewById(R.id.tv_type_pattern);
+        tv_storage_type = (TextView) view.findViewById(R.id.tv_storage_type);
     }
 
     @SuppressLint("WrongConstant")
@@ -168,10 +173,12 @@ public class SettingFragment extends Fragment implements OnClickListener,
         isUpload = SpUtils.getBoolean(SPConstants.UPLOAD_PATTERN, false);
         isStatistics = SpUtils.getBoolean(SPConstants.STATISTICS_REPORT_POISTION, false);
         isRescueFlood = SpUtils.getBoolean(SPConstants.RESCUE_PATTERN_FLOOD, false);
+        isMapState = SpUtils.getBoolean(SPConstants.MAP_SWITCH, false);
         toggle_bell.setSliderState(isPlaySound);
         toggle_vibrator.setSliderState(isVibrate);
         toggle_upload_pattern.setSliderState(isUpload);
         toggle_statistics_postion.setSliderState(isStatistics);
+        toggle_storage_pattern.setSliderState(isMapState);
         toggle_rescue_pattern.setSliderState(isRescueFlood);
         tv_name.setText(SpUtils.getString(SPConstants.LOGIN_NAME, "lisi"));
         tv_amc.setText("mac地址：" + BaseUtils.getMacFromHardware());
@@ -186,7 +193,8 @@ public class SettingFragment extends Fragment implements OnClickListener,
             tv_statistics_postion_counter.setText("");
         }
         tv_type_pattern.setText(getString(isRescueFlood ? R.string.rescue_pattern_flood : R.string.rescue_pattern_fire));
-//        loRaManager = (LoRaManager) getActivity().getSystemService(Context.LORA_SERVICE);
+        tv_storage_type.setText(getString(isMapState ? R.string.settings_storage_type_inner : R.string.settings_storage_type_outer));
+        loRaManager = (LoRaManager) getActivity().getSystemService(Context.LORA_SERVICE);
         if (helper == null) helper = DatabaseHelper.getHelper(getActivity());
         perdao = helper.getLocPersonDao();
         dao = helper.getPersonalInfoDao();
@@ -201,6 +209,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
         toggle_rescue_pattern.setOnToggleClickListener(this);
         toggle_upload_pattern.setOnToggleClickListener(this);
         toggle_statistics_postion.setOnToggleClickListener(this);
+        toggle_storage_pattern.setOnToggleClickListener(this);
         rl_sos_upload.setOnClickListener(this);
         rl_person_upload.setOnClickListener(this);
         rl_time_setting.setOnClickListener(this);
@@ -262,6 +271,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
                 break;
             case R.id.tv_sure:
                 alertdialog.dismiss();
+                SpUtils.putString(Constants.HTTP_TOOKEN, "");
                 getActivity().finish();
                 break;
             case R.id.rl_bd_setting:
@@ -401,7 +411,7 @@ public class SettingFragment extends Fragment implements OnClickListener,
                             getActivity().runOnUiThread(() -> {
                                 loadingView.dismiss();
                                 loadingView.cancel();
-                                Toast.makeText(getActivity(), "切换成功，开始重启应用...", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "切换成功，应用重启", Toast.LENGTH_SHORT).show();
                                 new Handler().postDelayed(() -> {
                                     restartApplication(getActivity());
                                 }, 3000);
@@ -410,6 +420,15 @@ public class SettingFragment extends Fragment implements OnClickListener,
                         }).start();
                     }
                 }
+                break;
+            case R.id.toggle_storage_pattern:
+                SpUtils.putBoolean(SPConstants.MAP_SWITCH, !SpUtils.getBoolean(SPConstants.MAP_SWITCH, false));
+                isMapState = SpUtils.getBoolean(SPConstants.MAP_SWITCH, false);
+                tv_storage_type.setText(getString(isMapState ? R.string.settings_storage_type_inner : R.string.settings_storage_type_outer));
+                showToast("地图数据切换为" + getString(isMapState ? R.string.settings_storage_type_inner : R.string.settings_storage_type_outer) + "，应用重启");
+                new Handler().postDelayed(() -> {
+                    restartApplication(getActivity());
+                }, 3000);
                 break;
         }
     }
@@ -831,67 +850,6 @@ public class SettingFragment extends Fragment implements OnClickListener,
         });
     }
 
-    /**
-     * 获取北斗号信息  send =1 传服务 send=0 设置sp
-     */
-//    private void getAllBDInfoFromServer() {
-//        //   登录成功开始下载设备信息
-//        Observable<AllBDInfosBean> observable = SLMRetrofit.getInstance().getApi().getAllBDInfos();
-//        observable.compose(new ThreadSwitchTransformer<AllBDInfosBean>()).subscribe(new CallbackListObserver<AllBDInfosBean>() {
-//            @Override
-//            protected void onSucceed(final AllBDInfosBean bean) {
-//                if (bean != null) {
-//                    if (bean.getCode() == 0) {
-//                        //请求成功
-//                        if (bean.getData() != null && bean.getData().size() > 0) {
-//                            //有数据
-//                            for (int i = 0; i < bean.getData().size(); i++) {
-//
-//                                AllBDInfosBean.DataBean dataBean = bean.getData().get(i);
-//                                if ("1".equals(dataBean.getSend())) {
-//                                    BDNum num = new BDNum(dataBean.getBdNumber(), Constants.TX_JZH);
-//                                    mNumList.add(num);//上传到服务接口的BdNum
-//                                }
-//                                if ("1".equals(dataBean.getReceive())) {
-//                                    SpUtils.putString(Constants.UPLOAD_JZH_NUM, dataBean.getBdNumber());
-//                                    try {
-//                                        if (SearchLocMapApplication.getInstance().getUploadService() != null) {
-//                                            SearchLocMapApplication.getInstance().getUploadService().setNum(Constants.TX_JZH, dataBean.getBdNumber());
-//                                        } else {
-//                                            SpUtils.putString(Constants.HTTP_TOOKEN, "");
-//                                            return;
-//                                        }
-//
-//                                    } catch (RemoteException e) {
-//                                        e.printStackTrace();
-//                                        SpUtils.putString(Constants.HTTP_TOOKEN, "");
-//                                        return;
-//                                    }
-//                                }
-//                                //添加到本地数据库
-//                                LocalBDNum localBDNum = new LocalBDNum(dataBean.getBdNumber(), dataBean.getSend(), dataBean.getReceive());
-//                                mLocalBDNums.add(localBDNum);
-//
-//                            }
-//
-//                        }
-//                    } else {
-//                        showToast(bean.getMessage() + "");
-//                    }
-//                } else {
-//                    showToast("服务器未能获取北斗平台的信息");
-//                }
-//
-//            }
-//
-//            @Override
-//            protected void onFailed() {
-//
-//            }
-//
-//        });
-//    }
-
     private class ProgressTask extends AsyncTask<Object, Integer, Boolean> {
         private DatabaseHelper helper;
         private Dao<HttpPersonInfo, Integer> httpPerDao;
@@ -970,104 +928,6 @@ public class SettingFragment extends Fragment implements OnClickListener,
         }
 
     }
-//    private class AyncLoginTask extends AsyncTask<Object, Integer, Boolean> {
-//        private DatabaseHelper helper;
-//        private Dao<HttpPersonInfo, Integer> httpPerDao;
-//        private Dao mBdNumDao;
-//        private boolean isInitMax = false;
-//
-//        @Override
-//        protected void onPreExecute() {
-//            helper = DatabaseHelper.getHelper(getActivity());
-//            httpPerDao = helper.getHttpPerDao();
-//            mBdNumDao = helper.getBdNumDao();
-//            ShowProgressDialog();
-//        }
-//
-//        @Override
-//        protected Boolean doInBackground(Object[] params) {
-//            boolean isSuccess = false;
-//            //清空数据
-//            try {
-//                CommonDBOperator.deleteAllItems(httpPerDao);
-//                Integer[] values = new Integer[2];
-//                String token = SpUtils.getString(Constants.HTTP_TOOKEN, "");
-//                getAllBDInfoFromServer();
-//                String rev = NetUtils.doHttpGetClient(token, Constants.USER_PATH);
-//                if (rev != null) {
-//                    JSONObject obj = new JSONObject(rev);
-//                    int code = obj.getInt("code");
-//                    if (code == 0) {
-//                        String data = obj.getString("data");
-//                        List<HttpRequstInfo> list = new Gson().fromJson(data, new TypeToken<List<HttpRequstInfo>>() {
-//                        }.getType());
-//                        values[0] = list.size() + mLocalBDNums.size();
-//                        LogUtil.d("size : " + list.size() + "mLocalBDNums:" + mLocalBDNums.size());
-//                        int delay = 40 * 100 / (list.size() + mLocalBDNums.size());
-//                        int counter = 0;
-//                        for (HttpRequstInfo info : list) {
-//                            counter++;
-//                            values[1] = counter;
-//                            publishProgress(values);
-//                            CommonDBOperator.saveToDB(httpPerDao, translationItem(info));
-//                            Thread.sleep(delay);
-//                        }
-//
-//                        for (LocalBDNum localBDNum : mLocalBDNums) {
-//                            counter++;
-//                            values[1] = counter;
-//                            publishProgress(values);
-//                            CommonDBOperator.saveToDB(mBdNumDao, localBDNum);
-//                            //上传到服务
-//                            Thread.sleep(delay);
-//                        }
-//                        try {//上传到服务接口
-//                            if (SearchLocMapApplication.getInstance() != null && SearchLocMapApplication.getInstance().getUploadService() != null) {
-//                                SearchLocMapApplication.getInstance().getUploadService().updateBDNum(mNumList);
-//                            } else {
-//                                SpUtils.putString(Constants.HTTP_TOOKEN, "");
-//                                return false;
-//                            }
-//                        } catch (RemoteException e) {
-//                            e.printStackTrace();
-//                            SpUtils.putString(Constants.HTTP_TOOKEN, "");
-//                        }
-//
-//                        isSuccess = true;
-//                        list.clear();
-//                        mLocalBDNums.clear();
-//                    }
-//                } else {
-//                    isSuccess = false;
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            return isSuccess;
-//        }
-//
-//        @Override
-//        protected void onProgressUpdate(Integer[] values) {
-//            if (!isInitMax) {
-//                progress.setMaxSeekBar(values[0]);
-//                isInitMax = true;
-//            } else {
-//                progress.setSeekBar(values[1], values[1] * 100 / values[0]);
-//            }
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Boolean result) {
-//            if (result) {
-//                showToast(getString(R.string.settings_sync_data_note));
-//            } else {
-//                showToast(getString(R.string.net_request_fail));
-//            }
-//            cancelProgressDialog();
-//        }
-//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

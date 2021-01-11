@@ -30,8 +30,8 @@
         android:layout_height="50dp"
         android:layout_below="@+id/im_login_logo"
         android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
         android:layout_marginTop="180dp"
+        android:layout_marginRight="40dp"
         android:background="@drawable/icon_login_input_bg">
 
         <ImageView
@@ -52,6 +52,7 @@
             android:background="@null"
             android:maxEms="15"
             android:maxLines="1"
+            android:singleLine="true"
             android:text="admin" />
 
 
@@ -92,6 +93,7 @@
             android:background="@null"
             android:maxEms="15"
             android:maxLines="1"
+            android:singleLine="true"
             android:text="admin" />
 
     </RelativeLayout>
@@ -103,8 +105,8 @@
         android:layout_below="@+id/rl_password"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="60dp"
-        android:layout_marginRight="60dp"
         android:layout_marginTop="20dp"
+        android:layout_marginRight="60dp"
         android:background="@drawable/icon_login_default"
         android:gravity="center_horizontal"
         android:paddingTop="7dp"

@@ -139,9 +139,9 @@ public class PlotItemListActivity extends PlotBaseActivity implements OnClickLis
                 }
                 break;
             case R.id.tv_load:
-                if (getDBManager() == null) {
-                    return;
-                }
+//                if (getDBManager() == null) {
+//                    return;
+//                }
                 List<PlotCheckBox> checkList1 = adapter.getCheckBoxList();
                 List<PlotItemInfo> uploadList = new ArrayList<PlotItemInfo>();
                 int counter1 = 0;

@@ -65,8 +65,10 @@ public class SearchLocMapApplication extends Application implements View.OnClick
     }
 
     public void autoUploadStart(Context mContext) {
-        if (Settings.Global.getInt(getContentResolver(),
-                Settings.Global.BD_MODE_ON, 0) != 1) {// 北斗定位没开
+        //
+        if (Settings.Global.getInt(getContentResolver(), Settings.Global.BD_MODE_ON, 0) == 0 &&
+                Settings.Global.getInt(getContentResolver(), Settings.Global.BD_INLINK_MODE_ON, 0) == 0 &&
+                Settings.Global.getInt(getContentResolver(), Settings.Global.BD_OUTLINK_MODE_ON, 0) == 0) {// 北斗定位没开
             alertdialog = new ShowAlertDialog(mContext);
             this.mContext = mContext;
             alertdialog.show();
@@ -89,8 +91,7 @@ public class SearchLocMapApplication extends Application implements View.OnClick
                 break;
             case R.id.tv_sure:
                 // 开启北斗
-                Intent intent_BDSetting = new Intent(
-                        Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+                Intent intent_BDSetting = new Intent("android.settings.action.DIPPER");
                 mContext.startActivity(intent_BDSetting);
                 SpUtils.putBoolean(SPConstants.ISJUMP, true);
                 alertdialog.dismiss();

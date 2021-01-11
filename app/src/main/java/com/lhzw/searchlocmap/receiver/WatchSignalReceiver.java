@@ -23,6 +23,7 @@ import com.lhzw.searchlocmap.constants.SPConstants;
 import com.lhzw.searchlocmap.db.dao.CommonDBOperator;
 import com.lhzw.searchlocmap.db.dao.DatabaseHelper;
 import com.lhzw.searchlocmap.event.EventBusBean;
+import com.lhzw.searchlocmap.fragment.SecurityFragment;
 import com.lhzw.searchlocmap.ui.MainActivity;
 import com.lhzw.searchlocmap.utils.BaseUtils;
 import com.lhzw.searchlocmap.utils.ComUtils;
@@ -132,6 +133,7 @@ public class WatchSignalReceiver extends BroadcastReceiver {
                     EventBus.getDefault().post(eventBusBean);
                     return;
             }
+
             //比较数据大小
             double distance = 0;
             //类型为sos,并可以上报,定位成功且距离有变动
@@ -188,8 +190,10 @@ public class WatchSignalReceiver extends BroadcastReceiver {
                 mComUtils.uploadBena(uploadList);  //上传到北斗服务
                 mHnadler.sendEmptyMessage(TOAST);  //显示上报数据弹窗
             }
-
-            CommonDBOperator.updateItem(persondao, list.get(0));
+            SecurityFragment.lastType = list.get(0).getState();
+            CommonDBOperator.deleteByKeys(persondao, "num", register_num);
+            CommonDBOperator.saveToDB(persondao, list.get(0));
+//            CommonDBOperator.updateItem(persondao, list.get(0));
             mContext.sendBroadcast(sosflash);
             list.clear();
         } else {

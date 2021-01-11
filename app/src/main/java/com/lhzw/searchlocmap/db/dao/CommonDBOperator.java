@@ -75,7 +75,7 @@ public class CommonDBOperator {
 				if (!BaseUtils.isStringEmpty(value)) {
 					formatValue = value;
 				}
-				list = dao.queryBuilder().orderBy(time, false).where()
+				list = dao.queryBuilder().orderBy(time, true).where()
 						.eq(key, formatValue).query();
 
 			} catch (SQLException e) {

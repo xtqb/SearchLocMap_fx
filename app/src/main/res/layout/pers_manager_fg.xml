@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/rl_title_bar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@color/green_little">
@@ -33,13 +34,16 @@
     </RelativeLayout>
 
     <View
+        android:id="@+id/splite_1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_below="@+id/rl_title_bar"
         android:background="#cccccc" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/splite_1"
         android:layout_gravity="top|left"
         android:layout_margin="5.0dip">
 
@@ -70,14 +74,17 @@
     </RelativeLayout>
 
     <View
+        android:id="@+id/splite_2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_below="@+id/splite_1"
         android:background="@color/gray_background" />
 
     <RelativeLayout
         android:id="@+id/rl_title"
         android:layout_width="match_parent"
         android:layout_height="40dp"
+        android:layout_below="@+id/splite_2"
         android:background="@color/white">
 
         <TextView
@@ -101,14 +108,18 @@
     </RelativeLayout>
 
     <View
+        android:id="@+id/splite_3"
         android:layout_width="match_parent"
         android:layout_height="10dp"
+        android:layout_below="@+id/rl_title"
         android:background="@color/gray_background" />
 
     <ListView
         android:id="@+id/personal_listview"
         android:layout_width="match_parent"
-        android:layout_height="347dp"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/relativeLayout1"
+        android:layout_below="@+id/splite_3"
         android:background="@color/white"
         android:divider="@drawable/lines"></ListView>
 
@@ -116,6 +127,7 @@
         android:id="@+id/relativeLayout1"
         android:layout_width="match_parent"
         android:layout_height="35dp"
+        android:layout_alignParentBottom="true"
         android:layout_marginTop="3dp"
         android:background="#E8E8E8"
         android:gravity="center_vertical">
@@ -142,4 +154,4 @@
             android:textSize="15sp" />
     </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>

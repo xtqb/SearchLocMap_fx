@@ -45,5 +45,6 @@ public class SPConstants {
 
 	public static final String STATISTICS_REPORT_NUM = "STATISTICS_REPORT_NUM";
 	public static final String BINDING_NUM = "BINDING_NUM";
+	public static final String MAP_SWITCH = "MAP_SWITCH"; // 地图内外置切换
 
 }

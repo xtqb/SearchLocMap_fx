@@ -32,21 +32,23 @@ public class ReportSosActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.sos_report);
 		initView();
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				initData();
-				setListener();
-			}
-		}).start();
+		setListener();
+//		new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				// TODO Auto-generated method stub
+////				initData();
+//				setListener();
+//			}
+//		}).start();
 	}
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		setDipperState();
+//		setDipperState();
+		anto_report_toggle.setSliderState(SpUtils.getBoolean(SPConstants.AUTO_REPORT, true));
 	}
 
 	private void initData() {
@@ -104,14 +106,18 @@ public class ReportSosActivity extends Activity implements
 	public void onToggleClick(View view) {
 		switch (view.getId()) {
 		case R.id.anto_report_toggle:
-			if(BaseUtils.getDBManager(ReportSosActivity.this) == null) {
-				anto_report_toggle.setSliderState(false);
-			} else {
-				SpUtils.putBoolean(SPConstants.AUTO_REPORT,
-						!SpUtils.getBoolean(SPConstants.AUTO_REPORT, true));
-				select_report.setEnabled(!SpUtils.getBoolean(
-						SPConstants.AUTO_REPORT, true));
-			}
+//			if(BaseUtils.getDBManager(ReportSosActivity.this) == null) {
+//				anto_report_toggle.setSliderState(false);
+//			} else {
+//				SpUtils.putBoolean(SPConstants.AUTO_REPORT,
+//						!SpUtils.getBoolean(SPConstants.AUTO_REPORT, true));
+//				select_report.setEnabled(!SpUtils.getBoolean(
+//						SPConstants.AUTO_REPORT, true));
+//			}
+			SpUtils.putBoolean(SPConstants.AUTO_REPORT,
+					!SpUtils.getBoolean(SPConstants.AUTO_REPORT, true));
+//			select_report.setEnabled(SpUtils.getBoolean(
+//					SPConstants.AUTO_REPORT, true));
 //			if (SpUtils.getBoolean(SPConstants.AUTO_REPORT, true)) {
 ////				SearchLocMapApplication.getIntance().autoUploadStart(
 ////						ReportSosActivity.this);

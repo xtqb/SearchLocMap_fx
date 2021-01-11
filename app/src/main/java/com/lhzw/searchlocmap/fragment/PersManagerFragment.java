@@ -115,7 +115,7 @@ public class PersManagerFragment extends Fragment implements
         tv_num = (TextView) view.findViewById(R.id.tv_num);
         relativeLayout1 = (RelativeLayout) view
                 .findViewById(R.id.relativeLayout1);
-        relativeLayout1.setVisibility(View.INVISIBLE);
+        relativeLayout1.setVisibility(View.GONE);
         helper = DatabaseHelper.getHelper(getActivity());
         persondao = helper.getLocPersonDao();
         dao = helper.getPersonalInfoDao();
@@ -161,7 +161,7 @@ public class PersManagerFragment extends Fragment implements
                     relativeLayout1.setVisibility(View.VISIBLE);
                 } else {
                     SpUtils.putBoolean(SPConstants.CHECKBOX_ISSHOW, false);
-                    relativeLayout1.setVisibility(View.INVISIBLE);
+                    relativeLayout1.setVisibility(View.GONE);
                 }
                 peradapter.notifyDataSetChanged();
                 ani_state = !ani_state;
@@ -237,7 +237,7 @@ public class PersManagerFragment extends Fragment implements
                             perlistview.setOnItemClickListener(PersManagerFragment.this);
 
                             SpUtils.putBoolean(SPConstants.CHECKBOX_ISSHOW, false);
-                            relativeLayout1.setVisibility(View.INVISIBLE);
+                            relativeLayout1.setVisibility(View.GONE);
                             ani_state = !ani_state;
 
                             peradapter.notifyDataSetChanged();

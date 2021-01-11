@@ -16,8 +16,8 @@ android {
         applicationId "com.lhzw.searchlocmap"
         minSdkVersion 23
         targetSdkVersion 23
-        versionCode 27
-        versionName "v10.0.3"
+        versionCode 28
+        versionName "v11.0.0"
     }
     buildTypes {
 //        release {
