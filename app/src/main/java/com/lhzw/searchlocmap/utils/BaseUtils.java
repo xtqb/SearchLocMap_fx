@@ -302,8 +302,9 @@ public class BaseUtils {
 
     public static BDManager getDBManager(Context mContext) {
         //检查北斗开关
-        if (Settings.Global.getInt(mContext.getContentResolver(),
-                Settings.Global.BD_MODE_ON, 0) != 1) {// 北斗定位没开
+        if (Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.BD_MODE_ON, 0) == 0 &&
+                Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.BD_INLINK_MODE_ON, 0) == 0 &&
+                Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.BD_OUTLINK_MODE_ON, 0) == 0) {// 北斗定位没开
             Toast.makeText(mContext, mContext.getString(R.string.dipper_switch_check_note), Toast.LENGTH_LONG).show();
             return null;
         }
