@@ -601,54 +601,54 @@ public class SettingFragment extends Fragment implements OnClickListener,
         for (BindingOfWatchBean bean : list) {
             // 处理数据 插入数据库
             if (isRescueFlood) {
-                if (!bean.isBound()) {
-                    // 两个数据库连接
-                    List<LocPersonalInfo> infos = CommonDBOperator.queryByKeys(perdao,
+//                if (!bean.isBound()) {
+                // 两个数据库连接
+                List<LocPersonalInfo> infos = CommonDBOperator.queryByKeys(perdao,
+                        "num", bean.getDeviceNumber());
+                if (null != infos && infos.size() > 0) {
+                    // 更新
+                    infos.get(0).setName(bean.getRealName() + "");
+                    CommonDBOperator.updateItem(perdao, infos.get(0));
+                    infos.clear();
+                    // 更新 personItem
+                    List<PersonalInfo> list1 = CommonDBOperator.queryByKeys(dao,
                             "num", bean.getDeviceNumber());
-                    if (null != infos && infos.size() > 0) {
-                        // 更新
-                        infos.get(0).setName(bean.getRealName() + "");
-                        CommonDBOperator.updateItem(perdao, infos.get(0));
-                        infos.clear();
-                        // 更新 personItem
-                        List<PersonalInfo> list1 = CommonDBOperator.queryByKeys(dao,
-                                "num", bean.getDeviceNumber());
-                        list1.get(0).setName(bean.getRealName());
-                        CommonDBOperator.updateItem(dao, list1.get(0));
-                        list1.clear();
+                    list1.get(0).setName(bean.getRealName());
+                    CommonDBOperator.updateItem(dao, list1.get(0));
+                    list1.clear();
+                } else {
+                    // 保存
+                    int offset = 0;
+                    if (offsetList.size() > 0) {
+                        offset = offsetList.get(offsetList.size() - 1);
+                        offsetList.remove(offsetList.size() - 1);
                     } else {
-                        // 保存
-                        int offset = 0;
-                        if (offsetList.size() > 0) {
-                            offset = offsetList.get(offsetList.size() - 1);
-                            offsetList.remove(offsetList.size() - 1);
+                        List<LocPersonalInfo> pers = CommonDBOperator.getList(perdao);
+                        if (pers == null || pers.size() == 0) {
+                            offset = 1;
                         } else {
-                            List<LocPersonalInfo> pers = CommonDBOperator.getList(perdao);
-                            if (pers == null || pers.size() == 0) {
-                                offset = 1;
-                            } else {
-                                offset = pers.size() + 1;
-                            }
+                            offset = pers.size() + 1;
                         }
-                        LocPersonalInfo perInfo = new LocPersonalInfo();
-                        perInfo.setNum(bean.getDeviceNumber());
-                        perInfo.setName(bean.getRealName());
-                        perInfo.setSex("男");
-                        perInfo.setOffset(offset);
-                        CommonDBOperator.saveToDB(perdao, perInfo);
-
-                        // 插入到 personItem
-                        PersonalInfo item = new PersonalInfo();
-                        item.setNum(bean.getDeviceNumber());
-                        item.setName(bean.getRealName());
-                        item.setSex("男");
-                        item.setOffset(offset);
-                        item.setState(Constants.PERSON_OFFLINE);
-                        CommonDBOperator.saveToDB(dao, item);
                     }
+                    LocPersonalInfo perInfo = new LocPersonalInfo();
+                    perInfo.setNum(bean.getDeviceNumber());
+                    perInfo.setName(bean.getRealName());
+                    perInfo.setSex("男");
+                    perInfo.setOffset(offset);
+                    CommonDBOperator.saveToDB(perdao, perInfo);
+
+                    // 插入到 personItem
+                    PersonalInfo item = new PersonalInfo();
+                    item.setNum(bean.getDeviceNumber());
+                    item.setName(bean.getRealName());
+                    item.setSex("男");
+                    item.setOffset(offset);
+                    item.setState(Constants.PERSON_OFFLINE);
+                    CommonDBOperator.saveToDB(dao, item);
                 }
+//                }
             } else {
-                if (!bean.isBound()) {
+                if (!bean.isBound() || (bean.isBound() && !bean.getBelongdeviceNumber().equals(BaseUtils.getMacFromHardware()))) {
                     CommonDBOperator.deleteByKeys(perdao, "num", bean.getDeviceNumber());
                     CommonDBOperator.deleteByKeys(dao, "num", bean.getDeviceNumber());
                 }
